@@ -192,7 +192,7 @@ export const BlossomDropGame: Component = () => {
     }, 450);
   };
 
-  // シンプルで可愛いスイーツ絵文字レンダラー
+  // シンプルで可愛いスイーツ絵文字レンダラー（丸い背景なし・絵文字単体）
   const renderSweets = (
     ctx: CanvasRenderingContext2D,
     c: { x: number; y: number; radius: number; level: number; scaleAnim?: number }
@@ -204,13 +204,13 @@ export const BlossomDropGame: Component = () => {
     ctx.save();
     ctx.translate(c.x, c.y);
 
-    // やわらかなアンビエントシャドウ
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.16)';
+    // 足元のやわらかな影
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
     ctx.beginPath();
-    ctx.ellipse(0, r * 0.9, r * 0.85, r * 0.22, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, r * 0.88, r * 0.72, r * 0.2, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 高級オーラ発光（タワー・パフェのみ）
+    // 高級オーラ発光（上位レベルのみ）
     if (c.level === 10) {
       ctx.shadowColor = '#f59e0b';
       ctx.shadowBlur = 18;
@@ -219,35 +219,12 @@ export const BlossomDropGame: Component = () => {
       ctx.shadowBlur = 10;
     }
 
-    // 球体ベースグラデーション
-    const grad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r);
-    grad.addColorStop(0, s.gradientStart);
-    grad.addColorStop(0.85, s.color);
-    grad.addColorStop(1, s.gradientEnd);
-
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.fillStyle = grad;
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    // クリーンな外枠
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.lineWidth = Math.max(1.5, r * 0.05);
-    ctx.stroke();
-
-    // 球体のツヤハイライト
-    ctx.beginPath();
-    ctx.ellipse(-r * 0.35, -r * 0.38, r * 0.26, r * 0.14, -Math.PI / 4, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-    ctx.fill();
-
-    // 中央にシンプルで可愛いスイーツ絵文字
-    const emojiSize = Math.round(r * 1.15);
+    // 丸い背景は一切描画せず、絵文字そのものを描画
+    const emojiSize = Math.round(r * 1.82);
     ctx.font = `${emojiSize}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(s.emoji, 0, r * 0.04);
+    ctx.fillText(s.emoji, 0, r * 0.05);
 
     ctx.restore();
   };
