@@ -71,7 +71,7 @@ export function deserializeFromSync(encoded: string): Partial<AppData> | null {
 export function createSyncUrl(data: AppData): string {
   const encoded = serializeForSync(data);
   const base = window.location.origin + window.location.pathname;
-  return `${base}#sync=${encoded}`;
+  return `${base}?sync=${encoded}`;
 }
 
 // QRコード画像を生成 (DataURL)
@@ -81,7 +81,7 @@ export async function createQrCodeDataUrl(url: string): Promise<string> {
       width: 256,
       margin: 2,
       color: {
-        dark: '#be123c', // 桜・ローズカラーのQRコード
+        dark: '#0f172a', // スレートカラーのQRコード
         light: '#ffffff',
       },
     });

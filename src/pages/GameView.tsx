@@ -20,7 +20,7 @@ export const GameView: Component = () => {
             指定されたゲームは存在しないか、現在準備中です。
           </p>
           <a
-            href="/"
+            href="#/"
             class="px-5 py-2.5 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold text-xs shadow-xs hover:bg-slate-800 dark:hover:bg-white transition-all"
           >
             ゲーム一覧へ戻る

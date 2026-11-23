@@ -50,17 +50,28 @@ export const Home: Component = () => {
   // URL経由の自動同期受信モーダル
   const [pendingSyncData, setPendingSyncData] = createSignal<Partial<AppData> | null>(null);
 
-  // 起動時のURLハッシュ同期チェック
+  // 起動時のURL同期チェック (クエリパラメータ ?sync= または URLハッシュ #sync=)
   onSettled(() => {
-    const hash = window.location.hash;
-    if (hash.startsWith('#sync=')) {
-      const encoded = hash.slice(6);
+    let encoded: string | null = null;
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has('sync')) {
+      encoded = searchParams.get('sync');
+    } else {
+      const hash = window.location.hash;
+      const syncIndex = hash.indexOf('sync=');
+      if (syncIndex !== -1) {
+        encoded = hash.slice(syncIndex + 5).split('&')[0];
+      }
+    }
+
+    if (encoded) {
       const data = deserializeFromSync(encoded);
       if (data) {
         sound.playVictory();
         setPendingSyncData(data);
-        // URLのハッシュを消去して履歴をクリーンに保つ
-        window.history.replaceState(null, '', window.location.pathname);
+        // URLの同期パラメータを消去して履歴をクリーンに保つ
+        const cleanPath = window.location.pathname + (window.location.hash.startsWith('#/game/') ? window.location.hash : '#/');
+        window.history.replaceState(null, '', cleanPath);
       }
     }
   });
@@ -243,7 +254,7 @@ export const Home: Component = () => {
         <section class="text-center py-6 sm:py-10 relative overflow-hidden">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium mb-4 shadow-2xs">
             <SparklesIcon size={14} class="text-slate-500" />
-            <span>完全クライアント完結・DB不要・Solid.js 2.0 駆動</span>
+            <span>ブラウザですぐ遊べるミニゲームポータル</span>
           </div>
 
           <h2 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
@@ -364,7 +375,7 @@ export const Home: Component = () => {
 
                     {/* プレイボタン */}
                     <a
-                      href={`/game/${game.id}`}
+                      href={`#/game/${game.id}`}
                       onClick={() => sound.playPop(520)}
                       class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs active:scale-98 transition-all"
                     >

@@ -100,7 +100,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
       {/* 上部ヘッダーコントロール */}
       <header class="w-full max-w-xl flex items-center justify-between py-2 px-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs mb-3">
         <a
-          href="/"
+          href="#/"
           onClick={() => sound.playPop(400)}
           class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
         >
@@ -253,7 +253,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
                 もう一度遊ぶ
               </button>
               <a
-                href="/"
+                href="#/"
                 onClick={() => sound.playPop(400)}
                 class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >

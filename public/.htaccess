@@ -52,23 +52,18 @@
     DirectorySlash Off
 </IfModule>
 
-# SPAのルーティング対応：存在しないファイル・ディレクトリへのアクセスをindex.htmlにリダイレクト
+# SPAのルーティング対応：存在しないファイル・ディレクトリへのアクセスをindex.htmlにフォールバック
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
-
-    # ルートアクセスはindex.htmlを直接配信
-    RewriteRule ^$ index.html [L]
-
-    # 存在するディレクトリ（末尾スラッシュ有無問わず）に index.html がある場合は内部リライトで即座に返す
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteCond %{REQUEST_FILENAME}/index.html -f
-    RewriteRule ^(.+?)/?$ $1/index.html [L]
 
     # 実際に存在するファイル・ディレクトリへのリクエストはそのまま通す
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
 
-    # それ以外（/game/floris-2048 等）はすべてindex.htmlに渡す
+    # それ以外はindex.htmlにフォールバック
     RewriteRule ^ index.html [QSA,L]
 </IfModule>
+
+# mod_rewrite無効環境でのフォールバック
+ErrorDocument 404 index.html
