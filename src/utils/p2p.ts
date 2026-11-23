@@ -57,22 +57,39 @@ export class ZeroTrustP2P {
 
     this.setupDataChannel(this.dc);
 
-    // ICE Candidate の収集完了を待ってから完全なOfferを返す
+    // ICE Candidate の収集完了を待ってから完全なOfferを返す（最大1000msでフォールバック）
     return new Promise((resolve, reject) => {
-      if (!this.pc) return reject('PeerConnection not initialized');
+      if (!this.pc) return reject(new Error('PeerConnection not initialized'));
 
-      this.pc.onicecandidate = (event) => {
-        if (!event.candidate && this.pc?.localDescription) {
-          // すべてのCandidate収集完了
+      let resolved = false;
+      const finish = () => {
+        if (resolved) return;
+        resolved = true;
+        if (this.pc?.localDescription) {
           const offerCode = compressSdp(this.pc.localDescription);
           resolve(offerCode);
+        } else {
+          reject(new Error('SDP generation failed'));
+        }
+      };
+
+      // STUN到達が遅い環境でも1秒以内に確実に応答コードを生成
+      const timeoutId = setTimeout(finish, 1000);
+
+      this.pc.onicecandidate = (event) => {
+        if (!event.candidate) {
+          clearTimeout(timeoutId);
+          finish();
         }
       };
 
       this.pc
         .createOffer()
         .then((offer) => this.pc?.setLocalDescription(offer))
-        .catch(reject);
+        .catch((err) => {
+          clearTimeout(timeoutId);
+          reject(err);
+        });
     });
   }
 
@@ -96,14 +113,28 @@ export class ZeroTrustP2P {
     const answer = await this.pc.createAnswer();
     await this.pc.setLocalDescription(answer);
 
-    // ICE Candidate の収集完了を待ってから完全なAnswerを返す
+    // ICE Candidate の収集完了を待ってから完全なAnswerを返す（最大1000msでフォールバック）
     return new Promise((resolve, reject) => {
-      if (!this.pc) return reject('PeerConnection not initialized');
+      if (!this.pc) return reject(new Error('PeerConnection not initialized'));
 
-      this.pc.onicecandidate = (event) => {
-        if (!event.candidate && this.pc?.localDescription) {
+      let resolved = false;
+      const finish = () => {
+        if (resolved) return;
+        resolved = true;
+        if (this.pc?.localDescription) {
           const answerCode = compressSdp(this.pc.localDescription);
           resolve(answerCode);
+        } else {
+          reject(new Error('Answer SDP generation failed'));
+        }
+      };
+
+      const timeoutId = setTimeout(finish, 1000);
+
+      this.pc.onicecandidate = (event) => {
+        if (!event.candidate) {
+          clearTimeout(timeoutId);
+          finish();
         }
       };
     });

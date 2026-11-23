@@ -52,6 +52,8 @@ export const PuzzleClashGame: Component = () => {
   const [roomCode, setRoomCode] = createSignal('');
   const [inputCode, setInputCode] = createSignal('');
   const [connected, setConnected] = createSignal(false);
+  const [isGenerating, setIsGenerating] = createSignal(false);
+  const [copied, setCopied] = createSignal(false);
   const [p2pError, setP2pError] = createSignal('');
 
   // Game state
@@ -499,37 +501,53 @@ export const PuzzleClashGame: Component = () => {
   // P2P Setup
   const setupHost = async () => {
     setP2pError('');
-    p2p = new ZeroTrustP2P({
-      onConnected: () => {
-        setConnected(true);
-      },
-      onMessage: (data: unknown) => handleP2PMessage(data as any),
-      onDisconnected: () => {
-        setConnected(false);
-      },
-      onError: (err: string) => setP2pError(err),
-    });
+    setIsGenerating(true);
+    setRoomCode('');
+    try {
+      p2p = new ZeroTrustP2P({
+        onConnected: () => {
+          setConnected(true);
+        },
+        onMessage: (data: unknown) => handleP2PMessage(data as any),
+        onDisconnected: () => {
+          setConnected(false);
+        },
+        onError: (err: string) => setP2pError(err),
+      });
 
-    const offer = await p2p.createHostOffer();
-    setRoomCode(offer);
+      const offer = await p2p.createHostOffer();
+      setRoomCode(offer);
+    } catch (e: any) {
+      setP2pError(e?.message || 'コードの生成に失敗しました。');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const joinClient = async () => {
     if (!inputCode().trim()) return;
     setP2pError('');
-    p2p = new ZeroTrustP2P({
-      onConnected: () => {
-        setConnected(true);
-      },
-      onMessage: (data: unknown) => handleP2PMessage(data as any),
-      onDisconnected: () => {
-        setConnected(false);
-      },
-      onError: (err: string) => setP2pError(err),
-    });
+    setIsGenerating(true);
+    setRoomCode('');
+    try {
+      p2p = new ZeroTrustP2P({
+        onConnected: () => {
+          setConnected(true);
+        },
+        onMessage: (data: unknown) => handleP2PMessage(data as any),
+        onDisconnected: () => {
+          setConnected(false);
+        },
+        onError: (err: string) => setP2pError(err),
+      });
 
-    const answer = await p2p.joinGuest(inputCode().trim());
-    setRoomCode(answer);
+      const answer = await p2p.joinGuest(inputCode().trim());
+      setRoomCode(answer);
+    } catch (e: any) {
+      setP2pError(e?.message || '応答の生成に失敗しました。');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const finalizeHost = async () => {
@@ -640,21 +658,40 @@ export const PuzzleClashGame: Component = () => {
           </div>
 
           <Show when={role() === 'host'}>
-            <p class="text-xs text-slate-300">
-              1. 以下の招待コードを相手に共有してください：
-            </p>
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-slate-300">
+                1. 以下の招待コードを相手に共有してください：
+              </span>
+              <button
+                onClick={setupHost}
+                disabled={isGenerating()}
+                class="text-[11px] text-cyan-400 hover:text-cyan-300 underline cursor-pointer disabled:opacity-50"
+              >
+                🔄 再生成
+              </button>
+            </div>
             <div class="flex gap-2">
               <input
                 type="text"
                 readonly
-                value={roomCode()}
-                class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-cyan-300 select-all"
+                value={isGenerating() ? '⏳ 招待コードを生成中...' : roomCode()}
+                placeholder="招待コードがここに表示されます"
+                class={`flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono select-all ${
+                  isGenerating() ? 'text-amber-400 animate-pulse' : 'text-cyan-300'
+                }`}
               />
               <button
-                onClick={() => navigator.clipboard.writeText(roomCode())}
-                class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg text-white"
+                onClick={() => {
+                  if (roomCode()) {
+                    navigator.clipboard.writeText(roomCode());
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }
+                }}
+                disabled={isGenerating() || !roomCode()}
+                class="px-3 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-xs font-semibold rounded-lg text-white cursor-pointer active:scale-95"
               >
-                コピー
+                {copied() ? 'コピー済！' : 'コピー'}
               </button>
             </div>
             <p class="text-xs text-slate-300">
@@ -670,7 +707,7 @@ export const PuzzleClashGame: Component = () => {
               />
               <button
                 onClick={finalizeHost}
-                class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-xs font-bold rounded-lg text-white"
+                class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-xs font-bold rounded-lg text-white cursor-pointer"
               >
                 接続
               </button>
@@ -691,9 +728,10 @@ export const PuzzleClashGame: Component = () => {
               />
               <button
                 onClick={joinClient}
-                class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-xs font-bold rounded-lg text-white"
+                disabled={isGenerating()}
+                class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-xs font-bold rounded-lg text-white cursor-pointer"
               >
-                応答生成
+                {isGenerating() ? '生成中...' : '応答生成'}
               </button>
             </div>
             <Show when={roomCode()}>
@@ -708,10 +746,14 @@ export const PuzzleClashGame: Component = () => {
                   class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-cyan-300 select-all"
                 />
                 <button
-                  onClick={() => navigator.clipboard.writeText(roomCode())}
-                  class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg text-white"
+                  onClick={() => {
+                    navigator.clipboard.writeText(roomCode());
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg text-white cursor-pointer"
                 >
-                  コピー
+                  {copied() ? 'コピー済！' : 'コピー'}
                 </button>
               </div>
             </Show>

@@ -31,6 +31,8 @@ export const SketchGuessGame: Component = () => {
   const [roomCode, setRoomCode] = createSignal('');
   const [inputCode, setInputCode] = createSignal('');
   const [connected, setConnected] = createSignal(false);
+  const [isGenerating, setIsGenerating] = createSignal(false);
+  const [copied, setCopied] = createSignal(false);
   const [p2pError, setP2pError] = createSignal('');
 
   // Game state
@@ -203,40 +205,63 @@ export const SketchGuessGame: Component = () => {
   // P2P Handlers
   const setupHost = async () => {
     setP2pError('');
-    p2p = new ZeroTrustP2P({
-      onConnected: () => {
-        setConnected(true);
-        const w = getRandomWord();
-        p2p?.send({ type: 'start_round', drawer: false, word: w });
-        startRound(true, w);
-      },
-      onMessage: (data: unknown) => handleP2PData(data as any),
-      onDisconnected: () => {
-        setConnected(false);
-      },
-      onError: (err: string) => setP2pError(err),
-    });
+    setIsGenerating(true);
+    setRoomCode('');
+    try {
+      p2p = new ZeroTrustP2P({
+        onConnected: () => {
+          setConnected(true);
+          const w = getRandomWord();
+          p2p?.send({ type: 'start_round', drawer: false, word: w });
+          startRound(true, w);
+        },
+        onMessage: (data: unknown) => handleP2PData(data as any),
+        onDisconnected: () => {
+          setConnected(false);
+        },
+        onError: (err: string) => setP2pError(err),
+      });
 
-    const offer = await p2p.createHostOffer();
-    setRoomCode(offer);
+      const offer = await p2p.createHostOffer();
+      setRoomCode(offer);
+    } catch (e: any) {
+      setP2pError(e?.message || 'コード生成に失敗しました');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const joinClient = async () => {
     if (!inputCode().trim()) return;
     setP2pError('');
-    p2p = new ZeroTrustP2P({
-      onConnected: () => {
-        setConnected(true);
-      },
-      onMessage: (data: unknown) => handleP2PData(data as any),
-      onDisconnected: () => {
-        setConnected(false);
-      },
-      onError: (err: string) => setP2pError(err),
-    });
+    setIsGenerating(true);
+    setRoomCode('');
+    try {
+      p2p = new ZeroTrustP2P({
+        onConnected: () => {
+          setConnected(true);
+        },
+        onMessage: (data: unknown) => handleP2PData(data as any),
+        onDisconnected: () => {
+          setConnected(false);
+        },
+        onError: (err: string) => setP2pError(err),
+      });
 
-    const answer = await p2p.joinGuest(inputCode().trim());
-    setRoomCode(answer);
+      const answer = await p2p.joinGuest(inputCode().trim());
+      setRoomCode(answer);
+    } catch (e: any) {
+      setP2pError(e?.message || '参加コード生成に失敗しました');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const copyCode = (code: string) => {
+    if (!code) return;
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const finalizeHost = async () => {
@@ -339,21 +364,39 @@ export const SketchGuessGame: Component = () => {
             <p class="text-xs text-slate-300">
               1. 以下の招待コードを相手に共有してください：
             </p>
-            <div class="flex gap-2">
-              <input
-                type="text"
-                readonly
-                value={roomCode()}
-                class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-pink-300 select-all"
-              />
-              <button
-                onClick={() => navigator.clipboard.writeText(roomCode())}
-                class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg text-white"
-              >
-                コピー
-              </button>
-            </div>
-            <p class="text-xs text-slate-300">
+            <Show
+              when={!isGenerating()}
+              fallback={
+                <div class="py-3 px-4 bg-slate-950 border border-slate-800 rounded-lg text-xs text-pink-400 font-mono animate-pulse flex items-center justify-center gap-2">
+                  <span class="inline-block w-3 h-3 border-2 border-pink-400 border-t-transparent rounded-full animate-spin" />
+                  招待コードを生成中...
+                </div>
+              }
+            >
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  readonly
+                  value={roomCode()}
+                  class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-pink-300 select-all"
+                />
+                <button
+                  onClick={() => copyCode(roomCode())}
+                  class="px-3 py-2 bg-pink-600 hover:bg-pink-500 text-xs font-semibold rounded-lg text-white transition-colors"
+                >
+                  {copied() ? '✓ コピー済' : 'コピー'}
+                </button>
+                <button
+                  onClick={setupHost}
+                  title="再生成"
+                  class="px-2 py-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg text-slate-300"
+                >
+                  🔄
+                </button>
+              </div>
+            </Show>
+
+            <p class="text-xs text-slate-300 mt-2">
               2. 相手から返ってきた応答コードを貼り付けて接続：
             </p>
             <div class="flex gap-2">
@@ -387,12 +430,19 @@ export const SketchGuessGame: Component = () => {
               />
               <button
                 onClick={joinClient}
-                class="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-xs font-bold rounded-lg text-white"
+                disabled={isGenerating()}
+                class="px-4 py-2 bg-pink-600 hover:bg-pink-500 disabled:opacity-50 text-xs font-bold rounded-lg text-white"
               >
-                応答生成
+                {isGenerating() ? '生成中...' : '応答生成'}
               </button>
             </div>
-            <Show when={roomCode()}>
+            <Show when={isGenerating()}>
+              <div class="py-2 text-xs text-pink-400 font-mono animate-pulse flex items-center justify-center gap-2">
+                <span class="inline-block w-3 h-3 border-2 border-pink-400 border-t-transparent rounded-full animate-spin" />
+                応答コードを生成中...
+              </div>
+            </Show>
+            <Show when={roomCode() && !isGenerating()}>
               <p class="text-xs text-slate-300 mt-2">
                 生成された応答コードをホストに送信してください：
               </p>
@@ -404,10 +454,10 @@ export const SketchGuessGame: Component = () => {
                   class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-pink-300 select-all"
                 />
                 <button
-                  onClick={() => navigator.clipboard.writeText(roomCode())}
-                  class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg text-white"
+                  onClick={() => copyCode(roomCode())}
+                  class="px-3 py-2 bg-pink-600 hover:bg-pink-500 text-xs font-semibold rounded-lg text-white transition-colors"
                 >
-                  コピー
+                  {copied() ? '✓ コピー済' : 'コピー'}
                 </button>
               </div>
             </Show>
