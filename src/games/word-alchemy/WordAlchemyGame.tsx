@@ -222,6 +222,11 @@ export const WordAlchemyGame: Component = () => {
       isGameOver={false}
       isVictory={isVictory()}
       onRestart={restart}
+      onNextStage={() => {
+        setChamberIdx(0);
+        restart();
+      }}
+      nextStageLabel="全回廊制覇！最初から遊ぶ"
       instructions={instructions}
     >
       <div class="w-full max-w-2xl h-full flex flex-col justify-between p-2 min-h-0 select-none">

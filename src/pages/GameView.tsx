@@ -30,7 +30,8 @@ export const GameView: Component = () => {
       }
     >
       {(item) => {
-        const Comp = item().component;
+        const target = item();
+        const Comp = target.component;
         return <Comp />;
       }}
     </Show>

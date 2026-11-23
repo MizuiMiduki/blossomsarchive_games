@@ -38,6 +38,7 @@ interface Circle {
   vx: number;
   vy: number;
   radius: number;
+  spawnTime: number;
 }
 
 let circleIdCounter = 1;
@@ -145,6 +146,7 @@ export const BlossomDropGame: Component = () => {
       vx: (Math.random() - 0.5) * 0.4,
       vy: 1.5,
       radius: tier.radius,
+      spawnTime: Date.now(),
     });
 
     sound.playPop(380);
@@ -456,6 +458,7 @@ export const BlossomDropGame: Component = () => {
               vx: (c1.vx + c2.vx) * 0.5,
               vy: -2,
               radius: newTier.radius,
+              spawnTime: Date.now(),
             });
 
             setScore((s) => s + newTier.score);
@@ -490,9 +493,10 @@ export const BlossomDropGame: Component = () => {
       circles.push(...toAdd);
     }
 
-    // 3. ゲームオーバー判定（静止していてデッドラインを超えているもの）
+    // 3. ゲームオーバー判定（スポーン後2秒以上経過し、静止していてデッドラインを超えているもの）
+    const now = Date.now();
     for (const c of circles) {
-      if (Math.abs(c.vy) < 0.2 && c.y - c.radius < deadLineY) {
+      if (now - c.spawnTime > 2000 && Math.abs(c.vy) < 0.25 && c.y - c.radius < deadLineY) {
         setIsGameOver(true);
         if (animationId) cancelAnimationFrame(animationId);
         return;
