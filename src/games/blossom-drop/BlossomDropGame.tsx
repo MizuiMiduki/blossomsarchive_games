@@ -204,23 +204,14 @@ export const BlossomDropGame: Component = () => {
     ctx.save();
     ctx.translate(c.x, c.y);
 
-    // 足元のやわらかな影
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+    // 足元の自然でソフトな温かいドロップシャドウ（トレイや床面への接地感を表現）
+    ctx.fillStyle = 'rgba(180, 83, 9, 0.14)';
     ctx.beginPath();
-    ctx.ellipse(0, r * 0.88, r * 0.72, r * 0.2, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, r * 0.88, r * 0.76, r * 0.22, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 高級オーラ発光（上位レベルのみ）
-    if (c.level === 10) {
-      ctx.shadowColor = '#f59e0b';
-      ctx.shadowBlur = 18;
-    } else if (c.level >= 8) {
-      ctx.shadowColor = 'rgba(244, 63, 94, 0.35)';
-      ctx.shadowBlur = 10;
-    }
-
-    // 丸い背景は一切描画せず、絵文字そのものを描画
-    const emojiSize = Math.round(r * 1.82);
+    // 絵文字そのものをフルカラー・高彩度で鮮明に描画
+    const emojiSize = Math.round(r * 1.92);
     ctx.font = `${emojiSize}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -235,6 +226,7 @@ export const BlossomDropGame: Component = () => {
     if (!ctx) return;
 
     // 1. 物理演算
+    const floorY = canvasRef.height - 10; // 下部の木目トレイの上面
     for (let i = 0; i < circles.length; i++) {
       const c = circles[i];
       c.vy += gravity;
@@ -259,8 +251,8 @@ export const BlossomDropGame: Component = () => {
         c.vy *= 0.92;
       }
 
-      if (c.y + c.radius > canvasRef.height) {
-        c.y = canvasRef.height - c.radius;
+      if (c.y + c.radius > floorY) {
+        c.y = floorY - c.radius;
         c.vy = -c.vy * bounce;
         // 床面での強い転がり摩擦（ツルツル横滑りを防止）
         c.vx *= 0.82;
@@ -394,27 +386,45 @@ export const BlossomDropGame: Component = () => {
     }
 
     // --- 5. 描画 ---
-    ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
+    // 明るく温かみのあるパティスリーカフェ風のグラデーション背景
+    // （暗い背景から脱却し、絵文字本来の鮮やかな色彩を最大限引き出す）
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, canvasRef.height);
+    bgGrad.addColorStop(0, '#fffbf5'); // ほんのり温かいアイボリー
+    bgGrad.addColorStop(0.65, '#fef3e2'); // 優しいカスタードクリーム
+    bgGrad.addColorStop(1, '#fdebd0'); // 落ち着いたペールアプリコット
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, canvasRef.width, canvasRef.height);
 
-    // デッドライン点線
-    ctx.strokeStyle = '#f43f5e';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 6]);
+    // 下部の木目調ウッドトレイ（スイーツが載るステージ）
+    const trayGrad = ctx.createLinearGradient(0, floorY, 0, canvasRef.height);
+    trayGrad.addColorStop(0, '#d97706'); // 温かいキャラメルウッド
+    trayGrad.addColorStop(1, '#92400e');
+    ctx.fillStyle = trayGrad;
+    ctx.fillRect(0, floorY, canvasRef.width, canvasRef.height - floorY);
+
+    // トレイのハイライトライン
+    ctx.fillStyle = 'rgba(254, 243, 199, 0.4)';
+    ctx.fillRect(0, floorY, canvasRef.width, 2);
+
+    // デッドライン点線（目立ちすぎず、でも警告としてわかりやすいローズレッド）
+    ctx.strokeStyle = 'rgba(244, 63, 94, 0.75)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 5]);
     ctx.beginPath();
-    ctx.moveTo(0, deadLineY);
-    ctx.lineTo(canvasRef.width, deadLineY);
+    ctx.moveTo(8, deadLineY);
+    ctx.lineTo(canvasRef.width - 8, deadLineY);
     ctx.stroke();
     ctx.setLineDash([]);
 
     // 落下予定ガイド線 & 手元のスイーツプレビュー
     if (canDrop) {
       const cur = SWEETS_TIERS[currentLevel()];
-      ctx.strokeStyle = 'rgba(244, 114, 182, 0.35)';
+      ctx.strokeStyle = 'rgba(236, 72, 153, 0.45)';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 4]);
       ctx.beginPath();
       ctx.moveTo(dropX, 42);
-      ctx.lineTo(dropX, canvasRef.height);
+      ctx.lineTo(dropX, floorY);
       ctx.stroke();
       ctx.setLineDash([]);
 
@@ -548,7 +558,7 @@ export const BlossomDropGame: Component = () => {
 
         {/* 落下ボックス (Canvas) */}
         <div
-          class="w-full aspect-[3/4] max-h-[calc(100dvh-130px)] bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border-4 border-pink-700/40 dark:border-pink-900/50 relative cursor-crosshair select-none touch-none"
+          class="w-full aspect-[3/4] max-h-[calc(100dvh-130px)] bg-[#fffbf5] rounded-3xl overflow-hidden shadow-xl border-4 border-amber-200 dark:border-amber-800/60 relative cursor-crosshair select-none touch-none"
           onPointerDown={handlePointerDown}
           onPointerMove={(e) => handlePointerMove(e.clientX)}
           onPointerUp={handlePointerUp}
