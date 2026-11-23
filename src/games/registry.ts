@@ -33,7 +33,6 @@ import { AiWordWolfGame } from './ai-word-wolf/AiWordWolfGame.tsx';
 import { MinesweeperGame } from './minesweeper/MinesweeperGame.tsx';
 import { SudokuGame } from './sudoku/SudokuGame.tsx';
 import { SokobanGame } from './sokoban/SokobanGame.tsx';
-import { RhythmTapGame } from './rhythm-tap/RhythmTapGame.tsx';
 import { SpeedTypingGame } from './speed-typing/SpeedTypingGame.tsx';
 import { BombDefusalGame } from './bomb-defusal/BombDefusalGame.tsx';
 import { DiskClashGame } from './disk-clash/DiskClashGame.tsx';
@@ -74,7 +73,6 @@ import {
   MinesweeperIcon,
   SudokuIcon,
   SokobanIcon,
-  RhythmBeatsIcon,
   SpeedTypingIcon,
   BombDefusalIcon,
   DiskClashIcon,
@@ -505,18 +503,6 @@ export const GAMES: GameDefinition[] = [
     icon: SokobanIcon,
     color: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/40',
     component: SokobanGame,
-    isAvailable: true,
-  },
-  {
-    id: 'rhythm-tap',
-    title: 'Floral Beats',
-    titleJp: 'Floral Beats (音ゲー)',
-    category: 'action',
-    description: '上から降ってくる花びらをタイミングよく叩く4レーンのリズムゲーム。',
-    badge: '音ゲー',
-    icon: RhythmBeatsIcon,
-    color: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-900/40',
-    component: RhythmTapGame,
     isAvailable: true,
   },
   {

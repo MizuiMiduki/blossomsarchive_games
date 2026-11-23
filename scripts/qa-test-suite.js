@@ -24,7 +24,7 @@ console.log('====================================================\n');
 console.log('--- TEST SUITE 1: Game Registry & Integrity ---');
 const registryCode = fs.readFileSync('src/games/registry.ts', 'utf8');
 const idMatches = [...registryCode.matchAll(/id:\s*'([^']+)'/g)].map((m) => m[1]);
-assert(idMatches.length === 41, `41 games are registered in registry.ts (found: ${idMatches.length})`);
+assert(idMatches.length === 40, `40 games are registered in registry.ts (found: ${idMatches.length})`);
 
 const expectedIds = [
   'blossom-life', 'petal-reversi', 'mini-shogi', 'standard-shogi', 'blossom-chess',
@@ -33,7 +33,7 @@ const expectedIds = [
   'sky-catapult', 'room-escape', 'ai-jailbreak', 'ai-detective', 'word-alchemy',
   'ai-courtroom', 'semantic-word', 'ar-slicer', 'ar-hunter', 'ar-catcher',
   'ar-bubble', 'ar-toss', 'ar-color-hunt', 'ar-aquarium', 'ai-interview',
-  'ai-word-wolf', 'minesweeper', 'sudoku', 'sokoban', 'rhythm-tap',
+  'ai-word-wolf', 'minesweeper', 'sudoku', 'sokoban',
   'speed-typing', 'bomb-defusal', 'disk-clash', 'puzzle-clash', 'sketch-guess',
   'word-wolf-room'
 ];
@@ -56,7 +56,7 @@ for (const id of expectedIds) {
   const p = path.resolve('dist/game', id, 'index.html');
   if (!fs.existsSync(p)) missingRoutes.push(id);
 }
-assert(missingRoutes.length === 0, `All 41 game routes have dedicated index.html in dist/game/<id>/`);
+assert(missingRoutes.length === 0, `All 40 game routes have dedicated index.html in dist/game/<id>/`);
 
 // -----------------------------------------------------------------------------
 // 3. P2P通信モジュール（SDP圧縮・復元）のQA
