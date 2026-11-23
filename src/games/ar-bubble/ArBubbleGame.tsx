@@ -1,6 +1,7 @@
 import { Component, createSignal, onSettled, onCleanup, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
+import { drawVideoCover } from '../../utils/camera.ts';
 import confetti from 'canvas-confetti';
 
 interface BubbleItem {
@@ -34,7 +35,7 @@ export const ArBubbleGame: Component = () => {
   const [timeLeft, setTimeLeft] = createSignal(60);
   const [isGameOver, setIsGameOver] = createSignal(false);
   const [cameraActive, setCameraActive] = createSignal(false);
-  const [facingMode, setFacingMode] = createSignal<'user' | 'environment'>('user');
+  const [facingMode, setFacingMode] = createSignal<'environment' | 'user'>('environment');
   const [poppedTotal, setPoppedTotal] = createSignal(0);
   const [isFever, setIsFever] = createSignal(false);
 
@@ -74,7 +75,7 @@ export const ArBubbleGame: Component = () => {
     try {
       if (stream) stream.getTracks().forEach((t) => t.stop());
       const media = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: facingMode(), width: { ideal: 640 }, height: { ideal: 480 } },
+        video: { facingMode: { ideal: facingMode() }, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false,
       });
       stream = media;
@@ -89,7 +90,7 @@ export const ArBubbleGame: Component = () => {
   };
 
   const toggleCameraFacing = async () => {
-    const nextMode = facingMode() === 'user' ? 'environment' : 'user';
+    const nextMode = facingMode() === 'environment' ? 'user' : 'environment';
     setFacingMode(nextMode);
     if (cameraActive()) {
       await startCamera();
@@ -199,13 +200,7 @@ export const ArBubbleGame: Component = () => {
 
     // 1. カメラ映像
     if (cameraActive() && videoRef && videoRef.readyState >= 2) {
-      ctx.save();
-      if (facingMode() === 'user') {
-        ctx.translate(width, 0);
-        ctx.scale(-1, 1);
-      }
-      ctx.drawImage(videoRef, 0, 0, width, height);
-      ctx.restore();
+      drawVideoCover(ctx, videoRef, width, height, facingMode() === 'user');
 
       ctx.fillStyle = isFever() ? 'rgba(236, 72, 153, 0.15)' : 'rgba(15, 23, 42, 0.2)';
       ctx.fillRect(0, 0, width, height);
@@ -224,13 +219,7 @@ export const ArBubbleGame: Component = () => {
       }
 
       if (diffCtx) {
-        diffCtx.save();
-        if (facingMode() === 'user') {
-          diffCtx.translate(diffCanvas.width, 0);
-          diffCtx.scale(-1, 1);
-        }
-        diffCtx.drawImage(videoRef, 0, 0, diffCanvas.width, diffCanvas.height);
-        diffCtx.restore();
+        drawVideoCover(diffCtx, videoRef, diffCanvas.width, diffCanvas.height, facingMode() === 'user');
 
         const curFrame = diffCtx.getImageData(0, 0, diffCanvas.width, diffCanvas.height);
         const data = curFrame.data;
@@ -442,7 +431,7 @@ export const ArBubbleGame: Component = () => {
                 title="前後カメラ切り替え"
                 class="px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-700 transition-all"
               >
-                🔄 {facingMode() === 'user' ? 'イン' : 'アウト'}
+                🔄 {facingMode() === 'environment' ? 'アウト' : 'イン'}
               </button>
             </Show>
           </div>

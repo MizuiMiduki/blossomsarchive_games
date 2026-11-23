@@ -1,6 +1,7 @@
 import { Component, createSignal, onSettled, onCleanup, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
+import { drawVideoCover } from '../../utils/camera.ts';
 import confetti from 'canvas-confetti';
 
 interface FallingItem {
@@ -21,6 +22,7 @@ export const ArCatcherGame: Component = () => {
   const [isGameOver, setIsGameOver] = createSignal(false);
   const [cameraActive, setCameraActive] = createSignal(false);
   const [comboCount, setComboCount] = createSignal(0);
+  const [facingMode, setFacingMode] = createSignal<'environment' | 'user'>('environment');
 
   let videoRef: HTMLVideoElement | undefined;
   let canvasRef: HTMLCanvasElement | undefined;
@@ -59,7 +61,7 @@ export const ArCatcherGame: Component = () => {
     try {
       if (stream) stream.getTracks().forEach((t) => t.stop());
       const media = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        video: { facingMode: { ideal: facingMode() }, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false,
       });
       stream = media;
@@ -70,6 +72,14 @@ export const ArCatcherGame: Component = () => {
       }
     } catch {
       setCameraActive(false);
+    }
+  };
+
+  const toggleCameraFacing = async () => {
+    const nextMode = facingMode() === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextMode);
+    if (cameraActive()) {
+      await startCamera();
     }
   };
 
@@ -132,14 +142,9 @@ export const ArCatcherGame: Component = () => {
 
     ctx.clearRect(0, 0, width, height);
 
-    // 1. カメラ映像（ミラー表示）
+    // 1. カメラ映像
     if (cameraActive() && videoRef && videoRef.readyState >= 2) {
-      ctx.save();
-      ctx.translate(width, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(videoRef, 0, 0, width, height);
-      ctx.restore();
-
+      drawVideoCover(ctx, videoRef, width, height, facingMode() === 'user');
       ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
       ctx.fillRect(0, 0, width, height);
     } else {
@@ -163,11 +168,7 @@ export const ArCatcherGame: Component = () => {
       }
 
       if (diffCtx) {
-        diffCtx.save();
-        diffCtx.translate(diffCanvas.width, 0);
-        diffCtx.scale(-1, 1);
-        diffCtx.drawImage(videoRef, 0, 0, diffCanvas.width, diffCanvas.height);
-        diffCtx.restore();
+        drawVideoCover(diffCtx, videoRef, diffCanvas.width, diffCanvas.height, facingMode() === 'user');
 
         const curFrame = diffCtx.getImageData(0, 0, diffCanvas.width, diffCanvas.height);
         const data = curFrame.data;
@@ -338,24 +339,37 @@ export const ArCatcherGame: Component = () => {
       instructions={instructions}
       extraControls={
         <div class="flex items-center justify-between gap-3 w-full max-w-sm px-2 text-xs">
-          <button
-            onClick={() => {
-              sound.playPop(520);
-              if (cameraActive()) {
-                stopCamera();
-              } else {
-                startCamera();
-              }
-            }}
-            class={`px-3.5 py-1.5 rounded-xl border font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs ${
-              cameraActive()
-                ? 'bg-rose-500 hover:bg-rose-600 text-white border-rose-600'
-                : 'bg-pink-600 hover:bg-pink-500 text-white border-pink-700'
-            }`}
-          >
-            <span>📷</span>
-            <span>{cameraActive() ? 'カメラ停止' : '顔認識開始 (AR)'}</span>
-          </button>
+          <div class="flex items-center gap-1.5">
+            <button
+              onClick={() => {
+                sound.playPop(520);
+                if (cameraActive()) {
+                  stopCamera();
+                } else {
+                  startCamera();
+                }
+              }}
+              class={`px-3 py-1.5 rounded-xl border font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs ${
+                cameraActive()
+                  ? 'bg-rose-500 hover:bg-rose-600 text-white border-rose-600'
+                  : 'bg-pink-600 hover:bg-pink-500 text-white border-pink-700'
+              }`}
+            >
+              <span>📷</span>
+              <span>{cameraActive() ? '停止' : 'カメラ開始 (AR)'}</span>
+            </button>
+
+            <Show when={cameraActive()}>
+              <button
+                onClick={toggleCameraFacing}
+                title="イン・アウトカメラ切り替え"
+                class="px-2.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-700 transition-all flex items-center gap-1 shadow-2xs"
+              >
+                <span>🔄</span>
+                <span>{facingMode() === 'environment' ? 'アウト' : 'イン'}</span>
+              </button>
+            </Show>
+          </div>
 
           <div class="flex items-center gap-2.5 text-slate-600 dark:text-slate-300 font-mono text-xs">
             <span>残り: <strong class="text-rose-500 text-sm font-bold">{timeLeft()}</strong>s</span>

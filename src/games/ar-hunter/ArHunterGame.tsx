@@ -1,6 +1,7 @@
 import { Component, createSignal, onSettled, onCleanup, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
+import { drawVideoCover } from '../../utils/camera.ts';
 import confetti from 'canvas-confetti';
 
 interface Spirit3D {
@@ -24,6 +25,7 @@ export const ArHunterGame: Component = () => {
   const [cameraActive, setCameraActive] = createSignal(false);
   const [lockOnTarget, setLockOnTarget] = createSignal<string | null>(null);
   const [capturedTotal, setCapturedTotal] = createSignal(0);
+  const [facingMode, setFacingMode] = createSignal<'environment' | 'user'>('environment');
 
   let videoRef: HTMLVideoElement | undefined;
   let canvasRef: HTMLCanvasElement | undefined;
@@ -83,7 +85,7 @@ export const ArHunterGame: Component = () => {
     try {
       if (stream) stream.getTracks().forEach((t) => t.stop());
       const media = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } },
+        video: { facingMode: { ideal: facingMode() }, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false,
       });
       stream = media;
@@ -94,6 +96,14 @@ export const ArHunterGame: Component = () => {
       }
     } catch {
       setCameraActive(false);
+    }
+  };
+
+  const toggleCameraFacing = async () => {
+    const nextMode = facingMode() === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextMode);
+    if (cameraActive()) {
+      await startCamera();
     }
   };
 
@@ -224,9 +234,9 @@ export const ArHunterGame: Component = () => {
 
     ctx.clearRect(0, 0, width, height);
 
-    // 1. カメラ映像（背面カメラはミラー反転しない）
+    // 1. カメラ映像（インカメラのみミラー反転、背面カメラは等倍）
     if (cameraActive() && videoRef && videoRef.readyState >= 2) {
-      ctx.drawImage(videoRef, 0, 0, width, height);
+      drawVideoCover(ctx, videoRef, width, height, facingMode() === 'user');
       // 暗視モード風フィルター
       ctx.fillStyle = 'rgba(2, 6, 23, 0.25)';
       ctx.fillRect(0, 0, width, height);
@@ -470,24 +480,37 @@ export const ArHunterGame: Component = () => {
       instructions={instructions}
       extraControls={
         <div class="flex items-center justify-between gap-3 w-full max-w-sm px-2 text-xs">
-          <button
-            onClick={() => {
-              sound.playPop(520);
-              if (cameraActive()) {
-                stopCamera();
-              } else {
-                startCamera();
-              }
-            }}
-            class={`px-3.5 py-1.5 rounded-xl border font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs ${
-              cameraActive()
-                ? 'bg-rose-500 hover:bg-rose-600 text-white border-rose-600'
-                : 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-700'
-            }`}
-          >
-            <span>📷</span>
-            <span>{cameraActive() ? 'カメラ停止' : 'カメラ開始 (AR)'}</span>
-          </button>
+          <div class="flex items-center gap-1.5">
+            <button
+              onClick={() => {
+                sound.playPop(520);
+                if (cameraActive()) {
+                  stopCamera();
+                } else {
+                  startCamera();
+                }
+              }}
+              class={`px-3 py-1.5 rounded-xl border font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs ${
+                cameraActive()
+                  ? 'bg-rose-500 hover:bg-rose-600 text-white border-rose-600'
+                  : 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-700'
+              }`}
+            >
+              <span>📷</span>
+              <span>{cameraActive() ? '停止' : 'カメラ開始 (AR)'}</span>
+            </button>
+
+            <Show when={cameraActive()}>
+              <button
+                onClick={toggleCameraFacing}
+                title="イン・アウトカメラ切り替え"
+                class="px-2.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-700 transition-all flex items-center gap-1 shadow-2xs"
+              >
+                <span>🔄</span>
+                <span>{facingMode() === 'environment' ? 'アウト' : 'イン'}</span>
+              </button>
+            </Show>
+          </div>
 
           <div class="flex items-center gap-2.5 text-slate-600 dark:text-slate-300 font-mono text-xs">
             <span>捕獲: <strong class="text-emerald-500 font-bold">{capturedTotal()}</strong>匹</span>

@@ -1,6 +1,7 @@
 import { Component, createSignal, onSettled, onCleanup, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
+import { drawVideoCover } from '../../utils/camera.ts';
 import confetti from 'canvas-confetti';
 
 interface TargetItem {
@@ -34,6 +35,7 @@ export const ArSlicerGame: Component = () => {
   const [isGameOver, setIsGameOver] = createSignal(false);
   const [cameraActive, setCameraActive] = createSignal(false);
   const [cameraDenied, setCameraDenied] = createSignal(false);
+  const [facingMode, setFacingMode] = createSignal<'environment' | 'user'>('environment');
   const [comboCount, setComboCount] = createSignal(0);
   const [comboMessage, setComboMessage] = createSignal<string | null>(null);
 
@@ -66,14 +68,14 @@ export const ArSlicerGame: Component = () => {
     '【プライバシー保護】カメラ映像は端末内ブラウザのみでリアルタイム処理され、外部への送信・保存は一切行われません。',
   ];
 
-  // カメラ初期化
+  // カメラ初期化（アウトカメラ優先）
   const startCamera = async () => {
     try {
       if (stream) {
         stream.getTracks().forEach((t) => t.stop());
       }
       const media = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        video: { facingMode: { ideal: facingMode() }, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false,
       });
       stream = media;
@@ -86,6 +88,14 @@ export const ArSlicerGame: Component = () => {
     } catch {
       setCameraDenied(true);
       setCameraActive(false);
+    }
+  };
+
+  const toggleCameraFacing = async () => {
+    const nextMode = facingMode() === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextMode);
+    if (cameraActive()) {
+      await startCamera();
     }
   };
 
@@ -257,13 +267,10 @@ export const ArSlicerGame: Component = () => {
 
     ctx.clearRect(0, 0, width, height);
 
-    // 1. カメラ映像の描画（反転ミラー表示）
+    // 1. カメラ映像の描画（アスペクト比維持 cover 描画）
     if (cameraActive() && videoRef && videoRef.readyState >= 2) {
-      ctx.save();
-      ctx.translate(width, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(videoRef, 0, 0, width, height);
-      ctx.restore();
+      const isMirrored = facingMode() === 'user';
+      drawVideoCover(ctx, videoRef, width, height, isMirrored);
 
       // 半透明ダークオーバーレイで的を見やすく演出
       ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
@@ -302,11 +309,9 @@ export const ArSlicerGame: Component = () => {
       }
 
       if (diffCtx) {
-        diffCtx.save();
-        diffCtx.translate(diffCanvas.width, 0);
-        diffCtx.scale(-1, 1);
-        diffCtx.drawImage(videoRef, 0, 0, diffCanvas.width, diffCanvas.height);
-        diffCtx.restore();
+        diffCtx.clearRect(0, 0, diffCanvas.width, diffCanvas.height);
+        const isMirrored = facingMode() === 'user';
+        drawVideoCover(diffCtx, videoRef, diffCanvas.width, diffCanvas.height, isMirrored);
 
         const curFrame = diffCtx.getImageData(0, 0, diffCanvas.width, diffCanvas.height);
         const data = curFrame.data;
@@ -537,24 +542,37 @@ export const ArSlicerGame: Component = () => {
       instructions={instructions}
       extraControls={
         <div class="flex items-center justify-between gap-3 w-full max-w-sm px-2 text-xs">
-          <button
-            onClick={() => {
-              sound.playPop(520);
-              if (cameraActive()) {
-                stopCamera();
-              } else {
-                startCamera();
-              }
-            }}
-            class={`px-3.5 py-1.5 rounded-xl border font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs ${
-              cameraActive()
-                ? 'bg-rose-500 hover:bg-rose-600 text-white border-rose-600'
-                : 'bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-700'
-            }`}
-          >
-            <span>📷</span>
-            <span>{cameraActive() ? 'カメラ停止' : 'カメラ開始 (AR)'}</span>
-          </button>
+          <div class="flex items-center gap-1.5">
+            <button
+              onClick={() => {
+                sound.playPop(520);
+                if (cameraActive()) {
+                  stopCamera();
+                } else {
+                  startCamera();
+                }
+              }}
+              class={`px-3 py-1.5 rounded-xl border font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs ${
+                cameraActive()
+                  ? 'bg-rose-500 hover:bg-rose-600 text-white border-rose-600'
+                  : 'bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-700'
+              }`}
+            >
+              <span>📷</span>
+              <span>{cameraActive() ? '停止' : 'カメラ開始 (AR)'}</span>
+            </button>
+
+            <Show when={cameraActive()}>
+              <button
+                onClick={toggleCameraFacing}
+                title="イン・アウトカメラ切り替え"
+                class="px-2.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-700 transition-all flex items-center gap-1 shadow-2xs"
+              >
+                <span>🔄</span>
+                <span>{facingMode() === 'environment' ? 'アウト' : 'イン'}</span>
+              </button>
+            </Show>
+          </div>
 
           <div class="flex items-center gap-3 text-slate-600 dark:text-slate-300 font-mono text-xs">
             <span>
