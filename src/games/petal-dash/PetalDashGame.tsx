@@ -11,31 +11,76 @@ export const PetalDashGame: Component = () => {
   let animationId: number | null = null;
 
   // ゲーム状態
-  let y = 150;
+  let y = 180;
   let vy = 0;
   const gravity = 0.35;
   const lift = -6.5;
   let pipes: { x: number; top: number; bottom: number; passed: boolean }[] = [];
   let frame = 0;
 
-  const restart = () => {
-    y = 150;
+  // 待機状態 (初見殺し防止: 入力があるまで浮遊待機)
+  const resetToReady = () => {
+    if (animationId) cancelAnimationFrame(animationId);
+    y = 180;
     vy = 0;
     pipes = [];
     frame = 0;
     setScore(0);
     setIsGameOver(false);
+    setIsPlaying(false);
+    renderIdle();
+  };
+
+  // 待機中のふわふわ浮遊アニメーション
+  const renderIdle = () => {
+    if (!canvasRef) return;
+    const ctx = canvasRef.getContext('2d');
+    if (!ctx) return;
+
+    frame++;
+    ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
+
+    // 背景グラデーション
+    const grad = ctx.createLinearGradient(0, 0, 0, canvasRef.height);
+    grad.addColorStop(0, '#fdf2f8');
+    grad.addColorStop(1, '#fce7f3');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvasRef.width, canvasRef.height);
+
+    // そよ風に揺れる花びら 🌸
+    const hoverY = 180 + Math.sin(frame * 0.06) * 8;
+    ctx.font = '28px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🌸', 60, hoverY);
+
+    if (!isPlaying() && !isGameOver()) {
+      animationId = requestAnimationFrame(renderIdle);
+    }
+  };
+
+  // ゲーム本編開始
+  const startGame = () => {
+    if (animationId) cancelAnimationFrame(animationId);
+    pipes = [];
+    frame = 0;
+    y = 180;
+    vy = lift;
+    setScore(0);
+    setIsGameOver(false);
     setIsPlaying(true);
+    sound.playPop(520);
     loop();
   };
 
   const jump = () => {
     if (isGameOver()) {
-      restart();
+      resetToReady();
       return;
     }
     if (!isPlaying()) {
-      setIsPlaying(true);
+      startGame();
+      return;
     }
     vy = lift;
     sound.playPop(520);
@@ -139,7 +184,7 @@ export const PetalDashGame: Component = () => {
   };
 
   onSettled(() => {
-    restart();
+    resetToReady();
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' || e.code === 'ArrowUp') {
         e.preventDefault();
@@ -154,9 +199,9 @@ export const PetalDashGame: Component = () => {
   });
 
   const instructions = [
-    'タップまたはスペースキーで花びらがふわりと上昇します。',
-    '上下から伸びる障害物を避けて、どこまでも飛び続けましょう！',
-    '隙間をくぐるごとにスコアが加算されます。',
+    '画面タップまたはスペースキーを押すとゲームがスタートします。',
+    'タップするたびに花びら🌸がふわりと上昇し、放っておくと重力で降下します。',
+    '上下の障害物を避けて隙間をくぐり続け、ハイスコアを目指しましょう！',
   ];
 
   return (
@@ -165,7 +210,7 @@ export const PetalDashGame: Component = () => {
       title="Petal Dash"
       score={score()}
       isGameOver={isGameOver()}
-      onRestart={restart}
+      onRestart={resetToReady}
       instructions={instructions}
     >
       <div
@@ -184,9 +229,15 @@ export const PetalDashGame: Component = () => {
         />
 
         <Show when={!isPlaying() && !isGameOver()}>
-          <div class="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-2xs">
-            <div class="px-5 py-2.5 rounded-2xl bg-white/90 text-rose-600 font-bold text-sm shadow-lg animate-pulse">
-              タップしてスタート！
+          <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/20 backdrop-blur-2xs p-4 pointer-events-none">
+            <div class="flex flex-col items-center gap-1.5 px-6 py-4 rounded-3xl bg-white/95 dark:bg-slate-900/95 text-center shadow-xl border border-rose-200 dark:border-slate-800 animate-pulse">
+              <span class="text-3xl">🌸</span>
+              <span class="text-rose-600 dark:text-rose-400 font-bold text-sm">
+                タップ または スペースキーで<br />スタート！
+              </span>
+              <span class="text-[11px] text-slate-500 dark:text-slate-400">
+                障害物を避けて飛び続けよう
+              </span>
             </div>
           </div>
         </Show>
