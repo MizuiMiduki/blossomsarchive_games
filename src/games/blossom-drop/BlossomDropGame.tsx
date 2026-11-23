@@ -71,9 +71,9 @@ export const BlossomDropGame: Component = () => {
   let dropX = 160;
   let canDrop = true;
   let isPointerDown = false;
-  const gravity = 0.38;
-  const friction = 0.985;
-  const bounce = 0.28;
+  const gravity = 0.42;
+  const friction = 0.965; // 空気抵抗・速度減衰
+  const bounce = 0.16; // 反発係数（ぽすっと落ち着く）
   const deadLineY = 70;
 
   const rollInitialTier = () => Math.floor(Math.random() * 3); // 0~2 (キャンディ, カップケーキ, クッキー)
@@ -268,22 +268,30 @@ export const BlossomDropGame: Component = () => {
 
       // ポップアニメーションの減衰
       if (c.scaleAnim > 1.0) {
-        c.scaleAnim = Math.max(1.0, c.scaleAnim - 0.035);
+        c.scaleAnim = Math.max(1.0, c.scaleAnim - 0.04);
       }
 
-      // 壁・底との衝突
+      // 壁・底との衝突 (床面のグリップ摩擦でツルツル滑りを解消)
       if (c.x - c.radius < 0) {
         c.x = c.radius;
         c.vx = -c.vx * bounce;
+        c.vy *= 0.92;
       } else if (c.x + c.radius > canvasRef.width) {
         c.x = canvasRef.width - c.radius;
         c.vx = -c.vx * bounce;
+        c.vy *= 0.92;
       }
 
       if (c.y + c.radius > canvasRef.height) {
         c.y = canvasRef.height - c.radius;
         c.vy = -c.vy * bounce;
+        // 床面での強い転がり摩擦（ツルツル横滑りを防止）
+        c.vx *= 0.82;
+        if (Math.abs(c.vy) < 0.15) c.vy = 0;
       }
+
+      // 微小速度の静止スリープ
+      if (Math.abs(c.vx) < 0.06) c.vx = 0;
     }
 
     // 2. 円同士の衝突＆マージ判定
@@ -317,8 +325,8 @@ export const BlossomDropGame: Component = () => {
               level: newLevel,
               x: mx,
               y: my,
-              vx: (c1.vx + c2.vx) * 0.5,
-              vy: -2.5,
+              vx: (c1.vx + c2.vx) * 0.4,
+              vy: -2.0,
               radius: newTier.radius,
               spawnTime: Date.now(),
               scaleAnim: 1.25, // ポップアニメーション
@@ -335,24 +343,47 @@ export const BlossomDropGame: Component = () => {
               } catch (_) {}
             }
           } else {
-            // 通常の弾性反発衝突
+            // 通常の衝突判定（質量比 ＆ 表面摩擦の適用でツルツル滑り落ちを防止）
             const overlap = minDist - dist;
             const nx = dx / (dist || 1);
             const ny = dy / (dist || 1);
 
-            c1.x -= nx * overlap * 0.5;
-            c1.y -= ny * overlap * 0.5;
-            c2.x += nx * overlap * 0.5;
-            c2.y += ny * overlap * 0.5;
+            // 質量比（半径の2乗比）
+            const m1 = c1.radius * c1.radius;
+            const m2 = c2.radius * c2.radius;
+            const totalM = m1 + m2;
+            const r1 = m2 / totalM;
+            const r2 = m1 / totalM;
 
+            // 位置補正
+            c1.x -= nx * overlap * r1;
+            c1.y -= ny * overlap * r1;
+            c2.x += nx * overlap * r2;
+            c2.y += ny * overlap * r2;
+
+            // 法線方向の反発
             const kx = c1.vx - c2.vx;
             const ky = c1.vy - c2.vy;
-            const p = 2 * (nx * kx + ny * ky) / 2;
+            const vn = nx * kx + ny * ky;
 
-            c1.vx -= p * nx * 0.8;
-            c1.vy -= p * ny * 0.8;
-            c2.vx += p * nx * 0.8;
-            c2.vy += p * ny * 0.8;
+            if (vn < 0) {
+              const impulse = (-(1 + bounce) * vn) / (1 / m1 + 1 / m2);
+              c1.vx -= (impulse / m1) * nx;
+              c1.vy -= (impulse / m1) * ny;
+              c2.vx += (impulse / m2) * nx;
+              c2.vy += (impulse / m2) * ny;
+
+              // 接線方向（すれ違い方向）の接触摩擦
+              const tx = -ny;
+              const ty = nx;
+              const vt = kx * tx + ky * ty;
+              const frictionImpulse = vt * 0.42;
+
+              c1.vx -= tx * frictionImpulse * r1;
+              c1.vy -= ty * frictionImpulse * r1;
+              c2.vx += tx * frictionImpulse * r2;
+              c2.vy += ty * frictionImpulse * r2;
+            }
           }
         }
       }
