@@ -9,6 +9,7 @@ import { PetalSolitaireGame } from './solitaire/PetalSolitaireGame.tsx';
 import { BouquetBlockGame } from './block-puzzle/BouquetBlockGame.tsx';
 import { PetalDashGame } from './petal-dash/PetalDashGame.tsx';
 import { BlossomDropGame } from './blossom-drop/BlossomDropGame.tsx';
+import { BlossomLifeGame } from './life-game/BlossomLifeGame.tsx';
 
 export type GameCategory = 'all' | 'puzzle' | 'board' | 'card' | 'action' | 'casual';
 
@@ -26,6 +27,18 @@ export interface GameDefinition {
 }
 
 export const GAMES: GameDefinition[] = [
+  {
+    id: 'blossom-life',
+    title: 'Blossom Life',
+    titleJp: '百花繚乱 ライフゲーム',
+    category: 'casual',
+    description: '生命の誕生と開花、世代交代をシミュレートするモダナイズド・ライフゲーム。多彩なプリセット搭載。',
+    badge: 'NEW',
+    icon: '🌱',
+    color: 'from-emerald-400 to-teal-500',
+    component: BlossomLifeGame,
+    isAvailable: true,
+  },
   {
     id: 'petal-reversi',
     title: 'Petal Reversi',
