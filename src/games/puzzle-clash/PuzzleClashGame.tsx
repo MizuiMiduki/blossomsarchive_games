@@ -266,6 +266,7 @@ export const PuzzleClashGame: Component = () => {
     if (gameState() !== 'playing') return;
     setGameState(won ? 'victory' : 'gameover');
     if (dropIntervalId) clearInterval(dropIntervalId);
+    if (cpuLoopId) clearInterval(cpuLoopId);
 
     if (won) {
       setMyWins((prev) => prev + 1);
@@ -358,6 +359,14 @@ export const PuzzleClashGame: Component = () => {
     }
   };
 
+  let cpuCurrentPiece: {
+    type: TetrominoType;
+    shape: number[][];
+    x: number;
+    y: number;
+  } | null = null;
+  let cpuTargetX = 3;
+
   const drawOppBoard = () => {
     if (!oppCanvasRef) return;
     const ctx = oppCanvasRef.getContext('2d');
@@ -371,11 +380,45 @@ export const PuzzleClashGame: Component = () => {
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(0, 0, w, h);
 
+    // Grid lines
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= COLS; x++) {
+      ctx.beginPath();
+      ctx.moveTo(x * cellW, 0);
+      ctx.lineTo(x * cellW, h);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= ROWS; y++) {
+      ctx.beginPath();
+      ctx.moveTo(0, y * cellH);
+      ctx.lineTo(w, y * cellH);
+      ctx.stroke();
+    }
+
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS; c++) {
         const val = oppGrid[r][c];
         if (val) {
           drawBlock(ctx, c * cellW, r * cellH, cellW, cellH, val);
+        }
+      }
+    }
+
+    // Draw active falling piece for CPU
+    if (cpuCurrentPiece && mode() === 'cpu') {
+      for (let r = 0; r < cpuCurrentPiece.shape.length; r++) {
+        for (let c = 0; c < cpuCurrentPiece.shape[r].length; c++) {
+          if (cpuCurrentPiece.shape[r][c]) {
+            drawBlock(
+              ctx,
+              (cpuCurrentPiece.x + c) * cellW,
+              (cpuCurrentPiece.y + r) * cellH,
+              cellW,
+              cellH,
+              COLORS[cpuCurrentPiece.type]
+            );
+          }
         }
       }
     }
@@ -435,6 +478,8 @@ export const PuzzleClashGame: Component = () => {
   const startRound = () => {
     grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
     oppGrid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    cpuCurrentPiece = null;
+    cpuGarbage = 0;
     setIncomingGarbage(0);
     setGameState('playing');
     setNextPiece(getRandomPiece());
@@ -458,44 +503,115 @@ export const PuzzleClashGame: Component = () => {
     cpuGarbage += lines;
   };
 
+  const spawnCpuPiece = () => {
+    const type = getRandomPiece();
+    const shape = SHAPES[type].map((row) => [...row]);
+    const x = Math.floor((COLS - shape[0].length) / 2);
+    const y = 0;
+
+    if (checkCollision(shape, x, y, oppGrid)) {
+      handleGameOver(true); // CPU topped out, player wins!
+      return;
+    }
+
+    cpuCurrentPiece = { type, shape, x, y };
+
+    // Choose target column
+    const validCols: number[] = [];
+    for (let c = 0; c <= COLS - shape[0].length; c++) {
+      if (!checkCollision(shape, c, 0, oppGrid)) {
+        validCols.push(c);
+      }
+    }
+    cpuTargetX = validCols.length > 0
+      ? validCols[Math.floor(Math.random() * validCols.length)]
+      : x;
+  };
+
   const startCpuAI = () => {
     if (cpuLoopId) clearInterval(cpuLoopId);
+    cpuGarbage = 0;
+    cpuCurrentPiece = null;
+    spawnCpuPiece();
+    drawOppBoard();
+
     cpuLoopId = window.setInterval(() => {
       if (gameState() !== 'playing') return;
 
-      // Simulate CPU piece drop & occasional line clear
-      const randRow = Math.floor(Math.random() * (ROWS - 3)) + 3;
-      const randCol = Math.floor(Math.random() * COLS);
-      oppGrid[randRow][randCol] = '#3b82f6';
-
-      // Apply garbage from player
-      if (cpuGarbage > 0) {
-        oppGrid.shift();
-        const hole = Math.floor(Math.random() * COLS);
-        const row = Array(COLS).fill(COLORS.G);
-        row[hole] = 0;
-        oppGrid.push(row);
-        cpuGarbage--;
+      if (!cpuCurrentPiece) {
+        spawnCpuPiece();
+        drawOppBoard();
+        return;
       }
 
-      // Random CPU clear & counterattack
-      if (Math.random() < 0.15) {
-        // CPU clears a row
-        oppGrid.pop();
-        oppGrid.unshift(Array(COLS).fill(0));
-        // 40% chance to send 1 garbage to player
-        if (Math.random() < 0.4) {
-          setIncomingGarbage((prev) => prev + 1);
+      // Move toward target column
+      if (cpuCurrentPiece.x < cpuTargetX && !checkCollision(cpuCurrentPiece.shape, cpuCurrentPiece.x + 1, cpuCurrentPiece.y, oppGrid)) {
+        cpuCurrentPiece.x += 1;
+      } else if (cpuCurrentPiece.x > cpuTargetX && !checkCollision(cpuCurrentPiece.shape, cpuCurrentPiece.x - 1, cpuCurrentPiece.y, oppGrid)) {
+        cpuCurrentPiece.x -= 1;
+      }
+
+      // Drop
+      if (!checkCollision(cpuCurrentPiece.shape, cpuCurrentPiece.x, cpuCurrentPiece.y + 1, oppGrid)) {
+        cpuCurrentPiece.y += 1;
+      } else {
+        // Lock piece into oppGrid
+        for (let r = 0; r < cpuCurrentPiece.shape.length; r++) {
+          for (let c = 0; c < cpuCurrentPiece.shape[r].length; c++) {
+            if (cpuCurrentPiece.shape[r][c]) {
+              const py = cpuCurrentPiece.y + r;
+              const px = cpuCurrentPiece.x + c;
+              if (py >= 0 && py < ROWS && px >= 0 && px < COLS) {
+                oppGrid[py][px] = COLORS[cpuCurrentPiece.type];
+              }
+            }
+          }
         }
-      }
+        cpuCurrentPiece = null;
 
-      // Check if CPU topped out
-      if (oppGrid[1].some((cell) => cell !== 0)) {
-        handleGameOver(true);
+        // Clear lines
+        let cleared = 0;
+        for (let r = ROWS - 1; r >= 0; r--) {
+          if (oppGrid[r].every((cell) => cell !== 0)) {
+            oppGrid.splice(r, 1);
+            oppGrid.unshift(Array(COLS).fill(0));
+            cleared++;
+            r++;
+          }
+        }
+
+        // Send attack to player
+        if (cleared > 0) {
+          const garbageToSend = cleared === 4 ? 4 : cleared === 3 ? 2 : cleared === 2 ? 1 : 0;
+          if (garbageToSend > 0) {
+            setIncomingGarbage((prev) => prev + garbageToSend);
+          }
+        }
+
+        // Apply incoming garbage from player
+        if (cpuGarbage > 0) {
+          const applyCount = Math.min(cpuGarbage, 4);
+          for (let i = 0; i < applyCount; i++) {
+            oppGrid.shift();
+            const hole = Math.floor(Math.random() * COLS);
+            const row = Array(COLS).fill(COLORS.G);
+            row[hole] = 0;
+            oppGrid.push(row);
+          }
+          cpuGarbage = Math.max(0, cpuGarbage - applyCount);
+        }
+
+        // Check if CPU topped out
+        if (oppGrid[0].some((c) => c !== 0) || oppGrid[1].some((c) => c !== 0)) {
+          handleGameOver(true);
+          return;
+        }
+
+        spawnCpuPiece();
       }
 
       drawOppBoard();
-    }, 900);
+    }, 280);
   };
 
   // P2P Setup
@@ -801,7 +917,15 @@ export const PuzzleClashGame: Component = () => {
             <div class="flex flex-col items-center">
               <span class="text-xs font-bold text-cyan-400 mb-1">YOU</span>
               <div class="relative border-2 border-cyan-500/50 rounded-lg overflow-hidden shadow-2xl bg-slate-950">
-                <canvas ref={myCanvasRef} width={200} height={400} class="block" />
+                <canvas
+                  ref={(el) => {
+                    myCanvasRef = el;
+                    drawMyBoard();
+                  }}
+                  width={200}
+                  height={400}
+                  class="block"
+                />
 
                 {/* Overlay Game Over / Win */}
                 <Show when={gameState() !== 'playing'}>
@@ -815,7 +939,7 @@ export const PuzzleClashGame: Component = () => {
                     </span>
                     <button
                       onClick={mode() === 'p2p' ? handleStartP2PRound : startRound}
-                      class="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs rounded-lg shadow-lg active:scale-95"
+                      class="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs rounded-lg shadow-lg active:scale-95 cursor-pointer"
                     >
                       次のラウンドへ
                     </button>
@@ -841,7 +965,15 @@ export const PuzzleClashGame: Component = () => {
                 {mode() === 'cpu' ? 'CPU' : 'OPPONENT'}
               </span>
               <div class="relative border-2 border-slate-700 rounded-lg overflow-hidden shadow-lg bg-slate-950 opacity-90">
-                <canvas ref={oppCanvasRef} width={140} height={280} class="block" />
+                <canvas
+                  ref={(el) => {
+                    oppCanvasRef = el;
+                    drawOppBoard();
+                  }}
+                  width={140}
+                  height={280}
+                  class="block"
+                />
               </div>
             </div>
           </div>
