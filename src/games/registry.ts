@@ -315,10 +315,10 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'ai-detective',
-    title: 'Reverse 20Q',
-    titleJp: '逆20の質問 (AI探偵を欺け)',
+    title: 'AI 20Q',
+    titleJp: 'AI 20の扉 (正体推理バトル)',
     category: 'ai',
-    description: 'ある物になりきり、AI探偵からの15問の鋭い質問を欺き続ける逆アキネイターゲーム。',
+    description: '最大15問の質問でAIの隠した秘密の正体を暴く！特徴を絞り込んでズバリ当てる本格推理ゲーム。',
     badge: 'ローカルAI',
     icon: AiDetectiveIcon,
     color: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-900/40',
