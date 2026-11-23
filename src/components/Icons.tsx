@@ -489,7 +489,7 @@ export const GomokuIcon: Component<IconProps> = (props) => (
   </svg>
 );
 
-export const FruitDropIcon: Component<IconProps> = (props) => (
+export const PlanetDropIcon: Component<IconProps> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={props.size || 28}
@@ -501,12 +501,13 @@ export const FruitDropIcon: Component<IconProps> = (props) => (
     class={props.class}
     {...props}
   >
-    <circle cx="12" cy="14" r="7" />
-    <path d="M12 7V4" stroke-linecap="round" />
-    <path d="M12 4c2 0 3-1 3-2" stroke-linecap="round" />
-    <circle cx="12" cy="14" r="3" stroke-dasharray="2 2" opacity="0.5" />
+    <circle cx="12" cy="12" r="6" />
+    <ellipse cx="12" cy="12" rx="10" ry="3.5" transform="rotate(-20 12 12)" stroke-linecap="round" />
+    <circle cx="10" cy="10" r="1" fill="currentColor" opacity="0.4" />
   </svg>
 );
+
+export const FruitDropIcon: Component<IconProps> = PlanetDropIcon;
 
 export const Puzzle2048Icon: Component<IconProps> = (props) => (
   <svg
