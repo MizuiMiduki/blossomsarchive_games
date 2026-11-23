@@ -11,6 +11,7 @@ import {
   AwardIcon,
   GamepadIcon,
   TrophyIcon,
+  ShareIcon,
 } from './Icons.tsx';
 import { sound } from '../utils/sound.ts';
 import {
@@ -38,8 +39,39 @@ export const GameShell: Component<GameShellProps> = (props) => {
   const [isNewRecord, setIsNewRecord] = createSignal(false);
   const [stats, setStats] = createSignal(getGameStats(props.id));
   const [viewportHeight, setViewportHeight] = createSignal<string>('100dvh');
+  const [shareCopied, setShareCopied] = createSignal(false);
 
   let containerRef: HTMLDivElement | undefined;
+
+  const handleShare = async () => {
+    sound.playPop(520);
+    const title = `${props.title} - BlossomsArchive Games`;
+    const scoreText = props.score !== undefined ? `【スコア: ${props.score}】` : '';
+    const resultText = props.isVictory ? 'クリア達成！' : '';
+    const text = `「${props.title}」をプレイ中！${scoreText}${resultText}\n登録不要・完全無料で遊べるブラウザミニゲームコレクション\n`;
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          text,
+          url,
+        });
+        return;
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === 'AbortError') return;
+      }
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(`${text}${url}`);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2500);
+      } catch {}
+    }
+  };
 
   const toggleSound = () => {
     const next = !isMuted();
@@ -201,6 +233,13 @@ export const GameShell: Component<GameShellProps> = (props) => {
             </Show>
           </button>
           <button
+            onClick={handleShare}
+            title="ゲームを共有"
+            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <ShareIcon size={18} />
+          </button>
+          <button
             onClick={() => {
               sound.playPop(420);
               handleRestart();
@@ -303,11 +342,18 @@ export const GameShell: Component<GameShellProps> = (props) => {
 
             <div class="flex flex-col gap-2.5">
               <button
+                onClick={handleShare}
+                class="w-full py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2 text-xs"
+              >
+                <ShareIcon size={16} />
+                <span>{shareCopied() ? '共有リンクをコピーしました！' : '結果をシェアする'}</span>
+              </button>
+              <button
                 onClick={() => {
                   sound.playPop(520);
                   handleRestart();
                 }}
-                class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2"
+                class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2 text-sm"
               >
                 <RotateCcwIcon size={18} />
                 もう一度遊ぶ
@@ -315,12 +361,19 @@ export const GameShell: Component<GameShellProps> = (props) => {
               <a
                 href="/"
                 onClick={() => sound.playPop(400)}
-                class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs"
               >
                 ゲーム一覧へ戻る
               </a>
             </div>
           </div>
+        </div>
+      </Show>
+
+      {/* 共有完了トースト通知 */}
+      <Show when={shareCopied()}>
+        <div class="fixed top-3 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 rounded-2xl shadow-xl border border-slate-700 text-xs font-bold animate-in fade-in duration-150">
+          共有リンクをクリップボードにコピーしました！
         </div>
       </Show>
     </div>
