@@ -7,6 +7,7 @@ interface TopicPair {
   citizen: string;
   wolf: string;
   category: string;
+  difficulty: 'normal' | 'hard';
   hints: {
     citizenHints: string[];
     wolfHints: string[];
@@ -15,48 +16,219 @@ interface TopicPair {
 
 const TOPICS: TopicPair[] = [
   {
-    citizen: 'ラーメン',
-    wolf: 'うどん',
-    category: '麺料理',
+    citizen: 'カフェラテ',
+    wolf: 'ミルクティー',
+    category: '人気のドリンク',
+    difficulty: 'hard',
     hints: {
-      citizenHints: ['スープの濃さや麺の硬さを選べることが多いです。', 'チャーシューや煮卵が乗っていると嬉しい。', '飲んだ後のシメに食べたくなります。'],
-      wolfHints: ['出汁が効いていて、温かいのも冷たいのも美味しいです。', '天ぷらやお揚げをトッピングするのが好きです。', '消化に良くてホッとする味ですね。'],
+      citizenHints: [
+        'ほっと一息つきたいカフェの定番ですね。',
+        'ミルクのまろやかさの中に、心地よい苦味や香ばしさがあります。',
+        '豆の焙煎度合いやエスプレッソの濃さで味がガラリと変わります。',
+      ],
+      wolfHints: [
+        'ほっと一息つきたいカフェの定番ですね。',
+        'ミルクのまろやかさの中に、華やかで豊かな香りが広がります。',
+        '茶葉の種類や甘さの加減でいろんなアレンジが楽しめます。',
+      ],
     },
   },
   {
-    citizen: 'ディズニーランド',
-    wolf: 'USJ（ユニバ）',
-    category: 'テーマパーク',
+    citizen: '新幹線',
+    wolf: '飛行機',
+    category: '長距離移動',
+    difficulty: 'hard',
     hints: {
-      citizenHints: ['夢と魔法の空間で、カチューシャをつけて歩きたくなります。', 'パレードや夜の花火がとても幻想的です。', 'ネズミやアヒルの人気キャラクターがいますね。'],
-      wolfHints: ['映画やアニメの世界観に入り込める大迫力のアトラクションが多いです。', '被り物やコスプレをして一日中テンションが上がります。', 'マリオや恐竜、魔法使いのエリアが有名です。'],
+      citizenHints: [
+        '遠くへ旅行や出張に行くときに頼りになる乗り物です。',
+        '乗る前に売店でお弁当や飲み物を買い込むのが楽しみの一つ。',
+        '窓の外の街並みや田園風景が高速で流れていくのが見どころです。',
+      ],
+      wolfHints: [
+        '遠くへ旅行や出張に行くときに頼りになる乗り物です。',
+        '出発の少し前に着いて、手続きを済ませて待つ時間がドキドキします。',
+        '窓から見下ろす雲海や地上の景色がとても神秘的で感動します。',
+      ],
+    },
+  },
+  {
+    citizen: '海',
+    wolf: 'プール',
+    category: '夏の水辺レジャー',
+    difficulty: 'normal',
+    hints: {
+      citizenHints: [
+        '夏になると家族や友達と水着を着て出かけたくなります。',
+        '波の音を聞きながら砂浜でまったり過ごすのも気持ちいいです。',
+        '上がったあとに肌が少しベタついたり、塩気を感じることがあります。',
+      ],
+      wolfHints: [
+        '夏になると家族や友達と水着を着て出かけたくなります。',
+        '流れるコースやすべり台など、アトラクション感覚で楽しめます。',
+        '上がったあとに塩素の匂いがしたり、シャワーで洗い流しますね。',
+      ],
+    },
+  },
+  {
+    citizen: '映画館',
+    wolf: '水族館',
+    category: '屋内デートスポット',
+    difficulty: 'hard',
+    hints: {
+      citizenHints: [
+        '薄暗い落ち着いた空間で、非日常の体験ができます。',
+        'チケットを買って指定の席に座り、ポップコーンをつまみます。',
+        '大画面の迫力と臨場感ある音響に圧倒されて引き込まれます。',
+      ],
+      wolfHints: [
+        '薄暗い落ち着いた空間で、非日常の体験ができます。',
+        '歩きながら幻想的な青い光の空間に包まれてリラックスできます。',
+        'ガラス越しに優雅に動く姿を眺めていると時間が経つのを忘れます。',
+      ],
     },
   },
   {
     citizen: '焼肉',
     wolf: 'すき焼き',
     category: 'ごちそう肉料理',
+    difficulty: 'normal',
     hints: {
-      citizenHints: ['網や鉄板の上でジュージュー焼いてタレにつけて食べます。', 'カルビや牛タン、ホルモンなど部位を選べるのが楽しい。', 'ビールや白ご飯が無限に進む最高のごちそうです。'],
-      wolfHints: ['甘辛い割り下で煮て、生卵に絡めて食べるのが最高です。', 'お肉だけじゃなくネギや豆腐、春雨も味が染みて絶品です。', 'お正月や特別な記念日に家族で鍋を囲むイメージです。'],
+      citizenHints: [
+        'スタミナをつけたい時や、お祝いの席で食べたくなる最高のごちそう。',
+        '網の上でジュージュー焼いて、部位ごとの食感の違いを楽しみます。',
+        '白ご飯やビールが止まらなくなって、タレの香ばしさがたまりません。',
+      ],
+      wolfHints: [
+        'スタミナをつけたい時や、お祝いの席で食べたくなる最高のごちそう。',
+        '甘辛い出汁で煮込んで、お肉と一緒に野菜や豆腐にも味が染み込みます。',
+        '溶いた生卵にくぐらせて口に運ぶ瞬間がたまらなく至福です。',
+      ],
     },
   },
   {
     citizen: 'カレーライス',
     wolf: 'ハヤシライス',
-    category: '定番洋食',
+    category: 'プレート洋食',
+    difficulty: 'hard',
     hints: {
-      citizenHints: ['スパイスが効いていて、辛さの段階が選べます。', '福神漬けやらっきょうがよく合います。', 'キャンプや給食で定番の人気メニューですね。'],
-      wolfHints: ['トマトやデミグラスソースのコクと甘みがあります。', '薄切り肉と玉ねぎがたっぷり入っていて優しい味です。', '辛いのが苦手な人でも美味しく食べられます。'],
+      citizenHints: [
+        '大人から子どもまで大人気で、ご飯にたっぷりかけていただきます。',
+        'スパイスの香りが食欲をそそり、辛さのアクセントがクセになります。',
+        '福神漬けやらっきょうが名脇役として最高に合いますね。',
+      ],
+      wolfHints: [
+        '大人から子どもまで大人気で、ご飯にたっぷりかけていただきます。',
+        'トマトや玉ねぎの深いコクと甘みが引き立ち、とてもまろやかです。',
+        '薄切り牛肉の旨味がデミグラスソースに溶け込んで優しい味わいです。',
+      ],
     },
   },
   {
-    citizen: 'スマートフォン',
-    wolf: 'ノートパソコン',
-    category: '電子機器',
+    citizen: '犬',
+    wolf: '猫',
+    category: '身近なペット',
+    difficulty: 'hard',
     hints: {
-      citizenHints: ['片手で操作できて、常にポケットやカバンに入れています。', 'タッチパネルでアプリを動かしたり写真を撮ったりします。', 'バッテリーが切れると現代人は生きていけません。'],
-      wolfHints: ['キーボードで文字を打ったり、画面を開いて作業します。', '持ち運びできてカフェやオフィスでよく使われます。', 'トラックパッドやマウスを使って操作しますね。'],
+      citizenHints: [
+        '人間にとても忠実で、表情豊かにコミュニケーションをとってくれます。',
+        '毎日のお散歩や運動が欠かせず、外で元気に遊ぶのが大好き。',
+        '嬉しいときに尻尾をブンブン振って駆け寄ってくる姿が愛おしいです。',
+      ],
+      wolfHints: [
+        '自由気ままでマイペースなところがたまらなく可愛いです。',
+        '日当たりのいい場所で丸くなって寝ている姿に癒やされます。',
+        '喉をゴロゴロ鳴らしてすり寄ってくるとたまらない気持ちになります。',
+      ],
+    },
+  },
+  {
+    citizen: 'サウナ',
+    wolf: '温泉',
+    category: '温浴リフレッシュ',
+    difficulty: 'hard',
+    hints: {
+      citizenHints: [
+        'じっくり汗を流して、心身ともにデトックスできる場所です。',
+        '限界まで温まったあとの水風呂と外気浴で「ととのう」感覚が最高。',
+        '数分入っているだけで全身から玉のような汗が吹き出してきます。',
+      ],
+      wolfHints: [
+        'じっくり汗を流して、心身ともにデトックスできる場所です。',
+        '湯船に肩まで浸かって「はぁ〜」と声が出る瞬間が至福の癒やし。',
+        '露天風呂から眺める自然の景色や、効能豊かな泉質を味わいます。',
+      ],
+    },
+  },
+  {
+    citizen: '花火大会',
+    wolf: '夏祭り',
+    category: '夏の風物詩',
+    difficulty: 'normal',
+    hints: {
+      citizenHints: [
+        '夜空を見上げながら、夏の思い出を作るビッグイベントです。',
+        '浴衣を着て出かける人も多く、ドーンとお腹に響く大迫力。',
+        'クライマックスの連続打ち上げには思わず歓声と拍手が起こります。',
+      ],
+      wolfHints: [
+        '夏の夜にみんなで集まって、屋台や雰囲気を楽しむイベントです。',
+        '浴衣を着て出かける人も多く、太鼓の音や提灯の灯りが風情満点。',
+        '焼きそばやかき氷、射的や金魚すくいなどお店を回るのが楽しいです。',
+      ],
+    },
+  },
+  {
+    citizen: 'キャンプ',
+    wolf: 'グランピング',
+    category: 'アウトドア体験',
+    difficulty: 'hard',
+    hints: {
+      citizenHints: [
+        '大自然の中でテントを張り、非日常のひとときを過ごします。',
+        '自分たちで火を起こしてご飯を作ったり、不便さも楽しむスタイル。',
+        '夜の焚き火を囲んで星空を眺めながら語り合うのが最高の醍醐味。',
+      ],
+      wolfHints: [
+        '大自然の中でテントを張り、非日常のひとときを過ごします。',
+        'ベッドや冷暖房が完備されていて、手ぶらで快適に過ごせるスタイル。',
+        '豪華なバーベキューやおしゃれな内装で、ホテル感覚のアウトドアです。',
+      ],
+    },
+  },
+  {
+    citizen: 'ラーメン',
+    wolf: 'うどん',
+    category: '麺料理',
+    difficulty: 'normal',
+    hints: {
+      citizenHints: [
+        '熱々のスープと麺の組み合わせが絶品で、専門店がたくさんあります。',
+        'スープの濃さや背脂の量、麺の硬さをお好みでカスタマイズできます。',
+        '飲み会のシメや、ガッツリお腹を満たしたいときに真っ先に浮かびます。',
+      ],
+      wolfHints: [
+        '熱々のスープと麺の組み合わせが絶品で、専門店がたくさんあります。',
+        '出汁の優しい旨味が染み渡り、温かいのも冷水で締めたのも美味。',
+        '体調がすぐれない時や、胃に優しいものが食べたい時にも安心の味です。',
+      ],
+    },
+  },
+  {
+    citizen: 'シャーペン',
+    wolf: '鉛筆',
+    category: '筆記用具',
+    difficulty: 'hard',
+    hints: {
+      citizenHints: [
+        '文字や絵を描くときに手放せない、学生時代からの相棒です。',
+        'ノックすると芯が出てきて、常に一定の細さで書き続けられます。',
+        '中に替芯を補充して、お気に入りの本体を何年も長く愛用できます。',
+      ],
+      wolfHints: [
+        '文字や絵を描くときに手放せない、学生時代からの相棒です。',
+        '削りたての木の香りと、紙の上を走る独特の滑らかな描き心地が好き。',
+        '使っていくうちに少しずつ短くなっていく姿に愛着が湧きますね。',
+      ],
     },
   },
 ];
@@ -69,35 +241,42 @@ interface ChatMessage {
 }
 
 export const AiWordWolfGame: Component = () => {
-  const [gameState, setGameState] = createSignal<'playing' | 'voting' | 'result'>('playing');
+  const [difficulty, setDifficulty] = createSignal<'normal' | 'hard'>('hard');
+  const [gameState, setGameState] = createSignal<'playing' | 'voting' | 'guess' | 'result'>('playing');
   const [round, setRound] = createSignal(1); // 1, 2, 3
   const [playerIsWolf, setPlayerIsWolf] = createSignal(false);
-  const [currentTopic, setCurrentTopic] = createSignal(TOPICS[0]);
+  const [currentTopic, setCurrentTopic] = createSignal<TopicPair>(TOPICS[0]);
   const [playerWord, setPlayerWord] = createSignal('');
   const [logs, setLogs] = createSignal<ChatMessage[]>([]);
   const [inputText, setInputText] = createSignal('');
   const [winner, setWinner] = createSignal<'citizen' | 'wolf' | null>(null);
   const [wolfPlayer, setWolfPlayer] = createSignal<string>('');
+  const [votedOutPlayer, setVotedOutPlayer] = createSignal<string>('');
   const [score, setScore] = createSignal(0);
+  const [guessChoices, setGuessChoices] = createSignal<string[]>([]);
+  const [reverseSuccess, setReverseSuccess] = createSignal(false);
+  const [voteDetails, setVoteDetails] = createSignal<{ voter: string; target: string }[]>([]);
 
   const instructions = [
-    '【AIワードウルフ】あなたと3人のAI（アリス・ボブ・キャロル）の中に、1人だけ違うお題を持つ「ウルフ（人狼）」が潜んでいます！',
-    'あなたに配られたお題を確認してください。ただし、自分が「多数派（市民）」か「少数派（ウルフ）」かは分かりません！',
-    '3回の会話ターンで、自分のお題について一言ずつ発言します。お題そのものを言ってしまうと即バレするので注意！',
-    '違和感のある発言を見極め、最後に「誰がウルフか」を投票で決定します。ウルフを追放できれば市民の勝ち、騙し通せばウルフの勝ちです。',
+    '【AIワードウルフ】あなたと3人のAI（アリス・ボブ・キャロル）の中に、1人だけ違うお題を持つ「ウルフ（少数派）」が潜んでいます！',
+    '3回の会話ターンで、自分のお題について一言ずつ発言します。固有名詞を直接言うと即バレするので注意！',
+    '【難易度ハード】AIも人間らしく巧妙にブラフを使い、市民の発言に擬態してきます。違和感のある言葉遣いを見破りましょう。',
+    '【ウルフ逆転ルール】ウルフが最多票で追放されても、最後に「市民のお題」を当てることができればウルフの逆転勝利となります！',
   ];
 
   const AI_PLAYERS = [
     { id: 'alice', name: 'アリス', avatar: '👩‍💼', desc: '論理的・慎重派' },
-    { id: 'bob', name: 'ボブ', avatar: '🧑‍🎨', desc: '直感・おとぼけ派' },
-    { id: 'carol', name: 'キャロル', avatar: '🕵️‍♀️', desc: '観察・鋭い探偵派' },
+    { id: 'bob', name: 'ボブ', avatar: '🧑‍🎨', desc: '直感・マイペース派' },
+    { id: 'carol', name: 'キャロル', avatar: '🕵️‍♀️', desc: '鋭い観察・探偵派' },
   ];
 
-  const restart = () => {
-    const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+  const restart = (diff = difficulty()) => {
+    // 難易度に応じたお題の抽出
+    const candidates = TOPICS.filter((t) => (diff === 'hard' ? true : t.difficulty === 'normal'));
+    const topic = candidates[Math.floor(Math.random() * candidates.length)] || TOPICS[0];
     setCurrentTopic(topic);
 
-    // ウルフの決定（プレイヤーまたはAI）
+    // プレイヤーがウルフになる確率（35%）
     const isWolf = Math.random() < 0.35;
     setPlayerIsWolf(isWolf);
     setPlayerWord(isWolf ? topic.wolf : topic.citizen);
@@ -110,8 +289,11 @@ export const AiWordWolfGame: Component = () => {
     setGameState('playing');
     setRound(1);
     setWinner(null);
+    setVotedOutPlayer('');
+    setReverseSuccess(false);
+    setVoteDetails([]);
 
-    // 最初のAI発言
+    // 最初のAI（アリス）の発言
     const firstSpeaker = AI_PLAYERS[0];
     const isFirstWolf = wolfName === firstSpeaker.name;
     const hints = isFirstWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
@@ -131,7 +313,6 @@ export const AiWordWolfGame: Component = () => {
     if (!text || gameState() !== 'playing') return;
 
     sound.playPop(500);
-    // プレイヤーの発言追加
     const newLogs: ChatMessage[] = [
       ...logs(),
       { speaker: 'あなた', avatar: '👤', role: 'player', text },
@@ -163,7 +344,7 @@ export const AiWordWolfGame: Component = () => {
     setLogs(newLogs);
     setInputText('');
 
-    if (currentR < 2) {
+    if (currentR < 3) {
       setRound((r) => r + 1);
       // 次のラウンドのアリスの発言
       const isAliceWolf = wolfPlayer() === 'アリス';
@@ -180,7 +361,7 @@ export const AiWordWolfGame: Component = () => {
         ]);
       }, 500);
     } else {
-      // 投票フェーズへ
+      // 3ターン終了で投票へ
       setTimeout(() => {
         sound.playMatch(5);
         setGameState('voting');
@@ -191,41 +372,123 @@ export const AiWordWolfGame: Component = () => {
   const handleVote = (target: string) => {
     sound.playPop(620);
 
-    // AIの投票決定（ウルフに怪しい疑惑が集まりやすいロジック）
     const actualWolf = wolfPlayer();
-    const isPlayerWolf = playerIsWolf();
+    const votes: { voter: string; target: string }[] = [
+      { voter: 'あなた', target },
+    ];
 
-    let votesAgainstWolf = 0;
-    if (target === actualWolf) votesAgainstWolf++;
+    // AIの知的な投票計算
+    // プレイヤーの発言を分析（文字数が極端に短い、またはウルフのお題が市民とズレているか）
+    const playerStatements = logs().filter((l) => l.role === 'player').map((l) => l.text).join(' ');
+    const isPlayerSuspicious = playerStatements.length < 15 || Math.random() < 0.25;
 
-    // AI達の投票
-    if (actualWolf !== 'アリス') votesAgainstWolf++;
-    if (actualWolf !== 'ボブ' && Math.random() < 0.7) votesAgainstWolf++;
-
-    const isWolfVotedOut = votesAgainstWolf >= 2;
-
-    if (isPlayerWolf) {
-      if (isWolfVotedOut) {
-        setWinner('citizen');
-        sound.playGameOver();
-      } else {
-        setWinner('wolf');
-        sound.playVictory();
-        setScore((s) => s + 400);
-        confetti({ particleCount: 35, spread: 60 });
-      }
+    // アリス（論理派）
+    if (actualWolf === 'アリス') {
+      // 自分がウルフならプレイヤーかボブに濡れ衣
+      votes.push({ voter: 'アリス', target: isPlayerSuspicious ? 'あなた' : 'ボブ' });
     } else {
-      if (isWolfVotedOut) {
-        setWinner('citizen');
-        sound.playVictory();
-        setScore((s) => s + 250);
-        confetti({ particleCount: 35, spread: 60 });
-      } else {
-        setWinner('wolf');
-        sound.playGameOver();
-      }
+      // 市民アリスはウルフを疑う確率が高い（ハードなら75%）
+      const voteTarget = Math.random() < (difficulty() === 'hard' ? 0.75 : 0.6) ? actualWolf : (isPlayerSuspicious ? 'あなた' : 'ボブ');
+      votes.push({ voter: 'アリス', target: voteTarget });
     }
 
+    // ボブ（直感派）
+    if (actualWolf === 'ボブ') {
+      votes.push({ voter: 'ボブ', target: isPlayerSuspicious ? 'あなた' : 'キャロル' });
+    } else {
+      const voteTarget = Math.random() < 0.55 ? actualWolf : (Math.random() < 0.5 ? 'あなた' : 'キャロル');
+      votes.push({ voter: 'ボブ', target: voteTarget });
+    }
+
+    // キャロル（観察派）
+    if (actualWolf === 'キャロル') {
+      votes.push({ voter: 'キャロル', target: isPlayerSuspicious ? 'あなた' : 'アリス' });
+    } else {
+      const voteTarget = Math.random() < (difficulty() === 'hard' ? 0.8 : 0.6) ? actualWolf : (isPlayerSuspicious ? 'あなた' : 'アリス');
+      votes.push({ voter: 'キャロル', target: voteTarget });
+    }
+
+    setVoteDetails(votes);
+
+    // 得票数集計
+    const countMap: Record<string, number> = {};
+    for (const v of votes) {
+      countMap[v.target] = (countMap[v.target] || 0) + 1;
+    }
+
+    // 最多得票者
+    let maxVotes = -1;
+    let expelled = '';
+    for (const [candidate, count] of Object.entries(countMap)) {
+      if (count > maxVotes) {
+        maxVotes = count;
+        expelled = candidate;
+      }
+    }
+    setVotedOutPlayer(expelled);
+
+    // ウルフが追放されたか？
+    if (expelled === actualWolf) {
+      // ウルフ逆転チャンスへ！
+      // 3択候補の作成（市民のお題 + 似たジャンルのダミー2つ）
+      const dummyTopics = TOPICS.filter((t) => t.citizen !== currentTopic().citizen);
+      const shuffledDummies = [...dummyTopics].sort(() => Math.random() - 0.5);
+      const choices = [
+        currentTopic().citizen,
+        shuffledDummies[0]?.citizen || 'おにぎり',
+        shuffledDummies[1]?.citizen || 'パスタ',
+      ].sort(() => Math.random() - 0.5);
+
+      setGuessChoices(choices);
+
+      if (actualWolf === 'あなた') {
+        // プレイヤー自身がウルフで追放された！市民のお題当てチャンスへ
+        setGameState('guess');
+      } else {
+        // AIがウルフで追放された！AIの逆転推理
+        // ハードなら35%、ノーマルなら20%でAIが逆転正解
+        const aiGuessedCorrect = Math.random() < (difficulty() === 'hard' ? 0.35 : 0.2);
+        if (aiGuessedCorrect) {
+          setReverseSuccess(true);
+          setWinner('wolf');
+          sound.playGameOver();
+        } else {
+          setReverseSuccess(false);
+          setWinner('citizen');
+          sound.playVictory();
+          setScore((s) => s + (difficulty() === 'hard' ? 500 : 300));
+          confetti({ particleCount: 45, spread: 70 });
+        }
+        setGameState('result');
+      }
+    } else {
+      // ウルフ追放失敗（市民が追放された）＝ ウルフの逃げ切り勝利！
+      setWinner('wolf');
+      if (playerIsWolf()) {
+        sound.playVictory();
+        setScore((s) => s + (difficulty() === 'hard' ? 600 : 400));
+        confetti({ particleCount: 50, spread: 80 });
+      } else {
+        sound.playGameOver();
+      }
+      setGameState('result');
+    }
+  };
+
+  const handlePlayerGuess = (choice: string) => {
+    sound.playPop(550);
+    const isCorrect = choice === currentTopic().citizen;
+    if (isCorrect) {
+      setReverseSuccess(true);
+      setWinner('wolf');
+      sound.playVictory();
+      setScore((s) => s + 800);
+      confetti({ particleCount: 60, spread: 80 });
+    } else {
+      setReverseSuccess(false);
+      setWinner('citizen');
+      sound.playGameOver();
+    }
     setGameState('result');
   };
 
@@ -240,8 +503,39 @@ export const AiWordWolfGame: Component = () => {
       score={score()}
       isGameOver={gameState() === 'result' && winner() === (playerIsWolf() ? 'citizen' : 'wolf')}
       isVictory={gameState() === 'result' && winner() === (playerIsWolf() ? 'wolf' : 'citizen')}
-      onRestart={restart}
+      onRestart={() => restart()}
       instructions={instructions}
+      extraControls={
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-slate-400 font-bold">難易度:</span>
+          <button
+            onClick={() => {
+              setDifficulty('normal');
+              restart('normal');
+            }}
+            class={`px-2.5 py-1 rounded-lg font-bold border transition-all ${
+              difficulty() === 'normal'
+                ? 'bg-amber-500 text-white border-amber-600 shadow-2xs'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-700'
+            }`}
+          >
+            ノーマル
+          </button>
+          <button
+            onClick={() => {
+              setDifficulty('hard');
+              restart('hard');
+            }}
+            class={`px-2.5 py-1 rounded-lg font-bold border transition-all ${
+              difficulty() === 'hard'
+                ? 'bg-rose-600 text-white border-rose-700 shadow-2xs'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-700'
+            }`}
+          >
+            🔥 ハード（心理戦）
+          </button>
+        </div>
+      }
     >
       <div class="w-full max-w-2xl h-full flex flex-col items-center justify-between relative min-h-0 select-none p-2 gap-2">
         {/* お題カード表示 */}
@@ -249,14 +543,14 @@ export const AiWordWolfGame: Component = () => {
           <div>
             <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">あなたのお題</span>
             <div class="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{playerWord()}</span>
+              <span class="tracking-wide text-amber-500 dark:text-amber-400">{playerWord()}</span>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-normal">
                 ジャンル: {currentTopic().category}
               </span>
             </div>
           </div>
           <div class="text-right text-xs font-mono font-bold text-slate-500 dark:text-slate-400">
-            <span>ターン: {Math.min(round(), 2)}/2</span>
+            <span>ターン: {Math.min(round(), 3)}/3</span>
           </div>
         </div>
 
@@ -270,7 +564,7 @@ export const AiWordWolfGame: Component = () => {
                   <div class="flex flex-col max-w-[85%]">
                     <span class="text-[10px] text-slate-400 font-bold mb-0.5">{msg.speaker}</span>
                     <div
-                      class={`px-3 py-2 rounded-2xl whitespace-pre-wrap shadow-2xs ${
+                      class={`px-3 py-2 rounded-2xl whitespace-pre-wrap shadow-2xs leading-normal ${
                         msg.role === 'player'
                           ? 'bg-amber-600 text-white rounded-tl-xs'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-tl-xs border border-slate-200 dark:border-slate-700'
@@ -300,7 +594,7 @@ export const AiWordWolfGame: Component = () => {
               <button
                 onClick={handleSendStatement}
                 disabled={!inputText().trim()}
-                class="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-all active:scale-95 shrink-0"
+                class="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-all active:scale-95 shrink-0 cursor-pointer"
               >
                 発言
               </button>
@@ -309,19 +603,47 @@ export const AiWordWolfGame: Component = () => {
 
           {/* 投票フェーズ */}
           <Show when={gameState() === 'voting'}>
-            <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-amber-50 dark:bg-amber-950/30 shrink-0 text-center">
-              <h3 class="text-xs font-bold text-amber-900 dark:text-amber-200 mb-2">
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 bg-amber-50 dark:bg-amber-950/30 shrink-0 text-center animate-in fade-in">
+              <h3 class="text-xs font-bold text-amber-900 dark:text-amber-200 mb-1">
                 🗳️ 会話終了！誰がウルフ（少数派）だと思いますか？
               </h3>
-              <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto">
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 mb-3">
+                誰かの発言に微妙な違和感はありませんでしたか？
+              </p>
+              <div class="grid grid-cols-3 gap-2.5 max-w-sm mx-auto">
                 <For each={AI_PLAYERS}>
                   {(ai) => (
                     <button
                       onClick={() => handleVote(ai.name)}
-                      class="p-2 rounded-xl border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-xs font-bold transition-all active:scale-95"
+                      class="p-2.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-xs font-bold transition-all active:scale-95 shadow-2xs cursor-pointer flex flex-col items-center gap-1"
                     >
-                      <div>{ai.avatar}</div>
-                      <div>{ai.name}</div>
+                      <div class="text-xl">{ai.avatar}</div>
+                      <div class="font-bold text-slate-900 dark:text-white">{ai.name}</div>
+                      <div class="text-[9px] text-slate-400">{ai.desc}</div>
+                    </button>
+                  )}
+                </For>
+              </div>
+            </div>
+          </Show>
+
+          {/* プレイヤーウルフ逆転チャンス（市民のお題当て） */}
+          <Show when={gameState() === 'guess'}>
+            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 bg-rose-50 dark:bg-rose-950/30 shrink-0 text-center animate-in zoom-in-95">
+              <div class="text-rose-600 dark:text-rose-400 font-black text-sm mb-1">
+                ⚠️ あなたはウルフとして追放されました！
+              </div>
+              <p class="text-xs text-slate-700 dark:text-slate-300 mb-2">
+                しかし【ラストチャンス】！みんなが話していた「市民のお題」を当てれば逆転勝利です！
+              </p>
+              <div class="flex flex-col gap-2 max-w-xs mx-auto">
+                <For each={guessChoices()}>
+                  {(choice) => (
+                    <button
+                      onClick={() => handlePlayerGuess(choice)}
+                      class="py-2.5 px-4 rounded-xl border border-rose-300 dark:border-rose-700 bg-white dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-xs font-bold text-slate-800 dark:text-slate-100 transition-all active:scale-95 cursor-pointer shadow-2xs"
+                    >
+                      {choice}
                     </button>
                   )}
                 </For>
@@ -331,22 +653,45 @@ export const AiWordWolfGame: Component = () => {
 
           {/* 結果発表フェーズ */}
           <Show when={gameState() === 'result'}>
-            <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 shrink-0 text-center animate-in fade-in">
-              <div class="text-xl mb-1">
+            <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 shrink-0 text-center animate-in fade-in">
+              <div class="text-2xl font-black mb-1">
                 {winner() === (playerIsWolf() ? 'wolf' : 'citizen') ? '🎉 VICTORY!' : '💀 DEFEAT'}
               </div>
               <div class="text-xs font-bold text-slate-800 dark:text-slate-100 mb-1">
-                ウルフの正体は <strong class="text-rose-500 font-black">{wolfPlayer()}</strong> でした！
+                最多得票: <strong class="text-rose-500 font-black">{votedOutPlayer()}</strong> が追放されました
               </div>
-              <div class="text-[11px] text-slate-500 dark:text-slate-400">
+
+              <Show when={reverseSuccess()}>
+                <div class="text-xs font-bold text-amber-500 dark:text-amber-400 my-1">
+                  ⚡ ウルフが見事に市民のお題を看破し、大逆転勝利！
+                </div>
+              </Show>
+
+              <div class="text-xs text-slate-700 dark:text-slate-300 my-1.5">
+                ウルフの正体: <strong class="text-rose-500 font-bold">{wolfPlayer()}</strong>
+              </div>
+
+              <div class="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
                 市民のお題: <strong class="text-slate-700 dark:text-slate-300">{currentTopic().citizen}</strong> ／
                 ウルフのお題: <strong class="text-rose-500">{currentTopic().wolf}</strong>
               </div>
+
+              {/* 投票の内訳 */}
+              <div class="flex flex-wrap justify-center gap-2 text-[10px] text-slate-500 dark:text-slate-400 mb-3 bg-slate-200/50 dark:bg-slate-800/50 p-2 rounded-xl max-w-sm mx-auto">
+                <For each={voteDetails()}>
+                  {(v) => (
+                    <span>
+                      {v.voter} ➔ <strong class="text-slate-700 dark:text-slate-300">{v.target}</strong>
+                    </span>
+                  )}
+                </For>
+              </div>
+
               <button
-                onClick={restart}
-                class="mt-2.5 px-4 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs active:scale-95 transition-all"
+                onClick={() => restart()}
+                class="px-5 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs active:scale-95 transition-all cursor-pointer shadow-md"
               >
-                もう一度遊ぶ
+                次のゲームをプレイ
               </button>
             </div>
           </Show>
