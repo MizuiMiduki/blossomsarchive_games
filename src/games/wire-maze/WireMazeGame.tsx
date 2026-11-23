@@ -359,6 +359,8 @@ export const WireMazeGame: Component = () => {
       isGameOver={isGameOver()}
       isVictory={isVictory()}
       onRestart={restart}
+      onNextStage={() => initStage(0)}
+      nextStageLabel="全ステージ制覇！最初から遊ぶ"
       instructions={instructions}
       extraControls={
         <div class="flex items-center justify-between w-full max-w-md px-3 py-1 bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">

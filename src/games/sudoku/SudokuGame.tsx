@@ -121,40 +121,57 @@ export const SudokuGame: Component = () => {
         cell.error = false;
       } else {
         cell.val = num;
+        sound.playPop(520);
+      }
+    }
 
-        // 重複チェック
-        let hasConflict = false;
-        for (let i = 0; i < 9; i++) {
-          if (i !== c && current[r][i].val === num) hasConflict = true;
-          if (i !== r && current[i][c].val === num) hasConflict = true;
+    recalculateErrors(current);
+
+    // 新たにエラーが生じた場合はミステイク加算
+    if (current[r][c].error) {
+      sound.playGameOver();
+      const nextM = mistakes() + 1;
+      setMistakes(nextM);
+      if (nextM >= 3) {
+        setIsGameOver(true);
+        if (timerId) clearInterval(timerId);
+      }
+    } else {
+      checkWin(current);
+    }
+
+    setBoard(current);
+  };
+
+  const recalculateErrors = (b: SudokuCell[][]) => {
+    // 全マスのエラーを再評価
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const val = b[r][c].val;
+        if (val === 0) {
+          b[r][c].error = false;
+          continue;
         }
+
+        let conflict = false;
+        // 行・列
+        for (let i = 0; i < 9; i++) {
+          if (i !== c && b[r][i].val === val) conflict = true;
+          if (i !== r && b[i][c].val === val) conflict = true;
+        }
+        // 3x3ブロック
         const br = Math.floor(r / 3) * 3;
         const bc = Math.floor(c / 3) * 3;
         for (let dr = 0; dr < 3; dr++) {
           for (let dc = 0; dc < 3; dc++) {
             const tr = br + dr;
             const tc = bc + dc;
-            if ((tr !== r || tc !== c) && current[tr][tc].val === num) hasConflict = true;
+            if ((tr !== r || tc !== c) && b[tr][tc].val === val) conflict = true;
           }
         }
-
-        cell.error = hasConflict;
-        if (hasConflict) {
-          sound.playGameOver();
-          const nextM = mistakes() + 1;
-          setMistakes(nextM);
-          if (nextM >= 3) {
-            setIsGameOver(true);
-            if (timerId) clearInterval(timerId);
-          }
-        } else {
-          sound.playPop(520);
-          checkWin(current);
-        }
+        b[r][c].error = conflict;
       }
     }
-
-    setBoard(current);
   };
 
   const deleteCurrent = () => {
@@ -165,7 +182,7 @@ export const SudokuGame: Component = () => {
     if (current[r][c].initial) return;
     current[r][c].val = 0;
     current[r][c].notes = [];
-    current[r][c].error = false;
+    recalculateErrors(current);
     setBoard(current);
   };
 
@@ -174,7 +191,9 @@ export const SudokuGame: Component = () => {
     if (h.length === 0) return;
     const prev = h[h.length - 1];
     setHistory(h.slice(0, -1));
-    setBoard(prev);
+    const nextBoard = prev.map((row) => row.map((cell) => ({ ...cell })));
+    recalculateErrors(nextBoard);
+    setBoard(nextBoard);
     sound.playPop(420);
   };
 
@@ -187,6 +206,7 @@ export const SudokuGame: Component = () => {
           break;
         }
       }
+      if (!complete) break;
     }
 
     if (complete) {
@@ -195,6 +215,12 @@ export const SudokuGame: Component = () => {
       if (timerId) clearInterval(timerId);
       confetti({ particleCount: 50, spread: 80 });
     }
+  };
+
+  const nextStage = () => {
+    const nextDiff: Difficulty = difficulty() === 'easy' ? 'medium' : difficulty() === 'medium' ? 'hard' : 'easy';
+    setDifficulty(nextDiff);
+    generateBoard(nextDiff);
   };
 
   generateBoard('easy');
@@ -207,6 +233,8 @@ export const SudokuGame: Component = () => {
       isGameOver={isGameOver()}
       isVictory={isVictory()}
       onRestart={() => generateBoard(difficulty())}
+      onNextStage={nextStage}
+      nextStageLabel={difficulty() !== 'hard' ? `難易度を上げて挑戦 (${difficulty() === 'easy' ? '中級' : '上級'}) →` : '新しい問題で遊ぶ'}
       instructions={instructions}
       extraControls={
         <div class="flex items-center justify-between gap-3 w-full max-w-4xl px-2 text-xs">

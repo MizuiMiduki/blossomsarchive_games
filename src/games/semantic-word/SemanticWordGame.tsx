@@ -170,6 +170,8 @@ export const SemanticWordGame: Component = () => {
       isGameOver={false}
       isVictory={isVictory()}
       onRestart={restart}
+      onNextStage={nextPuzzle}
+      nextStageLabel="次のお題へ進む →"
       instructions={instructions}
     >
       <div class="w-full max-w-2xl h-full flex flex-col justify-between p-2 min-h-0 select-none">

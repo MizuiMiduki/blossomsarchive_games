@@ -164,7 +164,7 @@ export const SpeedTypingGame: Component = () => {
       title="Speed Typing Battle"
       score={score()}
       isGameOver={isGameOver()}
-      isVictory={isGameOver() && cpm() >= 170}
+      isVictory={isGameOver()}
       onRestart={startGame}
       instructions={instructions}
       extraControls={

@@ -301,7 +301,7 @@ export const RhythmTapGame: Component = () => {
       title="Floral Beats"
       score={score()}
       isGameOver={isGameOver()}
-      isVictory={isGameOver() && score() > 5000}
+      isVictory={isGameOver()}
       onRestart={startSong}
       instructions={instructions}
       extraControls={

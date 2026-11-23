@@ -1166,3 +1166,107 @@ export const SpeedTypingIcon: Component<IconProps> = (props) => (
     <path d="M8 16h8" />
   </svg>
 );
+
+export const BombDefusalIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="11" cy="13" r="8" fill="currentColor" fill-opacity="0.15" />
+    <path d="M14.5 4.5l2-2" />
+    <path d="M19 2l2 2" />
+    <path d="M16.5 9.5l3.5-3.5" />
+    <circle cx="11" cy="13" r="3" />
+  </svg>
+);
+
+export const DiskClashIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="8" cy="8" r="5" fill="currentColor" fill-opacity="0.2" />
+    <circle cx="16" cy="16" r="5" fill="currentColor" fill-opacity="0.2" />
+    <path d="M11.5 11.5l1 1" />
+    <path d="M14 9l-4 4" />
+  </svg>
+);
+
+export const PuzzleClashIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <rect x="2" y="3" width="9" height="18" rx="2" />
+    <rect x="13" y="3" width="9" height="18" rx="2" />
+    <path d="M5 16h3" />
+    <path d="M16 12h3" />
+  </svg>
+);
+
+export const SketchGuessIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+    <path d="M3 21h18" />
+  </svg>
+);
+
+export const WordWolfRoomIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);

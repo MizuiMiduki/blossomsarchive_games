@@ -208,6 +208,12 @@ export const MinesweeperGame: Component = () => {
     'text-slate-800 dark:text-slate-200',
   ];
 
+  const nextStage = () => {
+    const nextDiff: Difficulty = difficulty() === 'easy' ? 'medium' : difficulty() === 'medium' ? 'hard' : 'easy';
+    setDifficulty(nextDiff);
+    initBoard(nextDiff);
+  };
+
   initBoard();
 
   return (
@@ -218,6 +224,8 @@ export const MinesweeperGame: Component = () => {
       isGameOver={isGameOver()}
       isVictory={isVictory()}
       onRestart={() => initBoard()}
+      onNextStage={nextStage}
+      nextStageLabel={difficulty() !== 'hard' ? `難易度を上げて挑戦 (${difficulty() === 'easy' ? '中級' : '上級'}) →` : '新しい盤面で遊ぶ'}
       instructions={instructions}
       extraControls={
         <div class="flex items-center justify-between gap-3 w-full max-w-4xl px-2 text-xs">

@@ -35,6 +35,11 @@ import { SudokuGame } from './sudoku/SudokuGame.tsx';
 import { SokobanGame } from './sokoban/SokobanGame.tsx';
 import { RhythmTapGame } from './rhythm-tap/RhythmTapGame.tsx';
 import { SpeedTypingGame } from './speed-typing/SpeedTypingGame.tsx';
+import { BombDefusalGame } from './bomb-defusal/BombDefusalGame.tsx';
+import { DiskClashGame } from './disk-clash/DiskClashGame.tsx';
+import { PuzzleClashGame } from './puzzle-clash/PuzzleClashGame.tsx';
+import { SketchGuessGame } from './sketch-guess/SketchGuessGame.tsx';
+import { WordWolfRoomGame } from './word-wolf-room/WordWolfRoomGame.tsx';
 import {
   LifeGameIcon,
   ReversiIcon,
@@ -71,6 +76,11 @@ import {
   SokobanIcon,
   RhythmBeatsIcon,
   SpeedTypingIcon,
+  BombDefusalIcon,
+  DiskClashIcon,
+  PuzzleClashIcon,
+  SketchGuessIcon,
+  WordWolfRoomIcon,
 } from '../components/Icons.tsx';
 
 export type GameCategory = 'all' | 'ar' | 'ai' | 'puzzle' | 'board' | 'card' | 'action' | 'casual';
@@ -519,6 +529,66 @@ export const GAMES: GameDefinition[] = [
     icon: SpeedTypingIcon,
     color: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-900/40',
     component: SpeedTypingGame,
+    isAvailable: true,
+  },
+  {
+    id: 'bomb-defusal',
+    title: 'Bomb Defusal Protocol',
+    titleJp: '爆弾解除プロトコル (リモート協力)',
+    category: 'puzzle',
+    description: '爆弾を見る解除担当と、マニュアルを見る指示役に分かれて通話やチャットで協力解除！P2P非対称協力ゲーム。',
+    badge: 'リモート協力',
+    icon: BombDefusalIcon,
+    color: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200/60 dark:border-red-900/40',
+    component: BombDefusalGame,
+    isAvailable: true,
+  },
+  {
+    id: 'disk-clash',
+    title: 'Disk Clash Arena',
+    titleJp: 'ディスク・クラッシュ (リモート対戦)',
+    category: 'action',
+    description: '自分のディスクを引っ張って相手のパックを場外へ弾き出す！P2P物理おはじき対戦。ソロ練習モードつき。',
+    badge: 'リモート対戦',
+    icon: DiskClashIcon,
+    color: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-900/40',
+    component: DiskClashGame,
+    isAvailable: true,
+  },
+  {
+    id: 'puzzle-clash',
+    title: 'Puzzle Clash',
+    titleJp: 'パズル・クラッシュ (リモート落ちパズル)',
+    category: 'puzzle',
+    description: 'ラインを消して相手にお邪魔ブロックを送り込め！リアルタイム相手ボード表示付きP2P対戦パズル。CPU対戦つき。',
+    badge: 'リモート対戦',
+    icon: PuzzleClashIcon,
+    color: 'bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border border-cyan-200/60 dark:border-cyan-900/40',
+    component: PuzzleClashGame,
+    isAvailable: true,
+  },
+  {
+    id: 'sketch-guess',
+    title: 'Sketch Guess Live',
+    titleJp: 'スケッチ・ゲス (お絵描きクイズ)',
+    category: 'casual',
+    description: '描いた線が相手の画面にリアルタイムで届く！お題を描く人と当てる人に分かれて交代で競うP2P伝言クイズ。',
+    badge: 'リモート対戦',
+    icon: SketchGuessIcon,
+    color: 'bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 border border-pink-200/60 dark:border-pink-900/40',
+    component: SketchGuessGame,
+    isAvailable: true,
+  },
+  {
+    id: 'word-wolf-room',
+    title: 'Word Wolf Room',
+    titleJp: 'ワードウルフ・ルーム (手元端末で推理戦)',
+    category: 'casual',
+    description: '各自のスマホやPCを手元で接続し、自分の画面だけに秘密のお題を表示。会話タイマー＆秘密投票付き心理戦。',
+    badge: 'リモート対戦',
+    icon: WordWolfRoomIcon,
+    color: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/40',
+    component: WordWolfRoomGame,
     isAvailable: true,
   },
 ];

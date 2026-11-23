@@ -239,6 +239,8 @@ export const SokobanGame: Component = () => {
       score={moves()}
       isVictory={isVictory()}
       onRestart={() => loadLevel(currentLevel())}
+      onNextStage={nextLevel}
+      nextStageLabel={currentLevel() < LEVELS.length - 1 ? `ステージ ${currentLevel() + 2} へ進む →` : '最初からもう一度遊ぶ'}
       instructions={instructions}
       extraControls={
         <div class="flex items-center justify-between gap-3 w-full max-w-4xl px-2 text-xs">

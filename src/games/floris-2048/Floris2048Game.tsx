@@ -220,6 +220,8 @@ export const Floris2048Game: Component = () => {
       isGameOver={isGameOver()}
       isVictory={isVictory()}
       onRestart={restart}
+      onNextStage={() => setIsVictory(false)}
+      nextStageLabel="続けてさらに上を目指す (エンドレス)"
       instructions={instructions}
       extraControls={
         <div class="flex items-center gap-3">

@@ -30,6 +30,8 @@ interface GameShellProps {
   isGameOver?: boolean;
   isVictory?: boolean;
   onRestart: () => void;
+  onNextStage?: () => void;
+  nextStageLabel?: string;
   children: JSX.Element;
   extraControls?: JSX.Element;
 }
@@ -370,9 +372,20 @@ export const GameShell: Component<GameShellProps> = (props) => {
             </Show>
 
             <div class="flex flex-col gap-2.5">
+              <Show when={props.isVictory && props.onNextStage}>
+                <button
+                  onClick={() => {
+                    sound.playPop(520);
+                    props.onNextStage!();
+                  }}
+                  class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 text-sm cursor-pointer"
+                >
+                  <span>{props.nextStageLabel || '次のステージへ進む →'}</span>
+                </button>
+              </Show>
               <button
                 onClick={handleShare}
-                class="w-full py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2 text-xs"
+                class="w-full py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2 text-xs cursor-pointer"
               >
                 <ShareIcon size={16} />
                 <span>{shareCopied() ? '共有リンクをコピーしました！' : '結果をシェアする'}</span>
@@ -382,10 +395,10 @@ export const GameShell: Component<GameShellProps> = (props) => {
                   sound.playPop(520);
                   handleRestart();
                 }}
-                class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2 text-sm"
+                class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2 text-xs cursor-pointer"
               >
-                <RotateCcwIcon size={18} />
-                もう一度遊ぶ
+                <RotateCcwIcon size={16} />
+                このステージをもう一度
               </button>
               <Link
                 href="/"

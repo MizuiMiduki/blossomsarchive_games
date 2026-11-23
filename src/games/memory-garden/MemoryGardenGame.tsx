@@ -127,6 +127,17 @@ export const MemoryGardenGame: Component = () => {
     return Math.max(100, base - penalty);
   };
 
+  const nextStage = () => {
+    if (difficulty() === 'easy') {
+      setDifficulty('normal');
+    } else if (difficulty() === 'normal') {
+      setDifficulty('hard');
+    } else {
+      setDifficulty('easy');
+    }
+    restart();
+  };
+
   onSettled(() => {
     restart();
     return () => {
@@ -148,6 +159,8 @@ export const MemoryGardenGame: Component = () => {
       isGameOver={false}
       isVictory={isVictory()}
       onRestart={restart}
+      onNextStage={nextStage}
+      nextStageLabel={difficulty() !== 'hard' ? `難易度を上げて挑戦 (${difficulty() === 'easy' ? 'Normal' : 'Hard'}) →` : '最初からもう一度遊ぶ'}
       instructions={instructions}
       extraControls={
         <div class="flex items-center gap-1.5 bg-white/90 dark:bg-slate-900/90 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs">

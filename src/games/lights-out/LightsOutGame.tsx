@@ -144,6 +144,8 @@ export const LightsOutGame: Component = () => {
       isGameOver={isGameOver()}
       isVictory={isVictory()}
       onRestart={restart}
+      onNextStage={nextLevel}
+      nextStageLabel={`レベル ${level() + 1} へ進む →`}
       instructions={instructions}
       extraControls={
         <div class="flex items-center justify-between w-full max-w-sm px-3 py-1 bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">
