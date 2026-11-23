@@ -79,13 +79,25 @@ jobs:
         with:
           path: dist/
 
-  # ─── 3. FTP デプロイ (FTP_SERVER が設定されている場合に実行) ───
+  # ─── 3. FTP デプロイ (シークレット未設定時は安全にスキップ) ───
   deploy-ftp:
     needs: [quality-gate, build]
-    if: "${{ secrets.FTP_SERVER != '' }}"
     runs-on: ubuntu-latest
     steps:
+      - name: Check if FTP Secrets are configured
+        id: check-ftp
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        run: |
+          if [ -z "$FTP_SERVER" ]; then
+            echo "ℹ️ FTP_SERVER is not configured yet. Skipping FTP deployment."
+            echo "configured=false" >> $GITHUB_OUTPUT
+          else
+            echo "configured=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Mask FTP Server IP Addresses
+        if: steps.check-ftp.outputs.configured == 'true'
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
         run: |
@@ -102,12 +114,14 @@ jobs:
           fi
 
       - name: Download Build Artifacts
+        if: steps.check-ftp.outputs.configured == 'true'
         uses: actions/download-artifact@v4
         with:
           name: dist-artifacts
           path: dist/
 
       - name: Deploy via FTP
+        if: steps.check-ftp.outputs.configured == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
