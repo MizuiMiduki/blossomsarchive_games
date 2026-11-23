@@ -6,8 +6,6 @@ interface Card {
   id: number;
   emoji: string;
   name: string;
-  isFlipped: boolean;
-  isMatched: boolean;
 }
 
 const FLOWERS = [
@@ -27,6 +25,7 @@ export const MemoryGardenGame: Component = () => {
   const [difficulty, setDifficulty] = createSignal<'easy' | 'normal' | 'hard'>('normal');
   const [cards, setCards] = createSignal<Card[]>([]);
   const [flippedIndices, setFlippedIndices] = createSignal<number[]>([]);
+  const [matchedCardIds, setMatchedCardIds] = createSignal<Set<number>>(new Set());
   const [moves, setMoves] = createSignal(0);
   const [seconds, setSeconds] = createSignal(0);
   const [isVictory, setIsVictory] = createSignal(false);
@@ -52,8 +51,8 @@ export const MemoryGardenGame: Component = () => {
     const deck: Card[] = [];
 
     selectedFlowers.forEach((f, idx) => {
-      deck.push({ id: idx * 2, emoji: f.emoji, name: f.name, isFlipped: false, isMatched: false });
-      deck.push({ id: idx * 2 + 1, emoji: f.emoji, name: f.name, isFlipped: false, isMatched: false });
+      deck.push({ id: idx * 2, emoji: f.emoji, name: f.name });
+      deck.push({ id: idx * 2 + 1, emoji: f.emoji, name: f.name });
     });
 
     // シャッフル
@@ -64,6 +63,7 @@ export const MemoryGardenGame: Component = () => {
 
     setCards(deck);
     setFlippedIndices([]);
+    setMatchedCardIds(new Set<number>());
     setMoves(0);
     setSeconds(0);
     setIsVictory(false);
@@ -76,15 +76,14 @@ export const MemoryGardenGame: Component = () => {
 
   const handleCardClick = (index: number) => {
     if (isLocked()) return;
-    const currentCards = [...cards()];
+    const currentCards = cards();
+    if (index < 0 || index >= currentCards.length) return;
     const card = currentCards[index];
 
-    if (card.isFlipped || card.isMatched) return;
+    // 既に表向きまたは揃っているカードはクリック無効
+    if (flippedIndices().includes(index) || matchedCardIds().has(card.id)) return;
 
     sound.playPop(520);
-    card.isFlipped = true;
-    setCards(currentCards);
-
     const flipped = [...flippedIndices(), index];
     setFlippedIndices(flipped);
 
@@ -97,14 +96,14 @@ export const MemoryGardenGame: Component = () => {
       if (firstCard.emoji === secondCard.emoji) {
         // マッチ！
         sound.playMatch(5);
-        firstCard.isMatched = true;
-        secondCard.isMatched = true;
-        setCards(currentCards);
+        const nextMatched = new Set(matchedCardIds());
+        nextMatched.add(firstCard.id);
+        nextMatched.add(secondCard.id);
+        setMatchedCardIds(nextMatched);
         setFlippedIndices([]);
 
         // 全カードマッチ判定
-        const allMatched = currentCards.every((c) => c.isMatched);
-        if (allMatched) {
+        if (nextMatched.size >= currentCards.length) {
           if (timer) clearInterval(timer);
           setIsVictory(true);
         }
@@ -112,9 +111,6 @@ export const MemoryGardenGame: Component = () => {
         // 不一致
         setIsLocked(true);
         setTimeout(() => {
-          firstCard.isFlipped = false;
-          secondCard.isFlipped = false;
-          setCards([...currentCards]);
           setFlippedIndices([]);
           setIsLocked(false);
         }, 800);
@@ -163,13 +159,13 @@ export const MemoryGardenGame: Component = () => {
                   restart();
                 }
               }}
-              class={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
+              class={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
                 difficulty() === diff
                   ? 'bg-rose-500 text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
               }`}
             >
-              {diff === 'easy' ? '初級 12枚' : diff === 'normal' ? '中級 16枚' : '上級 20枚'}
+              {diff === 'easy' ? '🌱 初級 12枚' : diff === 'normal' ? '🌸 中級 16枚' : '👑 上級 20枚'}
             </button>
           ))}
         </div>
@@ -196,23 +192,38 @@ export const MemoryGardenGame: Component = () => {
         }`}
       >
         <For each={cards()}>
-          {(card, index) => (
-            <button
-              onClick={() => handleCardClick(index())}
-              class={`aspect-square rounded-2xl flex items-center justify-center text-3xl sm:text-4xl transition-all duration-300 transform select-none shadow-xs border ${
-                card.isFlipped || card.isMatched
-                  ? 'bg-white dark:bg-slate-800 border-rose-200 dark:border-slate-700 rotate-0 scale-100'
-                  : 'bg-gradient-to-tr from-rose-400 to-pink-500 border-rose-300 text-transparent hover:scale-102 active:scale-95'
-              } ${card.isMatched ? 'opacity-85 ring-2 ring-emerald-400' : ''}`}
-            >
-              <Show
-                when={card.isFlipped || card.isMatched}
-                fallback={<span class="text-white/60 text-xl font-black">🌸</span>}
+          {(card, index) => {
+            const isFlipped = () => flippedIndices().includes(index());
+            const isMatched = () => matchedCardIds().has(card.id);
+            const isOpen = () => isFlipped() || isMatched();
+
+            return (
+              <button
+                onClick={() => handleCardClick(index())}
+                class={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-300 transform select-none shadow-xs border ${
+                  isOpen()
+                    ? 'bg-white dark:bg-slate-800 border-rose-300 dark:border-slate-600 scale-100 rotate-0 shadow-sm'
+                    : 'bg-gradient-to-tr from-rose-400 via-pink-400 to-rose-500 border-rose-300 hover:scale-102 active:scale-95 shadow-xs cursor-pointer'
+                } ${isMatched() ? 'ring-2 ring-emerald-400 opacity-90' : ''}`}
               >
-                <span class="animate-in zoom-in-75 duration-150">{card.emoji}</span>
-              </Show>
-            </button>
-          )}
+                <Show
+                  when={isOpen()}
+                  fallback={
+                    <span class="text-white/80 text-xl font-bold flex flex-col items-center">
+                      <span>🌸</span>
+                    </span>
+                  }
+                >
+                  <span class="text-3xl sm:text-4xl filter drop-shadow-xs animate-in zoom-in-75 duration-150">
+                    {card.emoji}
+                  </span>
+                  <span class="text-[10px] font-bold text-slate-600 dark:text-slate-300 mt-1">
+                    {card.name}
+                  </span>
+                </Show>
+              </button>
+            );
+          }}
         </For>
       </div>
     </GameShell>
