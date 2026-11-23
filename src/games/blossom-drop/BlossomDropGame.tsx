@@ -204,14 +204,20 @@ export const BlossomDropGame: Component = () => {
     ctx.save();
     ctx.translate(c.x, c.y);
 
-    // 足元の自然でソフトな温かいドロップシャドウ（トレイや床面への接地感を表現）
-    ctx.fillStyle = 'rgba(180, 83, 9, 0.14)';
+    // 1. 足元の自然な接地シャドウ
+    ctx.fillStyle = 'rgba(180, 83, 9, 0.16)';
     ctx.beginPath();
     ctx.ellipse(0, r * 0.88, r * 0.76, r * 0.22, 0, 0, Math.PI * 2);
     ctx.fill();
 
+    // 2. 重要: 絵文字を完全な100%不透明度・鮮明なフルカラーで描画するため
+    //    直前の影描画による半透明の fillStyle / globalAlpha を完全にリセット
+    ctx.fillStyle = '#000000';
+    ctx.globalAlpha = 1.0;
+    ctx.shadowBlur = 0;
+
     // 絵文字そのものをフルカラー・高彩度で鮮明に描画
-    const emojiSize = Math.round(r * 1.92);
+    const emojiSize = Math.round(r * 1.95);
     ctx.font = `${emojiSize}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -407,9 +413,9 @@ export const BlossomDropGame: Component = () => {
     ctx.fillRect(0, floorY, canvasRef.width, 2);
 
     // デッドライン点線（目立ちすぎず、でも警告としてわかりやすいローズレッド）
-    ctx.strokeStyle = 'rgba(244, 63, 94, 0.75)';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = 'rgba(244, 63, 94, 0.85)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
     ctx.beginPath();
     ctx.moveTo(8, deadLineY);
     ctx.lineTo(canvasRef.width - 8, deadLineY);
@@ -419,8 +425,8 @@ export const BlossomDropGame: Component = () => {
     // 落下予定ガイド線 & 手元のスイーツプレビュー
     if (canDrop) {
       const cur = SWEETS_TIERS[currentLevel()];
-      ctx.strokeStyle = 'rgba(236, 72, 153, 0.45)';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(236, 72, 153, 0.65)';
+      ctx.lineWidth = 2;
       ctx.setLineDash([4, 4]);
       ctx.beginPath();
       ctx.moveTo(dropX, 42);
