@@ -74,7 +74,7 @@ export const Home: Component = () => {
       origin: { y: 0.6 },
     });
 
-    const { merged, updatedScoresCount } = mergeIncomingData(incoming);
+    const { merged } = mergeIncomingData(incoming);
     setAppData(merged);
     setPendingSyncData(null);
   };

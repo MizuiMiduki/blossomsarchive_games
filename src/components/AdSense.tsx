@@ -50,7 +50,8 @@ function mountAd(
       }
       try {
         ins.className = 'adsbygoogle';
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        const win = window as unknown as { adsbygoogle?: unknown[] };
+        (win.adsbygoogle = win.adsbygoogle || []).push({});
       } catch (e) {
         console.error('AdSense push error:', e);
       }

@@ -17,7 +17,6 @@ export const PetalDashGame: Component = () => {
   const lift = -6.5;
   let pipes: { x: number; top: number; bottom: number; passed: boolean }[] = [];
   let frame = 0;
-  let isPressing = false;
 
   const restart = () => {
     y = 150;

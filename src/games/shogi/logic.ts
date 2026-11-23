@@ -172,7 +172,7 @@ export interface ShogiAction {
 export function chooseShogiMove(
   board: ShogiBoard,
   aiHand: PieceType[],
-  playerHand: PieceType[]
+  _playerHand: PieceType[]
 ): ShogiAction | null {
   const allActions: ShogiAction[] = [];
 

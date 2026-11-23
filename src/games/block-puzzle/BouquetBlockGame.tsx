@@ -1,4 +1,4 @@
-import { Component, createSignal, onSettled, For, Show } from 'solid-js';
+import { Component, createSignal, onSettled, For } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
 import {

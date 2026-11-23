@@ -25,10 +25,10 @@ export const ReversiGame: Component = () => {
   const [board, setBoard] = createSignal<BoardState>(createInitialBoard());
   const [turn, setTurn] = createSignal<Player>('black');
   const [playerColor, setPlayerColor] = createSignal<Player>('black');
-  const [difficulty, setDifficulty] = createSignal<'easy' | 'normal' | 'hard'>('normal');
+  const [difficulty] = createSignal<'easy' | 'normal' | 'hard'>('normal');
   const [playMode, setPlayMode] = createSignal<PlayMode>('npc');
   const [isAiThinking, setIsAiThinking] = createSignal(false);
-  const [showGuide, setShowGuide] = createSignal(true);
+  const [showGuide] = createSignal(true);
   const [message, setMessage] = createSignal<string>('');
   const [isGameOver, setIsGameOver] = createSignal(false);
   const [isVictory, setIsVictory] = createSignal(false);

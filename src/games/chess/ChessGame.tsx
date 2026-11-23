@@ -15,7 +15,7 @@ export const ChessGame: Component = () => {
   const [turn, setTurn] = createSignal<'w' | 'b'>('w');
   const [isAiThinking, setIsAiThinking] = createSignal(false);
   const [capturedByPlayer, setCapturedByPlayer] = createSignal<string[]>([]);
-  const [capturedByAi, setCapturedByAi] = createSignal<string[]>([]);
+  const [, setCapturedByAi] = createSignal<string[]>([]);
   const [isGameOver, setIsGameOver] = createSignal(false);
   const [isVictory, setIsVictory] = createSignal(false);
 

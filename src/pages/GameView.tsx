@@ -8,7 +8,7 @@ export const GameView: Component = () => {
 
   return (
     <Show
-      when={game() && game()?.component}
+      when={game()}
       fallback={
         <div class="min-h-screen flex flex-col items-center justify-center p-4 text-center bg-slate-50 dark:bg-slate-950">
           <div class="text-5xl mb-4">🍂</div>
@@ -27,8 +27,8 @@ export const GameView: Component = () => {
         </div>
       }
     >
-      {(g) => {
-        const Comp = g().component!;
+      {(item) => {
+        const Comp = item().component;
         return <Comp />;
       }}
     </Show>

@@ -10,10 +10,8 @@ interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
-declare global {
-  interface Window {
-    dataLayer?: unknown[];
-    gtag?: (...args: unknown[]) => void;
-    adsbygoogle?: unknown[];
-  }
+interface Window {
+  dataLayer?: unknown[];
+  gtag?: (...args: unknown[]) => void;
+  adsbygoogle?: unknown[];
 }

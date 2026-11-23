@@ -20,11 +20,12 @@ export function initThirdPartyScripts(initialPath: string = window.location.path
       gaScript.async = true;
       gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
       gaScript.onload = () => {
-        window.dataLayer = window.dataLayer || [];
+        const win = window as unknown as { dataLayer?: unknown[]; gtag?: (...args: unknown[]) => void };
+        win.dataLayer = win.dataLayer || [];
         function gtag(..._args: unknown[]) {
-          window.dataLayer?.push(arguments);
+          win.dataLayer?.push(arguments);
         }
-        window.gtag = gtag;
+        win.gtag = gtag;
         gtag('js', new Date());
         gtag('config', GA_ID, {
           page_path: initialPath,
@@ -74,9 +75,11 @@ export function initThirdPartyScripts(initialPath: string = window.location.path
 
 // ページ遷移（SPAルーティング）時のページビュートラッキング
 export function trackPageView(path: string, title?: string) {
-  if (typeof window === 'undefined' || !GA_ID || !window.gtag) return;
+  if (typeof window === 'undefined' || !GA_ID) return;
+  const win = window as unknown as { gtag?: (...args: unknown[]) => void };
+  if (!win.gtag) return;
   try {
-    window.gtag('config', GA_ID, {
+    win.gtag('config', GA_ID, {
       page_path: path,
       page_title: title || document.title,
     });

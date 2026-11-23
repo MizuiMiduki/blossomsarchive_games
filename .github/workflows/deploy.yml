@@ -1,10 +1,16 @@
-name: Build and Deploy to GitHub Pages
+name: Build and Deploy
 
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      サーバーを全削除して再デプロイ:
+        description: "選択すると、サーバー上の全ファイルを削除してからアップロードします（通常は差分同期のため不要）"
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -12,10 +18,30 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  # ─── 1. 品質ゲート (型検査) ───
+  quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Type Check
+        run: npm run type-check
+
+  # ─── 2. 本番ビルド (quality-gateと並行実行) ───
   build:
     runs-on: ubuntu-latest
     steps:
@@ -41,13 +67,67 @@ jobs:
           # SPA用 404フォールバック
           cp dist/index.html dist/404.html
 
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist/
+          retention-days: 1
+
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist/
 
-  deploy:
-    needs: build
+  # ─── 3. FTP デプロイ (FTP_SERVER が設定されている場合に実行) ───
+  deploy-ftp:
+    needs: [quality-gate, build]
+    if: "${{ secrets.FTP_SERVER != '' }}"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mask FTP Server IP Addresses
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        run: |
+          HOST="${FTP_SERVER#*://}"
+          HOST="${HOST%%/*}"
+          HOST="${HOST%%:*}"
+          if [ -n "$HOST" ]; then
+            for ADDR in $(getent ahosts "$HOST" 2>/dev/null | awk '{print $1}' | sort -u); do
+              echo "::add-mask::$ADDR"
+            done
+            if echo "$HOST" | grep -Eq '^[0-9.]+$|^[0-9a-fA-F:]+$'; then
+              echo "::add-mask::$HOST"
+            fi
+          fi
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist/
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: "./dist/"
+          server-dir: "${{ secrets.FTP_TARGET_DIR }}"
+          dangerous-clean-slate: ${{ github.event_name == 'workflow_dispatch' && inputs['サーバーを全削除して再デプロイ'] || false }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.env*
+            **/*.log
+            **/*.lock
+            **/*.sql
+
+  # ─── 4. GitHub Pages デプロイ (GitHub Pages 有効時) ───
+  deploy-pages:
+    needs: [quality-gate, build]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -56,3 +136,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true

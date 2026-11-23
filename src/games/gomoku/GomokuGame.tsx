@@ -3,7 +3,6 @@ import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
 import {
   Stone,
-  GOMOKU_SIZE,
   createEmptyGomokuBoard,
   checkWin,
   chooseGomokuMove,

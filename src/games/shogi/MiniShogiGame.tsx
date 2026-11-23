@@ -6,7 +6,6 @@ import {
   PieceType,
   createInitialShogiBoard,
   getValidShogiMoves,
-  getDropMoves,
   chooseShogiMove,
   PIECE_LABELS,
 } from './logic.ts';
