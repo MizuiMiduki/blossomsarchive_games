@@ -254,7 +254,7 @@ export const Floris2048Game: Component = () => {
       `}</style>
 
       <div
-        class="w-full max-w-[360px] aspect-square bg-stone-200/90 dark:bg-stone-800/90 p-3 rounded-3xl shadow-inner border-2 border-stone-300 dark:border-stone-700 select-none touch-none relative"
+        class="w-full max-w-[460px] max-h-[calc(100dvh-130px)] aspect-square bg-stone-200/90 dark:bg-stone-800/90 p-3 rounded-3xl shadow-inner border-2 border-stone-300 dark:border-stone-700 select-none touch-none relative"
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
       >

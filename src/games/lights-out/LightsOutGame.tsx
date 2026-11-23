@@ -172,17 +172,17 @@ export const LightsOutGame: Component = () => {
         </div>
       }
     >
-      <div class="flex flex-col items-center gap-3 w-full max-w-sm select-none p-3">
+      <div class="flex flex-col items-center justify-center gap-3 w-full max-w-md max-h-full select-none p-1">
         {/* 5x5 電脳ライト盤面 */}
-        <div class="p-3 rounded-3xl bg-slate-900 border-4 border-slate-800 shadow-2xl">
-          <div class="grid grid-cols-5 gap-2.5 sm:gap-3 bg-slate-950 p-2 rounded-2xl">
+        <div class="p-3 sm:p-4 rounded-3xl bg-slate-900 border-4 border-slate-800 shadow-2xl w-full aspect-square flex items-center justify-center">
+          <div class="grid grid-cols-5 gap-2 sm:gap-3 bg-slate-950 p-2 sm:p-3 rounded-2xl w-full h-full">
             <For each={grid()}>
               {(row, r) => (
                 <For each={row}>
                   {(isOn, c) => (
                     <button
                       onClick={() => handleCellClick(r(), c())}
-                      class={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl transition-all duration-150 flex items-center justify-center relative cursor-pointer active:scale-95 ${
+                      class={`w-full h-full rounded-2xl transition-all duration-150 flex items-center justify-center relative cursor-pointer active:scale-95 ${
                         isOn
                           ? 'bg-amber-400 border-2 border-amber-300 shadow-[0_0_16px_rgba(251,191,36,0.8)]'
                           : 'bg-slate-800/90 border border-slate-700 hover:bg-slate-700/80 shadow-inner'

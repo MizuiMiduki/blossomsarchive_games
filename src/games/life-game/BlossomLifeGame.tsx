@@ -257,7 +257,7 @@ export const BlossomLifeGame: Component = () => {
       }
     >
       {/* 世代 & 生存数インフォバー */}
-      <div class="w-full max-w-[360px] flex items-center justify-between text-xs px-3 py-1.5 bg-slate-900/90 text-white rounded-2xl mb-2 shadow-xs border border-slate-800">
+      <div class="w-full max-w-[540px] flex items-center justify-between text-xs px-3 py-1.5 bg-slate-900/90 text-white rounded-2xl mb-1.5 shadow-xs border border-slate-800">
         <div class="flex items-center gap-2">
           <span>世代:</span>
           <span class="font-mono font-bold text-sky-400 text-sm">{generation()}</span>
@@ -285,7 +285,7 @@ export const BlossomLifeGame: Component = () => {
 
       {/* ライフゲーム Canvas */}
       <div
-        class="w-full max-w-[360px] aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-800 relative cursor-crosshair select-none touch-none bg-slate-950"
+        class="w-full max-w-[540px] max-h-[calc(100dvh-130px)] aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-800 relative cursor-crosshair select-none touch-none bg-slate-950"
         onPointerDown={(e) => {
           isPointerDown = true;
           try {

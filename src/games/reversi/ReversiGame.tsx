@@ -390,7 +390,7 @@ export const ReversiGame: Component = () => {
       onRestart={restart}
       instructions={instructions}
       extraControls={
-        <div class="flex flex-col gap-2 w-full max-w-sm">
+        <div class="flex flex-col gap-2 w-full max-w-md">
           {/* NPC難易度 & 先手後手 (NPCモード時) */}
           <Show when={playMode() === 'npc'}>
             <div class="flex items-center justify-between p-1.5 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs shadow-2xs">
@@ -411,7 +411,7 @@ export const ReversiGame: Component = () => {
                         : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
                     }`}
                   >
-                    {diff === 'easy' ? '🌱 初級' : diff === 'normal' ? '🌸 中級' : '👑 上級'}
+                    {diff === 'easy' ? '初級' : diff === 'normal' ? '中級' : '上級'}
                   </button>
                 ))}
               </div>
@@ -467,10 +467,10 @@ export const ReversiGame: Component = () => {
     >
       {/* P2P 接続パネル (P2P対戦モード時のみ表示) */}
       <Show when={playMode() === 'p2p' && p2pStatus() !== 'connected'}>
-        <div class="w-full max-w-sm bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-xl border border-emerald-200 dark:border-emerald-950 mb-3 text-xs animate-in fade-in">
+        <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-xl border border-emerald-200 dark:border-emerald-950 mb-3 text-xs animate-in fade-in">
           <div class="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-2">
             <span class="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
-              <span>🛡️ ゼロトラスト P2P 接続</span>
+              <span>ゼロトラスト P2P 接続</span>
             </span>
             <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-bold">
               サーバー介在ゼロ / E2EE
@@ -510,7 +510,7 @@ export const ReversiGame: Component = () => {
                 onClick={() => copyToClipboard(hostOfferCode(), '招待コード')}
                 class="w-full py-1.5 rounded-lg border border-slate-200 text-slate-700 dark:text-slate-300 font-semibold text-[11px] hover:bg-slate-50"
               >
-                {copyStatus() || '📋 招待コードをコピー'}
+                {copyStatus() || '招待コードをコピー'}
               </button>
 
               <span class="font-bold text-slate-700 dark:text-slate-200 mt-2">2. 相手から届いた応答コードを入力</span>
@@ -557,7 +557,7 @@ export const ReversiGame: Component = () => {
                 onClick={() => copyToClipboard(guestAnswerCode(), '応答コード')}
                 class="w-full py-2 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-sm"
               >
-                {copyStatus() || '📋 応答コードをコピー'}
+                {copyStatus() || '応答コードをコピー'}
               </button>
               <span class="text-[10px] text-slate-400 animate-pulse">ホストの承認を待っています...</span>
             </div>
@@ -570,7 +570,7 @@ export const ReversiGame: Component = () => {
       </Show>
 
       {/* スコア & 手番情報 */}
-      <div class="w-full max-w-sm flex items-center justify-between px-3 py-2 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-rose-100 dark:border-slate-800 shadow-xs mb-3">
+      <div class="w-full max-w-md flex items-center justify-between px-3 py-2 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-rose-100 dark:border-slate-800 shadow-xs mb-2 sm:mb-3">
         {/* 黒 (紅椿) */}
         <div
           class={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all ${
@@ -579,7 +579,7 @@ export const ReversiGame: Component = () => {
               : 'opacity-70'
           }`}
         >
-          <span class="text-2xl leading-none">🌺</span>
+          <span class="w-4 h-4 rounded-full bg-slate-950 border border-slate-700 shadow-xs inline-block" />
           <div class="text-left text-xs">
             <div class="font-bold text-slate-800 dark:text-slate-100">
               {playerColor() === 'black' ? 'あなた' : playMode() === 'p2p' ? '相手(P2P)' : 'NPC'}
@@ -624,12 +624,12 @@ export const ReversiGame: Component = () => {
               {counts().white} 個
             </div>
           </div>
-          <span class="text-2xl leading-none">🌸</span>
+          <span class="w-4 h-4 rounded-full bg-white border border-slate-300 shadow-xs inline-block" />
         </div>
       </div>
 
       {/* オセロ盤面 (8x8) */}
-      <div class="w-full max-w-[360px] aspect-square bg-emerald-800 dark:bg-emerald-950 p-2 sm:p-2.5 rounded-3xl shadow-xl border-4 border-emerald-900/40 select-none">
+      <div class="w-full max-w-[480px] max-h-[calc(100dvh-170px)] aspect-square bg-emerald-800 dark:bg-emerald-950 p-2 sm:p-2.5 rounded-3xl shadow-xl border-4 border-emerald-900/40 select-none">
         <div class="grid grid-cols-8 grid-rows-8 gap-1 w-full h-full bg-emerald-700/60 dark:bg-emerald-900/60 p-1 rounded-2xl">
           <For each={board()}>
             {(row, rIdx) => (

@@ -148,7 +148,7 @@ export const GomokuGame: Component = () => {
       </div>
 
       {/* 碁盤 (13x13) */}
-      <div class="w-full max-w-[360px] aspect-square bg-amber-100 dark:bg-amber-950/80 p-2 rounded-2xl shadow-xl border-4 border-amber-300/60 dark:border-amber-900/60 select-none">
+      <div class="w-full max-w-[520px] max-h-[calc(100dvh-150px)] aspect-square bg-amber-100 dark:bg-amber-950/80 p-2 sm:p-2.5 rounded-2xl shadow-xl border-4 border-amber-300/60 dark:border-amber-900/60 select-none">
         <div class="grid grid-cols-13 grid-rows-13 gap-0 w-full h-full border border-amber-800/40 dark:border-amber-700/40 relative">
           <For each={board()}>
             {(row, rIdx) => (

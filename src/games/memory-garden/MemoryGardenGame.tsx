@@ -184,7 +184,7 @@ export const MemoryGardenGame: Component = () => {
 
       {/* カードグリッド */}
       <div
-        class={`grid gap-2.5 p-3.5 bg-slate-200/50 dark:bg-slate-900/60 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-sm w-full ${
+        class={`grid gap-2 sm:gap-2.5 p-2.5 sm:p-3.5 bg-slate-200/50 dark:bg-slate-900/60 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-lg max-h-[calc(100dvh-150px)] w-full ${
           difficulty() === 'easy'
             ? 'grid-cols-3'
             : difficulty() === 'normal'

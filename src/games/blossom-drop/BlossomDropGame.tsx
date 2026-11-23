@@ -304,9 +304,9 @@ export const BlossomDropGame: Component = () => {
       onRestart={restart}
       instructions={instructions}
     >
-      <div class="w-full max-w-[340px] flex flex-col items-center">
+      <div class="w-full max-w-[420px] max-h-full flex flex-col items-center justify-center min-h-0 flex-1">
         {/* 次のフルーツ表示 */}
-        <div class="flex items-center gap-2 mb-2 px-3 py-1 bg-white/90 dark:bg-slate-900/90 rounded-xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">
+        <div class="flex items-center gap-2 mb-1.5 px-3 py-1 bg-white/90 dark:bg-slate-900/90 rounded-xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs shrink-0">
           <span class="text-slate-500 font-medium">NEXT:</span>
           <span
             class="w-3.5 h-3.5 rounded-full inline-block shadow-2xs border border-black/10 dark:border-white/20"
@@ -317,7 +317,7 @@ export const BlossomDropGame: Component = () => {
 
         {/* 落下ボックス (Canvas) */}
         <div
-          class="w-full aspect-[3/4] bg-slate-100/80 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-xl border-4 border-slate-300 dark:border-slate-800 relative cursor-crosshair select-none touch-none"
+          class="w-full aspect-[3/4] max-h-[calc(100dvh-130px)] bg-slate-100/80 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-xl border-4 border-slate-300 dark:border-slate-800 relative cursor-crosshair select-none touch-none"
           onPointerDown={handlePointerDown}
           onPointerMove={(e) => handlePointerMove(e.clientX)}
           onPointerUp={handlePointerUp}

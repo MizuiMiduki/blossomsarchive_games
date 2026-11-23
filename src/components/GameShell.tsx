@@ -129,10 +129,10 @@ export const GameShell: Component<GameShellProps> = (props) => {
   return (
     <div
       ref={containerRef}
-      class="flex flex-col items-center justify-between min-h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-2 sm:p-4 select-none"
+      class="flex flex-col items-center justify-between h-[100dvh] max-h-[100dvh] w-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-1 sm:p-2.5 pt-[max(0.35rem,env(safe-area-inset-top))] pb-[max(0.35rem,env(safe-area-inset-bottom))] pl-[max(0.35rem,env(safe-area-inset-left))] pr-[max(0.35rem,env(safe-area-inset-right))] select-none overflow-hidden overscroll-none"
     >
       {/* 上部ヘッダーコントロール */}
-      <header class="w-full max-w-xl flex items-center justify-between py-2 px-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs mb-3">
+      <header class="w-full max-w-3xl shrink-0 flex items-center justify-between py-1.5 px-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs mb-1">
         <a
           href="#/"
           onClick={() => sound.playPop(400)}
@@ -194,20 +194,20 @@ export const GameShell: Component<GameShellProps> = (props) => {
         </div>
       </header>
 
-      {/* ゲームコンテンツ本体 */}
-      <main class="w-full flex-1 flex flex-col items-center justify-center relative">
+      {/* ゲームコンテンツ本体: ビューポート高さを最大限に活用 */}
+      <main class="w-full flex-1 flex flex-col items-center justify-center relative min-h-0 overflow-hidden">
         {props.children}
       </main>
 
-      {/* 画面下の追加コントロール（Undoボタンなどがあれば） */}
+      {/* 画面下の追加コントロール */}
       <Show when={props.extraControls}>
-        <div class="w-full max-w-xl mt-3 flex items-center justify-center">
+        <div class="w-full max-w-3xl shrink-0 mt-1 flex items-center justify-center">
           {props.extraControls}
         </div>
       </Show>
 
       {/* フッターコピーライト */}
-      <footer class="mt-3 text-[10px] text-slate-400 dark:text-slate-500 text-center select-none">
+      <footer class="hidden sm:block mt-0.5 text-[9px] text-slate-400 dark:text-slate-500 text-center select-none shrink-0">
         ©2017 - {new Date().getFullYear()} BlossomsArchive
       </footer>
 

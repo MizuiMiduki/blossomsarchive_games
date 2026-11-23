@@ -30,7 +30,7 @@ const ShogiPieceView: Component<ShogiPieceViewProps> = (props) => {
   const sizeClass = () => {
     if (props.size === 'sm') return 'w-7 h-8';
     if (props.size === 'md') return 'w-9 h-10';
-    return 'w-[84%] h-[90%] max-w-[48px] max-h-[56px]';
+    return 'w-[84%] h-[90%] max-w-[64px] max-h-[72px]';
   };
 
   return (
@@ -314,7 +314,7 @@ export const MiniShogiGame: Component = () => {
       }
     >
       {/* AIの持ち駒 */}
-      <div class="w-full max-w-[340px] flex items-center justify-between px-3 py-2 bg-amber-100/70 dark:bg-amber-950/50 rounded-xl mb-2 text-xs border border-amber-300/60 dark:border-amber-900/60 shadow-xs">
+      <div class="w-full max-w-[460px] flex items-center justify-between px-3 py-2 bg-amber-100/70 dark:bg-amber-950/50 rounded-xl mb-2 text-xs border border-amber-300/60 dark:border-amber-900/60 shadow-xs">
         <span class="font-bold text-slate-700 dark:text-slate-300">相手の持ち駒:</span>
         <div class="flex items-center gap-1.5 min-h-[34px]">
           <Show when={aiHand().length === 0}>
@@ -329,7 +329,7 @@ export const MiniShogiGame: Component = () => {
       </div>
 
       {/* 将棋盤 (5x5) */}
-      <div class="w-full max-w-[340px] aspect-square bg-amber-200 dark:bg-amber-950 p-2 rounded-2xl shadow-xl border-4 border-amber-400 dark:border-amber-900 select-none">
+      <div class="w-full max-w-[460px] max-h-[calc(100dvh-170px)] aspect-square bg-amber-200 dark:bg-amber-950 p-2 sm:p-2.5 rounded-2xl shadow-xl border-4 border-amber-400 dark:border-amber-900 select-none">
         <div class="grid grid-cols-5 grid-rows-5 gap-1 w-full h-full bg-amber-400/40 dark:bg-amber-900/40 p-1 rounded-xl">
           <For each={board()}>
             {(row, rIdx) => (
@@ -382,7 +382,7 @@ export const MiniShogiGame: Component = () => {
       </div>
 
       {/* プレイヤーの持ち駒 */}
-      <div class="w-full max-w-[340px] flex items-center justify-between px-3 py-2 bg-amber-100/70 dark:bg-amber-950/50 rounded-xl mt-2 text-xs border border-amber-300/60 dark:border-amber-900/60 shadow-xs">
+      <div class="w-full max-w-[460px] flex items-center justify-between px-3 py-2 bg-amber-100/70 dark:bg-amber-950/50 rounded-xl mt-2 text-xs border border-amber-300/60 dark:border-amber-900/60 shadow-xs">
         <span class="font-bold text-slate-700 dark:text-slate-300">あなたの持ち駒:</span>
         <div class="flex items-center gap-1.5 min-h-[34px] flex-wrap">
           <Show when={playerHand().length === 0}>

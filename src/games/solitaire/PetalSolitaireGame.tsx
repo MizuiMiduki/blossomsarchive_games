@@ -149,7 +149,7 @@ export const PetalSolitaireGame: Component = () => {
       onRestart={restart}
       instructions={instructions}
     >
-      <div class="w-full max-w-md flex flex-col gap-3 p-2 bg-emerald-800/90 dark:bg-emerald-950 p-3 rounded-3xl shadow-xl border-4 border-emerald-900/60 select-none text-xs">
+      <div class="w-full max-w-lg max-h-[calc(100dvh-130px)] flex flex-col gap-2 sm:gap-3 p-2 sm:p-3 bg-emerald-800/90 dark:bg-emerald-950 rounded-3xl shadow-xl border-4 border-emerald-900/60 select-none text-xs overflow-y-auto">
         {/* 上部: 山札 / 捨て札 / 組札 (4つ) */}
         <div class="flex items-center justify-between">
           {/* 山札 & 捨て札 */}
@@ -158,7 +158,7 @@ export const PetalSolitaireGame: Component = () => {
               onClick={drawStock}
               class="w-11 h-16 sm:w-12 sm:h-18 rounded-lg bg-emerald-700 border-2 border-emerald-500 shadow-sm flex items-center justify-center text-white/80 font-bold hover:scale-105 active:scale-95 transition-all text-sm"
             >
-              <Show when={state().stock.length > 0} fallback={<span class="text-xs">🔄</span>}>
+              <Show when={state().stock.length > 0} fallback={<span class="text-xs">↺</span>}>
                 ✦
               </Show>
             </button>

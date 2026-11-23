@@ -103,7 +103,7 @@ export const BouquetBlockGame: Component = () => {
       instructions={instructions}
     >
       {/* 盤面 (10x10) */}
-      <div class="w-full max-w-[340px] aspect-square p-2 bg-slate-800 dark:bg-slate-900 rounded-3xl shadow-xl border-4 border-slate-700 select-none mb-3">
+      <div class="w-full max-w-[420px] max-h-[calc(100dvh-180px)] aspect-square p-2 bg-slate-800 dark:bg-slate-900 rounded-3xl shadow-xl border-4 border-slate-700 select-none mb-2">
         <div class="grid grid-cols-10 grid-rows-10 gap-1 w-full h-full bg-slate-900/60 p-1 rounded-2xl">
           <For each={grid()}>
             {(row, rIdx) => (
@@ -123,7 +123,7 @@ export const BouquetBlockGame: Component = () => {
       </div>
 
       {/* 選択可能なピース (3スロット) */}
-      <div class="w-full max-w-[340px] flex items-center justify-around gap-2 p-2 bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 min-h-[90px] shadow-2xs">
+      <div class="w-full max-w-[420px] flex items-center justify-around gap-2 p-2 bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 min-h-[80px] shadow-2xs">
         <For each={availableShapes()}>
           {(shape) => {
             const isSel = () => selectedShape()?.id === shape.id;

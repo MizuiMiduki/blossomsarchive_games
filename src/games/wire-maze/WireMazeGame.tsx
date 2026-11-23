@@ -379,7 +379,7 @@ export const WireMazeGame: Component = () => {
       }
     >
       <div
-        class="w-full max-w-[480px] aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-800 relative select-none touch-none bg-slate-950 cursor-crosshair"
+        class="w-full max-w-2xl max-h-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-800 relative select-none touch-none bg-slate-950 cursor-crosshair"
         onPointerDown={(e) => handlePointerDown(e.clientX, e.clientY)}
         onPointerMove={(e) => handlePointerMove(e.clientX, e.clientY)}
         onPointerUp={() => {

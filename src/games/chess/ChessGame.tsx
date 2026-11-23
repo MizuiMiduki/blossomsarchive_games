@@ -178,7 +178,7 @@ export const ChessGame: Component = () => {
       }
     >
       {/* 獲得した駒 */}
-      <div class="w-full max-w-[340px] flex items-center justify-between text-xs px-2 py-1 mb-1 text-slate-500">
+      <div class="w-full max-w-[480px] flex items-center justify-between text-xs px-2 py-1 mb-1 text-slate-500">
         <div class="flex items-center gap-1">
           <span>取った駒:</span>
           <span class="text-base text-slate-900 dark:text-slate-100">{capturedByPlayer().join(' ')}</span>
@@ -193,7 +193,7 @@ export const ChessGame: Component = () => {
       </div>
 
       {/* チェス盤 (8x8) */}
-      <div class="w-full max-w-[340px] aspect-square p-2 bg-stone-700 dark:bg-stone-900 rounded-2xl shadow-xl border-4 border-stone-800 select-none">
+      <div class="w-full max-w-[480px] max-h-[calc(100dvh-160px)] aspect-square p-2 bg-stone-700 dark:bg-stone-900 rounded-2xl shadow-xl border-4 border-stone-800 select-none">
         <div class="grid grid-cols-8 grid-rows-8 gap-0 w-full h-full border border-stone-900">
           <For each={board()}>
             {(row, rIdx) => (
@@ -212,7 +212,7 @@ export const ChessGame: Component = () => {
                   return (
                     <button
                       onClick={() => handleCellClick(rIdx(), cIdx())}
-                      class={`relative w-full h-full flex items-center justify-center font-bold text-xl sm:text-2xl transition-all ${
+                      class={`relative w-full h-full flex items-center justify-center font-bold text-2xl sm:text-3xl md:text-4xl transition-all ${
                         isLight
                           ? 'bg-amber-100 hover:bg-amber-200/90 text-slate-900'
                           : 'bg-stone-500 hover:bg-stone-400 text-white'

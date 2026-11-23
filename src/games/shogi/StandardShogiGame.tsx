@@ -403,9 +403,9 @@ export const StandardShogiGame: Component = () => {
         </div>
       }
     >
-      <div class="flex flex-col items-center gap-2 w-full max-w-lg select-none px-1">
+      <div class="flex flex-col items-center justify-center gap-1.5 w-full max-w-xl max-h-full select-none px-1">
         {/* 後手（AI）駒台 */}
-        <div class="w-full flex items-center justify-between px-3 py-1.5 bg-amber-50/70 dark:bg-slate-900/80 rounded-xl border border-amber-200/80 dark:border-slate-800 text-xs shadow-2xs">
+        <div class="w-full flex items-center justify-between px-2.5 py-1 bg-amber-50/70 dark:bg-slate-900/80 rounded-xl border border-amber-200/80 dark:border-slate-800 text-xs shadow-2xs">
           <div class="flex items-center gap-2">
             <span class="font-bold text-slate-600 dark:text-slate-300 text-[11px]">後手 (AI) 持ち駒:</span>
             <div class="flex items-center gap-1 flex-wrap min-h-[30px]">
@@ -439,7 +439,7 @@ export const StandardShogiGame: Component = () => {
                     return (
                       <div
                         onClick={() => handleCellClick(r(), c())}
-                        class={`w-8 h-9 sm:w-11 sm:h-12 border border-amber-900/30 flex items-center justify-center relative cursor-pointer transition-colors ${
+                        class={`w-[clamp(29px,8.8vw,54px)] h-[clamp(33px,9.8vw,60px)] border border-amber-900/30 flex items-center justify-center relative cursor-pointer transition-colors ${
                           selected()
                             ? 'bg-rose-200/80 dark:bg-rose-950/60'
                             : lastMoveCell()

@@ -217,9 +217,9 @@ export const RoomEscapeGame: Component = () => {
         </div>
       }
     >
-      <div class="flex flex-col items-center gap-3 w-full max-w-lg select-none px-2">
+      <div class="flex flex-col items-center justify-center gap-2 w-full max-w-2xl max-h-full select-none px-2">
         {/* 部屋のビジュアル (SVGルームイラスト) */}
-        <div class="w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-800 relative bg-slate-900">
+        <div class="w-full aspect-[4/3] max-h-[calc(100dvh-170px)] rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-800 relative bg-slate-900">
           <svg viewBox="0 0 480 360" class="w-full h-full block">
             {/* 部屋の壁・床 */}
             <polygon points="0,0 480,0 480,270 0,270" fill="#1e293b" />

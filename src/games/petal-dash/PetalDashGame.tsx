@@ -251,7 +251,7 @@ export const PetalDashGame: Component = () => {
       instructions={instructions}
     >
       <div
-        class="w-full max-w-[340px] aspect-[3/4] bg-sky-50 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-xl border-4 border-slate-300 dark:border-slate-700 relative cursor-pointer select-none"
+        class="w-full max-w-[420px] max-h-[calc(100dvh-130px)] aspect-[3/4] bg-sky-50 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-xl border-4 border-slate-300 dark:border-slate-700 relative cursor-pointer select-none"
         onClick={jump}
         onTouchStart={(e) => {
           e.preventDefault();
