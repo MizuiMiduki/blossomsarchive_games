@@ -1,4 +1,4 @@
-import { Component, createSignal, onSettled, Show } from 'solid-js';
+import { Component, createSignal, createEffect, onSettled, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
 import { PlayIcon, PauseIcon } from '../../components/Icons.tsx';
@@ -20,7 +20,6 @@ export const BlossomLifeGame: Component = () => {
   const [brushMode, setBrushMode] = createSignal<'draw' | 'erase'>('draw');
 
   let canvasRef: HTMLCanvasElement | undefined;
-  let timerId: number | null = null;
   let isPointerDown = false;
   let lastSoundTime = 0;
 
@@ -32,12 +31,6 @@ export const BlossomLifeGame: Component = () => {
     setGeneration((g) => g + 1);
     setLivingCount(count);
 
-    if (count === 0 && isRunning()) {
-      setIsRunning(false);
-      if (timerId) window.clearTimeout(timerId);
-      return;
-    }
-
     if (births > 0 && Math.random() < 0.25) {
       const notes = [523.25, 587.33, 659.25, 783.99, 880.0]; // C D E G A
       const note = notes[Math.floor(Math.random() * notes.length)];
@@ -45,14 +38,26 @@ export const BlossomLifeGame: Component = () => {
     }
   };
 
-  // 再生ループ
-  const runLoop = () => {
-    if (timerId) window.clearTimeout(timerId);
-    if (!isRunning()) return;
-
-    advanceStep();
-    timerId = window.setTimeout(runLoop, speedMs());
+  // 再生 / 一時停止切り替え
+  const togglePlay = () => {
+    sound.playPop(500);
+    setIsRunning((prev) => !prev);
   };
+
+  // 再生タイマー管理 (Solid.js 2.0 リアクティブエフェクト)
+  createEffect(
+    () => ({ running: isRunning(), interval: speedMs() }),
+    ({ running, interval }) => {
+      if (!running) return;
+      const timer = window.setInterval(() => {
+        advanceStep();
+      }, interval);
+
+      return () => {
+        window.clearInterval(timer);
+      };
+    }
+  );
 
   // Canvas描画
   const renderCanvas = () => {
@@ -113,6 +118,18 @@ export const BlossomLifeGame: Component = () => {
     }
   };
 
+  // gridが変化したときにCanvasを再描画
+  createEffect(
+    () => grid(),
+    () => {
+      renderCanvas();
+    }
+  );
+
+  onSettled(() => {
+    renderCanvas();
+  });
+
   // マウス/タッチ座標からセルを更新
   const updateCellFromPointer = (clientX: number, clientY: number) => {
     if (!canvasRef) return;
@@ -130,7 +147,6 @@ export const BlossomLifeGame: Component = () => {
         next[r][c] = { alive: isAlive, age: isAlive ? 1 : 0 };
         setGrid(next);
         setLivingCount(countLiveCells(next));
-        renderCanvas();
 
         const now = Date.now();
         if (now - lastSoundTime > 60) {
@@ -145,27 +161,10 @@ export const BlossomLifeGame: Component = () => {
   const handleClear = () => {
     sound.playPop(350);
     setIsRunning(false);
-    if (timerId) window.clearTimeout(timerId);
     setGrid(createEmptyLifeGrid());
     setGeneration(0);
     setLivingCount(0);
-    renderCanvas();
   };
-
-  onSettled(() => {
-    renderCanvas();
-
-    const renderLoop = () => {
-      renderCanvas();
-      requestAnimationFrame(renderLoop);
-    };
-    const animId = requestAnimationFrame(renderLoop);
-
-    return () => {
-      if (timerId) window.clearTimeout(timerId);
-      cancelAnimationFrame(animId);
-    };
-  });
 
   const instructions = [
     '画面をタップまたはドラッグして、セルを自由に描いて配置できます。',
@@ -189,12 +188,7 @@ export const BlossomLifeGame: Component = () => {
             {/* 再生 / 停止 / ステップ */}
             <div class="flex items-center gap-1.5">
               <button
-                onClick={() => {
-                  sound.playPop(500);
-                  const next = !isRunning();
-                  setIsRunning(next);
-                  if (next) runLoop();
-                }}
+                onClick={togglePlay}
                 class={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shadow-2xs flex items-center gap-1.5 ${
                   isRunning()
                     ? 'bg-amber-600 text-white hover:bg-amber-700'
@@ -278,9 +272,8 @@ export const BlossomLifeGame: Component = () => {
             value={speedMs()}
             onChange={(e) => {
               setSpeedMs(Number(e.currentTarget.value));
-              if (isRunning()) runLoop();
             }}
-            class="bg-slate-800 text-white text-[11px] rounded-lg px-1.5 py-0.5 border border-slate-700 focus:outline-none"
+            class="bg-slate-800 text-white text-[11px] rounded-lg px-1.5 py-0.5 border border-slate-700 focus:outline-none cursor-pointer"
           >
             <option value="200">0.5x</option>
             <option value="100">1.0x</option>
@@ -295,6 +288,9 @@ export const BlossomLifeGame: Component = () => {
         class="w-full max-w-[360px] aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-800 relative cursor-crosshair select-none touch-none bg-slate-950"
         onPointerDown={(e) => {
           isPointerDown = true;
+          try {
+            (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+          } catch {}
           updateCellFromPointer(e.clientX, e.clientY);
         }}
         onPointerMove={(e) => {
@@ -302,10 +298,13 @@ export const BlossomLifeGame: Component = () => {
             updateCellFromPointer(e.clientX, e.clientY);
           }
         }}
-        onPointerUp={() => {
+        onPointerUp={(e) => {
           isPointerDown = false;
+          try {
+            (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+          } catch {}
         }}
-        onPointerLeave={() => {
+        onPointerCancel={() => {
           isPointerDown = false;
         }}
       >
