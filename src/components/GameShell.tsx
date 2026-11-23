@@ -1,4 +1,4 @@
-import { Component, createSignal, onSettled, Show } from 'solid-js';
+import { Component, createSignal, createEffect, onSettled, Show } from 'solid-js';
 import type { JSX } from '@solidjs/web';
 import confetti from 'canvas-confetti';
 import {
@@ -13,7 +13,12 @@ import {
   TrophyIcon,
 } from './Icons.tsx';
 import { sound } from '../utils/sound.ts';
-import { recordGamePlay, getGameStats } from '../utils/storage.ts';
+import {
+  recordGameStart,
+  updateHighScore,
+  recordGamePlay,
+  getGameStats,
+} from '../utils/storage.ts';
 
 interface GameShellProps {
   id: string;
@@ -74,23 +79,52 @@ export const GameShell: Component<GameShellProps> = (props) => {
   let prevGameOver = false;
   let prevVictory = false;
 
-  const checkStatus = () => {
-    if (props.isVictory && !prevVictory) {
-      prevVictory = true;
-      handleGameEnd(true);
-    } else if (props.isGameOver && !prevGameOver) {
-      prevGameOver = true;
-      handleGameEnd(false);
-    } else if (!props.isGameOver && !props.isVictory) {
-      prevGameOver = false;
-      prevVictory = false;
-      setIsNewRecord(false);
-    }
-  };
-
+  // ゲーム開始・マウント時にプレイ回数を加算
   onSettled(() => {
-    checkStatus();
+    recordGameStart(props.id);
+    setStats(getGameStats(props.id));
   });
+
+  // リアルタイムハイスコア自動保存
+  createEffect(
+    () => props.score,
+    (score) => {
+      if (score !== undefined && score > 0) {
+        if (updateHighScore(props.id, score)) {
+          setIsNewRecord(true);
+          setStats(getGameStats(props.id));
+        }
+      }
+    }
+  );
+
+  // ゲームオーバー / 勝利状態のリアクティブ検知
+  createEffect(
+    () => ({ isGameOver: Boolean(props.isGameOver), isVictory: Boolean(props.isVictory) }),
+    ({ isGameOver, isVictory }) => {
+      if (isVictory && !prevVictory) {
+        prevVictory = true;
+        handleGameEnd(true);
+      } else if (isGameOver && !prevGameOver) {
+        prevGameOver = true;
+        handleGameEnd(false);
+      } else if (!isGameOver && !isVictory) {
+        prevGameOver = false;
+        prevVictory = false;
+        setIsNewRecord(false);
+      }
+    }
+  );
+
+  // リスタート処理
+  const handleRestart = () => {
+    recordGameStart(props.id);
+    setStats(getGameStats(props.id));
+    prevGameOver = false;
+    prevVictory = false;
+    setIsNewRecord(false);
+    props.onRestart();
+  };
 
   return (
     <div
@@ -143,7 +177,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
           <button
             onClick={() => {
               sound.playPop(420);
-              props.onRestart();
+              handleRestart();
             }}
             title="リスタート"
             class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -245,7 +279,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
               <button
                 onClick={() => {
                   sound.playPop(520);
-                  props.onRestart();
+                  handleRestart();
                 }}
                 class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2"
               >

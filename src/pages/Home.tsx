@@ -20,7 +20,6 @@ import {
   loadAppData,
   saveAppData,
   toggleFavorite,
-  getGameStats,
   exportBackupJson,
   importBackupJson,
   AppData,
@@ -50,8 +49,10 @@ export const Home: Component = () => {
   // URL経由の自動同期受信モーダル
   const [pendingSyncData, setPendingSyncData] = createSignal<Partial<AppData> | null>(null);
 
-  // 起動時のURL同期チェック (クエリパラメータ ?sync= または URLハッシュ #sync=)
+  // 起動時のURL同期チェック ＆ 最新セーブデータ同期
   onSettled(() => {
+    setAppData(loadAppData());
+
     let encoded: string | null = null;
     const searchParams = new URLSearchParams(window.location.search);
     if (searchParams.has('sync')) {
@@ -318,7 +319,13 @@ export const Home: Component = () => {
             }
           >
             {(game) => {
-              const stats = getGameStats(game.id);
+              const stats = () =>
+                appData().stats[game.id] || {
+                  highScore: 0,
+                  playCount: 0,
+                  clearCount: 0,
+                  lastPlayedAt: 0,
+                };
               const isFav = () => appData().favorites.includes(game.id);
               const GameIcon = game.icon;
 
@@ -368,9 +375,9 @@ export const Home: Component = () => {
                     <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 py-2 border-t border-slate-100 dark:border-slate-800/80 mb-3">
                       <span class="flex items-center gap-1">
                         <AwardIcon size={14} class="text-amber-500" />
-                        最高: <strong class="text-slate-700 dark:text-slate-300">{stats.highScore}</strong>
+                        最高: <strong class="text-slate-700 dark:text-slate-300">{stats().highScore}</strong>
                       </span>
-                      <span>プレイ: {stats.playCount}回</span>
+                      <span>プレイ: {stats().playCount}回</span>
                     </div>
 
                     {/* プレイボタン */}

@@ -71,6 +71,48 @@ export function getGameStats(gameId: string): GameStats {
   );
 }
 
+export function recordGameStart(gameId: string): GameStats {
+  const data = loadAppData();
+  const current = data.stats[gameId] || {
+    highScore: 0,
+    playCount: 0,
+    clearCount: 0,
+    lastPlayedAt: 0,
+  };
+
+  const updated: GameStats = {
+    ...current,
+    playCount: current.playCount + 1,
+    lastPlayedAt: Date.now(),
+  };
+
+  data.stats[gameId] = updated;
+  saveAppData(data);
+  return updated;
+}
+
+export function updateHighScore(gameId: string, score: number): boolean {
+  if (score <= 0) return false;
+  const data = loadAppData();
+  const current = data.stats[gameId] || {
+    highScore: 0,
+    playCount: 0,
+    clearCount: 0,
+    lastPlayedAt: 0,
+  };
+
+  if (score > current.highScore) {
+    data.stats[gameId] = {
+      ...current,
+      highScore: score,
+      lastPlayedAt: Date.now(),
+    };
+    saveAppData(data);
+    return true;
+  }
+  return false;
+}
+
 export function recordGamePlay(
   gameId: string,
   score: number,
@@ -91,7 +133,7 @@ export function recordGamePlay(
   const updated: GameStats = {
     ...current,
     highScore: Math.max(current.highScore, score),
-    playCount: current.playCount + 1,
+    playCount: Math.max(current.playCount, 1),
     clearCount: isClear ? current.clearCount + 1 : current.clearCount,
     bestTime: isNewBestTime ? timeTaken : current.bestTime,
     lastPlayedAt: Date.now(),
