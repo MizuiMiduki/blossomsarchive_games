@@ -606,3 +606,119 @@ export const DashRunnerIcon: Component<IconProps> = (props) => (
     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor" fill-opacity="0.2" />
   </svg>
 );
+
+export const ItoToshiIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    {/* 針 */}
+    <path d="M19 5 L21 3 L19 2 L17 4 L6 15 L4 20 L9 18 Z" fill="currentColor" fill-opacity="0.2" />
+    <circle cx="18" cy="4" r="1" fill="currentColor" />
+    {/* 糸のしなやかな波 */}
+    <path d="M3 21 C 6 17, 10 22, 14 18 C 16 16, 17 9, 18 4" stroke-width="1.8" />
+  </svg>
+);
+
+export const WireMazeIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    {/* コースワイヤー */}
+    <path d="M3 6 L10 6 L10 18 L16 18 L16 10 L21 10" />
+    {/* イライラ棒のプローブ球 */}
+    <circle cx="16" cy="14" r="3" fill="currentColor" />
+    {/* 電撃スパーク */}
+    <path d="M19 15 L22 13 L20 18" stroke-width="1.5" />
+  </svg>
+);
+
+export const LightsOutIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <rect x="3" y="3" width="18" height="18" rx="3" />
+    <circle cx="12" cy="12" r="3" fill="currentColor" />
+    <circle cx="6" cy="12" r="1.5" fill="currentColor" fill-opacity="0.3" />
+    <circle cx="18" cy="12" r="1.5" fill="currentColor" fill-opacity="0.3" />
+    <circle cx="12" cy="6" r="1.5" fill="currentColor" fill-opacity="0.3" />
+    <circle cx="12" cy="18" r="1.5" fill="currentColor" fill-opacity="0.3" />
+  </svg>
+);
+
+export const CatapultIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    {/* 飛行軌跡 */}
+    <path d="M3 19 C 5 7, 13 4, 19 8" stroke-dasharray="2 2" />
+    {/* 飛翔する球 */}
+    <circle cx="19" cy="8" r="3" fill="currentColor" />
+    {/* 砲台 */}
+    <path d="M2 21 L8 21" stroke-width="2" />
+    <path d="M3 20 L7 14" stroke-width="2.5" />
+  </svg>
+);
+
+export const EscapeRoomIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M4 21 V4 C4 3 5 2 6 2 H14 C15 2 16 3 16 4 V21" />
+    {/* 開いた扉 */}
+    <polygon points="6 3 16 5 16 19 6 21" fill="currentColor" fill-opacity="0.2" />
+    {/* 鍵穴 */}
+    <circle cx="13" cy="12" r="1" fill="currentColor" />
+    <path d="M20 16 L20 21" />
+    <path d="M17 18 L22 18" />
+  </svg>
+);

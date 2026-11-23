@@ -4,12 +4,18 @@ import { MemoryGardenGame } from './memory-garden/MemoryGardenGame.tsx';
 import { ReversiGame } from './reversi/ReversiGame.tsx';
 import { GomokuGame } from './gomoku/GomokuGame.tsx';
 import { MiniShogiGame } from './shogi/MiniShogiGame.tsx';
+import { StandardShogiGame } from './shogi/StandardShogiGame.tsx';
 import { ChessGame } from './chess/ChessGame.tsx';
 import { PetalSolitaireGame } from './solitaire/PetalSolitaireGame.tsx';
 import { BouquetBlockGame } from './block-puzzle/BouquetBlockGame.tsx';
 import { PetalDashGame } from './petal-dash/PetalDashGame.tsx';
 import { BlossomDropGame } from './blossom-drop/BlossomDropGame.tsx';
 import { BlossomLifeGame } from './life-game/BlossomLifeGame.tsx';
+import { ItoToshiGame } from './ito-toshi/ItoToshiGame.tsx';
+import { WireMazeGame } from './wire-maze/WireMazeGame.tsx';
+import { LightsOutGame } from './lights-out/LightsOutGame.tsx';
+import { SkyLauncherGame } from './sky-launcher/SkyLauncherGame.tsx';
+import { RoomEscapeGame } from './room-escape/RoomEscapeGame.tsx';
 import {
   LifeGameIcon,
   ReversiIcon,
@@ -22,6 +28,11 @@ import {
   SolitaireCardIcon,
   BlockPuzzleIcon,
   DashRunnerIcon,
+  ItoToshiIcon,
+  WireMazeIcon,
+  LightsOutIcon,
+  CatapultIcon,
+  EscapeRoomIcon,
 } from '../components/Icons.tsx';
 
 export type GameCategory = 'all' | 'puzzle' | 'board' | 'card' | 'action' | 'casual';
@@ -74,6 +85,18 @@ export const GAMES: GameDefinition[] = [
     icon: ShogiIcon,
     color: 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/40',
     component: MiniShogiGame,
+    isAvailable: true,
+  },
+  {
+    id: 'standard-shogi',
+    title: 'Standard Shogi (9×9)',
+    titleJp: '本将棋 (9×9)',
+    category: 'board',
+    description: '伝統の9×9マス盤で本格対局。持ち駒の再利用・成駒選択・3段階AI対戦に対応。',
+    badge: 'NEW',
+    icon: ShogiIcon,
+    color: 'bg-amber-100 dark:bg-amber-950/50 text-amber-900 dark:text-amber-200 border border-amber-300/80 dark:border-amber-900/60',
+    component: StandardShogiGame,
     isAvailable: true,
   },
   {
@@ -170,6 +193,66 @@ export const GAMES: GameDefinition[] = [
     icon: DashRunnerIcon,
     color: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700',
     component: PetalDashGame,
+    isAvailable: true,
+  },
+  {
+    id: 'ito-toshi',
+    title: 'Ito-toshi',
+    titleJp: '糸通し',
+    category: 'casual',
+    description: '長押しで上昇、離して下降。迫り来る針の穴をくぐり抜けて限界の飛距離を目指すFlash風名作。',
+    badge: '名作',
+    icon: ItoToshiIcon,
+    color: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/40',
+    component: ItoToshiGame,
+    isAvailable: true,
+  },
+  {
+    id: 'wire-maze',
+    title: 'Wire Maze',
+    titleJp: '電撃イライラ棒',
+    category: 'action',
+    description: '壁やトラップに触れたら即爆発！慎重かつスピーディにゴールを目指す緊張のマウスアクション。',
+    badge: '名作',
+    icon: WireMazeIcon,
+    color: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/40',
+    component: WireMazeGame,
+    isAvailable: true,
+  },
+  {
+    id: 'lights-out',
+    title: 'Lights Out',
+    titleJp: 'ライツアウト',
+    category: 'puzzle',
+    description: '押したマスと上下左右が反転。すべての明かりを消灯させるFlash時代の古典的電脳パズル。',
+    badge: 'パズル',
+    icon: LightsOutIcon,
+    color: 'bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300 border border-yellow-200/60 dark:border-yellow-900/40',
+    component: LightsOutGame,
+    isAvailable: true,
+  },
+  {
+    id: 'sky-catapult',
+    title: 'Sky Launcher',
+    titleJp: 'ぶっ飛ばしゲーム',
+    category: 'casual',
+    description: '角度とパワーを決めて発射！地上のトランポリンやブーストを駆使して最長飛距離を狙うフライトゲーム。',
+    badge: '爽快',
+    icon: CatapultIcon,
+    color: 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-900/40',
+    component: SkyLauncherGame,
+    isAvailable: true,
+  },
+  {
+    id: 'room-escape',
+    title: 'Room Escape',
+    titleJp: 'ミニ脱出ゲーム',
+    category: 'puzzle',
+    description: '怪しい場所をクリックして手がかりやアイテムを発見。暗号を解いて密室から脱出する定番ゲーム。',
+    badge: '脱出',
+    icon: EscapeRoomIcon,
+    color: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-900/40',
+    component: RoomEscapeGame,
     isAvailable: true,
   },
 ];
