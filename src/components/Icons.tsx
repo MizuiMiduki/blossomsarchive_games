@@ -429,8 +429,9 @@ export const ShogiIcon: Component<IconProps> = (props) => (
     class={props.class}
     {...props}
   >
+    {/* 伝統的な将棋駒の五角形（底辺が肩幅より広い末広がりの本将棋形状） */}
     <path
-      d="M12 2 L19 6 L17 21 L7 21 L5 6 Z"
+      d="M12 2.5 L18.5 7.5 L20 21.5 L4 21.5 L5.5 7.5 Z"
       fill="none"
       stroke="currentColor"
       stroke-width="1.8"
@@ -441,9 +442,9 @@ export const ShogiIcon: Component<IconProps> = (props) => (
       y="16.5"
       text-anchor="middle"
       font-size="9"
-      font-weight="bold"
+      font-weight="900"
       fill="currentColor"
-      font-family="serif"
+      font-family="'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif"
     >
       王
     </text>
