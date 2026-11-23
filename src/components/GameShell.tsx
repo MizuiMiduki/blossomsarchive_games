@@ -29,6 +29,10 @@ interface GameShellProps {
   score?: number;
   isGameOver?: boolean;
   isVictory?: boolean;
+  gameOverTitle?: string;
+  gameOverMessage?: string;
+  victoryTitle?: string;
+  victoryMessage?: string;
   onRestart: () => void;
   onNextStage?: () => void;
   nextStageLabel?: string;
@@ -349,11 +353,15 @@ export const GameShell: Component<GameShellProps> = (props) => {
             </div>
 
             <h2 class="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1">
-              {props.isVictory ? 'ステージクリア！' : 'ゲームオーバー'}
+              {props.isVictory
+                ? props.victoryTitle || 'ステージクリア！'
+                : props.gameOverTitle || 'ゲームオーバー'}
             </h2>
 
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-              {props.isVictory ? '素晴らしい！見事クリアしました！' : 'もう一度挑戦してみましょう！'}
+              {props.isVictory
+                ? props.victoryMessage || '素晴らしい！見事クリアしました！'
+                : props.gameOverMessage || 'もう一度挑戦してみましょう！'}
             </p>
 
             <Show when={props.score !== undefined}>

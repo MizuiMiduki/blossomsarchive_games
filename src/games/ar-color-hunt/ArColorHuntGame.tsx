@@ -59,7 +59,8 @@ export const ArColorHuntGame: Component = () => {
   const [score, setScore] = createSignal(0);
   const [timeLeft, setTimeLeft] = createSignal(60);
   const [streak, setStreak] = createSignal(0);
-  const [isGameOver, setIsGameOver] = createSignal(false);
+  const [isTimeUp, setIsTimeUp] = createSignal(false);
+  const [isVictory, setIsVictory] = createSignal(false);
   const [cameraActive, setCameraActive] = createSignal(false);
   const [facingMode, setFacingMode] = createSignal<'environment' | 'user'>('environment');
 
@@ -135,7 +136,8 @@ export const ArColorHuntGame: Component = () => {
     setScore(0);
     setTimeLeft(60);
     setStreak(0);
-    setIsGameOver(false);
+    setIsTimeUp(false);
+    setIsVictory(false);
     currentLock = 0;
     setLockProgress(0);
     pickNextMission();
@@ -145,8 +147,15 @@ export const ArColorHuntGame: Component = () => {
       setTimeLeft((t) => {
         if (t <= 1) {
           clearInterval(timerId!);
-          setIsGameOver(true);
-          sound.playGameOver();
+          stopCamera();
+          if (score() > 0) {
+            setIsVictory(true);
+            sound.playVictory();
+            confetti({ particleCount: 70, spread: 80 });
+          } else {
+            setIsTimeUp(true);
+            sound.playGameOver();
+          }
           return 0;
         }
         return t - 1;
@@ -179,7 +188,7 @@ export const ArColorHuntGame: Component = () => {
     }
 
     // 2. ピクセル色解析
-    if (cameraActive() && videoRef && videoRef.readyState >= 2 && !isGameOver()) {
+    if (cameraActive() && videoRef && videoRef.readyState >= 2 && !isTimeUp() && !isVictory()) {
       if (!sampleCanvas) {
         sampleCanvas = document.createElement('canvas');
         sampleCanvas.width = 30;
@@ -339,7 +348,12 @@ export const ArColorHuntGame: Component = () => {
       id="ar-color-hunt"
       title="AR Color Hunter"
       score={score()}
-      isGameOver={isGameOver()}
+      isGameOver={isTimeUp()}
+      isVictory={isVictory()}
+      gameOverTitle="タイムアップ！探索終了"
+      gameOverMessage="60秒が経過しました！次回はもっとたくさんのお宝カラーを探してみましょう！"
+      victoryTitle="タイムアップ！探索完了"
+      victoryMessage={`60秒間お疲れ様でした！見事 ${Math.floor(score() / 100)} 個のお宝カラーを発見しました！`}
       onRestart={restart}
       instructions={instructions}
       extraControls={
