@@ -5,27 +5,26 @@ import { sound } from '../../utils/sound.ts';
 export interface SweetsType {
   level: number;
   name: string;
-  shortName: string;
+  emoji: string;
   radius: number;
   score: number;
   color: string;
   gradientStart: string;
   gradientEnd: string;
-  textColor: string;
 }
 
 export const SWEETS_TIERS: SweetsType[] = [
-  { level: 0, name: '金平糖', shortName: '金平糖', radius: 15, score: 2, color: '#f472b6', gradientStart: '#fce7f3', gradientEnd: '#ec4899', textColor: '#ffffff' },
-  { level: 1, name: 'マカロン', shortName: 'マカロン', radius: 20, score: 4, color: '#34d399', gradientStart: '#d1fae5', gradientEnd: '#10b981', textColor: '#ffffff' },
-  { level: 2, name: 'クッキー', shortName: 'クッキー', radius: 26, score: 8, color: '#fbbf24', gradientStart: '#fef3c7', gradientEnd: '#d97706', textColor: '#78350f' },
-  { level: 3, name: 'プリン', shortName: 'プリン', radius: 33, score: 16, color: '#facc15', gradientStart: '#fef9c3', gradientEnd: '#ca8a04', textColor: '#713f12' },
-  { level: 4, name: 'シュークリーム', shortName: 'シュー', radius: 41, score: 32, color: '#fb923c', gradientStart: '#ffedd5', gradientEnd: '#ea580c', textColor: '#ffffff' },
-  { level: 5, name: 'ドーナツ', shortName: 'ドーナツ', radius: 49, score: 64, color: '#f43f5e', gradientStart: '#ffe4e6', gradientEnd: '#e11d48', textColor: '#ffffff' },
-  { level: 6, name: 'タルト', shortName: 'タルト', radius: 58, score: 128, color: '#818cf8', gradientStart: '#e0e7ff', gradientEnd: '#4f46e5', textColor: '#ffffff' },
-  { level: 7, name: 'ショートケーキ', shortName: 'ショート', radius: 68, score: 256, color: '#fda4af', gradientStart: '#ffffff', gradientEnd: '#f43f5e', textColor: '#9f1239' },
-  { level: 8, name: 'パフェ', shortName: 'パフェ', radius: 78, score: 512, color: '#c084fc', gradientStart: '#f3e8ff', gradientEnd: '#7e22ce', textColor: '#ffffff' },
-  { level: 9, name: 'ホールケーキ', shortName: 'ホール', radius: 89, score: 1024, color: '#e11d48', gradientStart: '#ffe4e6', gradientEnd: '#be123c', textColor: '#ffffff' },
-  { level: 10, name: 'ロイヤルタワー', shortName: 'タワー', radius: 100, score: 2048, color: '#f59e0b', gradientStart: '#fef08a', gradientEnd: '#b45309', textColor: '#ffffff' },
+  { level: 0, name: 'キャンディ', emoji: '🍬', radius: 15, score: 2, color: '#f472b6', gradientStart: '#fce7f3', gradientEnd: '#ec4899' },
+  { level: 1, name: 'カップケーキ', emoji: '🧁', radius: 20, score: 4, color: '#34d399', gradientStart: '#d1fae5', gradientEnd: '#10b981' },
+  { level: 2, name: 'クッキー', emoji: '🍪', radius: 26, score: 8, color: '#fbbf24', gradientStart: '#fef3c7', gradientEnd: '#d97706' },
+  { level: 3, name: 'プリン', emoji: '🍮', radius: 33, score: 16, color: '#facc15', gradientStart: '#fef9c3', gradientEnd: '#ca8a04' },
+  { level: 4, name: 'パンケーキ', emoji: '🥞', radius: 41, score: 32, color: '#fb923c', gradientStart: '#ffedd5', gradientEnd: '#ea580c' },
+  { level: 5, name: 'ドーナツ', emoji: '🍩', radius: 49, score: 64, color: '#f43f5e', gradientStart: '#ffe4e6', gradientEnd: '#e11d48' },
+  { level: 6, name: 'タルトパイ', emoji: '🥧', radius: 58, score: 128, color: '#818cf8', gradientStart: '#e0e7ff', gradientEnd: '#4f46e5' },
+  { level: 7, name: 'ショートケーキ', emoji: '🍰', radius: 68, score: 256, color: '#fda4af', gradientStart: '#ffffff', gradientEnd: '#f43f5e' },
+  { level: 8, name: 'パフェアイス', emoji: '🍨', radius: 78, score: 512, color: '#c084fc', gradientStart: '#f3e8ff', gradientEnd: '#7e22ce' },
+  { level: 9, name: 'ホールケーキ', emoji: '🎂', radius: 89, score: 1024, color: '#e11d48', gradientStart: '#ffe4e6', gradientEnd: '#be123c' },
+  { level: 10, name: 'ロイヤルクラウン', emoji: '👑', radius: 100, score: 2048, color: '#f59e0b', gradientStart: '#fef08a', gradientEnd: '#b45309' },
 ];
 
 export const PLANET_TIERS = SWEETS_TIERS;
@@ -51,7 +50,6 @@ interface Particle {
   size: number;
   life: number;
   maxLife: number;
-  shape: 'circle' | 'star' | 'heart';
 }
 
 let circleIdCounter = 1;
@@ -78,23 +76,22 @@ export const BlossomDropGame: Component = () => {
   const bounce = 0.28;
   const deadLineY = 70;
 
-  const rollInitialTier = () => Math.floor(Math.random() * 3); // 0~2 (金平糖, マカロン, クッキー)
+  const rollInitialTier = () => Math.floor(Math.random() * 3); // 0~2 (キャンディ, カップケーキ, クッキー)
   const rollNextTier = () => Math.floor(Math.random() * 4); // 0~3 (プリンまで)
 
   const spawnMergeParticles = (x: number, y: number, color: string) => {
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 14; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = 1.5 + Math.random() * 4.5;
       particles.push({
         x,
         y,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 1.0,
+        vy: Math.sin(angle) * speed - 0.8,
         color: Math.random() < 0.6 ? color : '#fef08a',
-        size: 3 + Math.random() * 4,
+        size: 3 + Math.random() * 3.5,
         life: 1.0,
-        maxLife: 20 + Math.random() * 15,
-        shape: Math.random() < 0.4 ? 'star' : 'circle',
+        maxLife: 18 + Math.random() * 12,
       });
     }
   };
@@ -195,132 +192,7 @@ export const BlossomDropGame: Component = () => {
     }, 450);
   };
 
-  // 愛嬌たっぷりの顔を描画するヘルパー
-  const drawCuteFace = (
-    ctx: CanvasRenderingContext2D,
-    cx: number,
-    cy: number,
-    r: number,
-    level: number,
-    scaleAnim: number
-  ) => {
-    const eyeSize = Math.max(2, r * 0.11);
-    const eyeSpread = r * 0.35;
-    const eyeY = cy - r * 0.05;
-
-    // ほっぺた（ピンクのふんわりチーク）
-    ctx.fillStyle = 'rgba(244, 63, 94, 0.45)';
-    ctx.beginPath();
-    ctx.ellipse(cx - eyeSpread - eyeSize * 0.8, eyeY + r * 0.22, eyeSize * 1.5, eyeSize * 0.85, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(cx + eyeSpread + eyeSize * 0.8, eyeY + r * 0.22, eyeSize * 1.5, eyeSize * 0.85, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 瞳のスタイル
-    if (scaleAnim > 1.05) {
-      // 合体直後は星目 (★ ★)
-      ctx.fillStyle = '#fef08a';
-      for (const ex of [cx - eyeSpread, cx + eyeSpread]) {
-        drawStar(ctx, ex, eyeY, eyeSize * 1.6);
-      }
-    } else if (level === 1 || level === 5) {
-      // マカロン・ドーナツ: ウィンク顔 (^_~)
-      // 左目: パッチリ黒目
-      ctx.fillStyle = '#1e1b4b';
-      ctx.beginPath();
-      ctx.arc(cx - eyeSpread, eyeY, eyeSize, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(cx - eyeSpread - eyeSize * 0.35, eyeY - eyeSize * 0.35, eyeSize * 0.45, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 右目: ウィンク (⌒)
-      ctx.strokeStyle = '#1e1b4b';
-      ctx.lineWidth = Math.max(1.8, eyeSize * 0.4);
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.arc(cx + eyeSpread, eyeY + eyeSize * 0.3, eyeSize * 1.1, Math.PI * 1.15, Math.PI * 1.85);
-      ctx.stroke();
-    } else if (level === 8 || level === 10) {
-      // パフェ・タワーケーキ: キラキラ瞳
-      for (const ex of [cx - eyeSpread, cx + eyeSpread]) {
-        ctx.fillStyle = '#1e1b4b';
-        ctx.beginPath();
-        ctx.arc(ex, eyeY, eyeSize * 1.15, 0, Math.PI * 2);
-        ctx.fill();
-        // ハイライト2つ
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(ex - eyeSize * 0.4, eyeY - eyeSize * 0.4, eyeSize * 0.55, 0, Math.PI * 2);
-        ctx.arc(ex + eyeSize * 0.35, eyeY + eyeSize * 0.35, eyeSize * 0.28, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    } else {
-      // 通常のつぶらなパッチリ瞳
-      for (const ex of [cx - eyeSpread, cx + eyeSpread]) {
-        ctx.fillStyle = '#1e1b4b';
-        ctx.beginPath();
-        ctx.arc(ex, eyeY, eyeSize, 0, Math.PI * 2);
-        ctx.fill();
-        // 白ハイライト
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(ex - eyeSize * 0.35, eyeY - eyeSize * 0.35, eyeSize * 0.45, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    // 口のスタイル
-    ctx.strokeStyle = '#1e1b4b';
-    ctx.lineWidth = Math.max(1.5, eyeSize * 0.35);
-    ctx.lineCap = 'round';
-
-    if (level === 3 || level === 7) {
-      // プリン・ショートケーキ: 幸せな開いたお口 (D)
-      ctx.fillStyle = '#e11d48';
-      ctx.beginPath();
-      ctx.arc(cx, eyeY + r * 0.22, eyeSize * 0.9, 0, Math.PI);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-    } else if (level === 5) {
-      // ドーナツ: ペロッと舌出し
-      ctx.beginPath();
-      ctx.arc(cx, eyeY + r * 0.2, eyeSize * 0.7, 0, Math.PI);
-      ctx.stroke();
-      // 舌
-      ctx.fillStyle = '#f43f5e';
-      ctx.beginPath();
-      ctx.arc(cx + eyeSize * 0.2, eyeY + r * 0.28, eyeSize * 0.45, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      // にっこり微笑み (∪)
-      ctx.beginPath();
-      ctx.arc(cx, eyeY + r * 0.16, eyeSize * 0.75, 0.2, Math.PI - 0.2);
-      ctx.stroke();
-    }
-  };
-
-  const drawStar = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) => {
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-      const a = (i * Math.PI * 2) / 5 - Math.PI / 2;
-      const ai = a + Math.PI / 5;
-      const x1 = cx + Math.cos(a) * r;
-      const y1 = cy + Math.sin(a) * r;
-      const x2 = cx + Math.cos(ai) * (r * 0.45);
-      const y2 = cy + Math.sin(ai) * (r * 0.45);
-      if (i === 0) ctx.moveTo(x1, y1);
-      else ctx.lineTo(x1, y1);
-      ctx.lineTo(x2, y2);
-    }
-    ctx.closePath();
-    ctx.fill();
-  };
-
-  // スイーツごとのリッチな固有アート描画
+  // シンプルで可愛いスイーツ絵文字レンダラー
   const renderSweets = (
     ctx: CanvasRenderingContext2D,
     c: { x: number; y: number; radius: number; level: number; scaleAnim?: number }
@@ -332,13 +204,13 @@ export const BlossomDropGame: Component = () => {
     ctx.save();
     ctx.translate(c.x, c.y);
 
-    // 高級スイーツのやわらかな影（アンビエントシャドウ）
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.14)';
+    // やわらかなアンビエントシャドウ
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.16)';
     ctx.beginPath();
-    ctx.ellipse(0, r * 0.88, r * 0.85, r * 0.22, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, r * 0.9, r * 0.85, r * 0.22, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // タワーケーキやパフェのオーラ発光
+    // 高級オーラ発光（タワー・パフェのみ）
     if (c.level === 10) {
       ctx.shadowColor = '#f59e0b';
       ctx.shadowBlur = 18;
@@ -347,8 +219,8 @@ export const BlossomDropGame: Component = () => {
       ctx.shadowBlur = 10;
     }
 
-    // 球体ベースグラデーション（ふっくら立体感）
-    const grad = ctx.createRadialGradient(-r * 0.32, -r * 0.35, r * 0.1, 0, 0, r);
+    // 球体ベースグラデーション
+    const grad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r);
     grad.addColorStop(0, s.gradientStart);
     grad.addColorStop(0.85, s.color);
     grad.addColorStop(1, s.gradientEnd);
@@ -357,216 +229,25 @@ export const BlossomDropGame: Component = () => {
     ctx.arc(0, 0, r, 0, Math.PI * 2);
     ctx.fillStyle = grad;
     ctx.fill();
-    ctx.shadowBlur = 0; // シャドウリセット
+    ctx.shadowBlur = 0;
 
-    // クリップ領域（スイーツの内部デコレーション）
-    ctx.save();
+    // クリーンな外枠
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+    ctx.lineWidth = Math.max(1.5, r * 0.05);
+    ctx.stroke();
+
+    // 球体のツヤハイライト
     ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.clip();
-
-    // --- スイーツごとの固有テクスチャ・トッピング ---
-    if (c.level === 0) {
-      // 金平糖: 角砂糖の星の突起
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-      for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
-        const px = Math.cos(angle) * (r * 0.72);
-        const py = Math.sin(angle) * (r * 0.72);
-        ctx.beginPath();
-        ctx.arc(px, py, r * 0.24, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    } else if (c.level === 1) {
-      // マカロン: 中央の波打つ濃厚バニラクリーム層
-      ctx.fillStyle = '#fef9c3'; // ガナッシュクリーム
-      ctx.beginPath();
-      ctx.ellipse(0, 0, r * 1.05, r * 0.24, 0, 0, Math.PI * 2);
-      ctx.fill();
-      // 上下のピエ（焼きひだ）
-      ctx.fillStyle = 'rgba(5, 150, 105, 0.25)';
-      ctx.fillRect(-r, -r * 0.22, r * 2, r * 0.08);
-      ctx.fillRect(-r, r * 0.14, r * 2, r * 0.08);
-    } else if (c.level === 2) {
-      // クッキー: 焼き目とチョコチップ
-      ctx.fillStyle = '#451a03'; // ダークチョコチップ
-      const chips = [
-        [-0.45, -0.4], [0.38, -0.42], [-0.15, 0.42], [0.42, 0.3], [-0.48, 0.12], [0.1, -0.05]
-      ];
-      for (const [ox, oy] of chips) {
-        ctx.beginPath();
-        ctx.ellipse(r * ox, r * oy, r * 0.16, r * 0.13, 0.2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    } else if (c.level === 3) {
-      // プリン: とろ〜り濃厚カラメルソース＆ホイップ
-      ctx.fillStyle = '#713f12'; // ビターカラメル
-      ctx.beginPath();
-      ctx.ellipse(0, -r * 0.48, r * 0.88, r * 0.42, 0, 0, Math.PI * 2);
-      ctx.fill();
-      // 垂れるカラメル
-      ctx.beginPath();
-      ctx.arc(-r * 0.4, -r * 0.16, r * 0.2, 0, Math.PI);
-      ctx.arc(r * 0.32, -r * 0.12, r * 0.22, 0, Math.PI);
-      ctx.fill();
-      // ホイップクリーム
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(0, -r * 0.58, r * 0.22, 0, Math.PI * 2);
-      ctx.fill();
-      // チェリー（さくらんぼ）
-      ctx.fillStyle = '#dc2626';
-      ctx.beginPath();
-      ctx.arc(r * 0.08, -r * 0.72, r * 0.14, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (c.level === 4) {
-      // シュークリーム: あふれるカスタード＆粉砂糖
-      ctx.fillStyle = '#fef08a';
-      ctx.beginPath();
-      ctx.ellipse(0, 0, r * 0.92, r * 0.35, 0, 0, Math.PI * 2);
-      ctx.fill();
-      // 粉砂糖（パウダースノー）
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-      ctx.beginPath();
-      ctx.arc(-r * 0.35, -r * 0.45, r * 0.18, 0, Math.PI * 2);
-      ctx.arc(r * 0.3, -r * 0.5, r * 0.2, 0, Math.PI * 2);
-      ctx.arc(0, -r * 0.6, r * 0.16, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (c.level === 5) {
-      // ドーナツ: 苺チョコアイシング & カラフルチョコスプレー
-      ctx.fillStyle = '#f43f5e';
-      ctx.beginPath();
-      ctx.arc(0, -r * 0.1, r * 0.95, 0, Math.PI * 2);
-      ctx.fill();
-      // スプリンクル
-      const sprinkles = [
-        { ox: -0.45, oy: -0.5, col: '#fef08a' },
-        { ox: 0.35, oy: -0.45, col: '#38bdf8' },
-        { ox: -0.22, oy: -0.7, col: '#ffffff' },
-        { ox: 0.5, oy: -0.15, col: '#a3e635' },
-        { ox: -0.55, oy: -0.12, col: '#fb923c' },
-        { ox: 0.12, oy: -0.35, col: '#ffffff' }
-      ];
-      for (const sp of sprinkles) {
-        ctx.fillStyle = sp.col;
-        ctx.fillRect(r * sp.ox, r * sp.oy, r * 0.15, r * 0.08);
-      }
-    } else if (c.level === 6) {
-      // タルト: 濃厚ブルーベリー＆タルト縁
-      ctx.fillStyle = '#312e81';
-      for (let i = 0; i < 7; i++) {
-        const ang = (i * Math.PI * 2) / 7;
-        const bx = Math.cos(ang) * (r * 0.52);
-        const by = Math.sin(ang) * (r * 0.52);
-        ctx.beginPath();
-        ctx.arc(bx, by, r * 0.18, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#6366f1';
-        ctx.beginPath();
-        ctx.arc(bx - r * 0.04, by - r * 0.04, r * 0.07, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#312e81';
-      }
-    } else if (c.level === 7) {
-      // ショートケーキ: スポンジ層と苺
-      ctx.fillStyle = '#fef08a'; // スポンジ
-      ctx.fillRect(-r, r * 0.28, r * 2, r * 0.25);
-      // 完熟大粒いちご
-      ctx.fillStyle = '#e11d48';
-      ctx.beginPath();
-      ctx.arc(0, -r * 0.48, r * 0.32, 0, Math.PI * 2);
-      ctx.fill();
-      // いちごのつぶつぶ
-      ctx.fillStyle = '#fef08a';
-      ctx.fillRect(-r * 0.08, -r * 0.48, r * 0.04, r * 0.04);
-      ctx.fillRect(r * 0.08, -r * 0.44, r * 0.04, r * 0.04);
-      // ヘタ
-      ctx.fillStyle = '#16a34a';
-      ctx.beginPath();
-      ctx.ellipse(0, -r * 0.74, r * 0.16, r * 0.07, 0, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (c.level === 8) {
-      // パフェ: ベリー層 & ウエハースロール
-      ctx.fillStyle = 'rgba(236, 72, 153, 0.4)';
-      ctx.fillRect(-r, r * 0.2, r * 2, r * 0.26);
-      // ウエハーススティック
-      ctx.strokeStyle = '#d97706';
-      ctx.lineWidth = r * 0.12;
-      ctx.beginPath();
-      ctx.moveTo(-r * 0.45, r * 0.45);
-      ctx.lineTo(r * 0.55, -r * 0.65);
-      ctx.stroke();
-      // チェリー
-      ctx.fillStyle = '#dc2626';
-      ctx.beginPath();
-      ctx.arc(-r * 0.15, -r * 0.48, r * 0.22, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (c.level === 9) {
-      // ホールケーキ: ホイップとイチゴの王冠
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-      for (let i = 0; i < 8; i++) {
-        const ang = (i * Math.PI) / 4;
-        const hx = Math.cos(ang) * (r * 0.68);
-        const hy = Math.sin(ang) * (r * 0.68);
-        ctx.beginPath();
-        ctx.arc(hx, hy, r * 0.17, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#e11d48';
-        ctx.beginPath();
-        ctx.arc(hx, hy, r * 0.09, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-      }
-    } else if (c.level === 10) {
-      // ロイヤルタワー: 3段ケーキと黄金のティアラクラウン
-      ctx.fillStyle = '#fef08a';
-      ctx.fillRect(-r * 0.8, -r * 0.05, r * 1.6, r * 0.18);
-      ctx.fillRect(-r * 0.55, -r * 0.35, r * 1.1, r * 0.18);
-      // 黄金ティアラ
-      ctx.fillStyle = '#f59e0b';
-      ctx.beginPath();
-      ctx.moveTo(-r * 0.3, -r * 0.6);
-      ctx.lineTo(-r * 0.2, -r * 0.8);
-      ctx.lineTo(0, -r * 0.65);
-      ctx.lineTo(r * 0.2, -r * 0.8);
-      ctx.lineTo(r * 0.3, -r * 0.6);
-      ctx.closePath();
-      ctx.fill();
-    }
-
-    ctx.restore(); // クリップ解除
-
-    // ドーナツの中央の穴（本物のドーナツらしく穴をあける）
-    if (c.level === 5) {
-      ctx.beginPath();
-      ctx.arc(0, 0, r * 0.28, 0, Math.PI * 2);
-      ctx.fillStyle = '#020617'; // 背景色
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-
-    // 球体のツヤハイライト（ぷるんとしたスペキュラ光）
-    ctx.save();
-    ctx.beginPath();
-    ctx.ellipse(-r * 0.38, -r * 0.42, r * 0.26, r * 0.15, -Math.PI / 4, 0, Math.PI * 2);
+    ctx.ellipse(-r * 0.35, -r * 0.38, r * 0.26, r * 0.14, -Math.PI / 4, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
     ctx.fill();
-    ctx.beginPath();
-    ctx.arc(-r * 0.2, -r * 0.55, r * 0.08, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-    ctx.fill();
-    ctx.restore();
 
-    // 愛らしいキャラクターの顔を描画（ダサい文字の代わりに可愛い表情！）
-    drawCuteFace(ctx, 0, 0, r, c.level, scale);
-
-    // 外枠のエレガントなストローク
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.18)';
-    ctx.lineWidth = 1.8;
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.stroke();
+    // 中央にシンプルで可愛いスイーツ絵文字
+    const emojiSize = Math.round(r * 1.15);
+    ctx.font = `${emojiSize}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(s.emoji, 0, r * 0.04);
 
     ctx.restore();
   };
@@ -640,7 +321,7 @@ export const BlossomDropGame: Component = () => {
               vy: -2.5,
               radius: newTier.radius,
               spawnTime: Date.now(),
-              scaleAnim: 1.3, // ポップアニメーション
+              scaleAnim: 1.25, // ポップアニメーション
             });
 
             // マージパーティクルとサウンド
@@ -687,7 +368,7 @@ export const BlossomDropGame: Component = () => {
       const p = particles[i];
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.15; // わずかな重力
+      p.vy += 0.15;
       p.life -= 1 / p.maxLife;
       if (p.life <= 0) {
         particles.splice(i, 1);
@@ -747,13 +428,9 @@ export const BlossomDropGame: Component = () => {
       ctx.save();
       ctx.globalAlpha = Math.max(0, p.life);
       ctx.fillStyle = p.color;
-      if (p.shape === 'star') {
-        drawStar(ctx, p.x, p.y, p.size);
-      } else {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
       ctx.restore();
     }
 
@@ -790,10 +467,10 @@ export const BlossomDropGame: Component = () => {
   });
 
   const instructions = [
-    '画面をドラッグ（またはマウス移動）して落とす位置を調整し、指を離すと可愛いスイーツが落下します。',
+    '画面をドラッグ（またはマウス移動）して落とす位置を調整し、指を離すとスイーツが落下します。',
     '同じ種類のスイーツがぶつかるとマージし、より大きくて豪華なスイーツへと進化します。',
     '【HOLD機能】「HOLD」ボタンまたは Shift / C キーで現在狙っているスイーツを一時キープ可能（1手につき1回）。',
-    '進化順: 金平糖 → マカロン → クッキー → プリン → シュークリーム → ドーナツ → タルト → ショートケーキ → パフェ → ホールケーキ → ロイヤルタワー',
+    '進化順: 🍬キャンディ → 🧁カップケーキ → 🍪クッキー → 🍮プリン → 🥞パンケーキ → 🍩ドーナツ → 🥧タルト → 🍰ケーキ → 🍨パフェ → 🎂ホールケーキ → 👑ロイヤルクラウン',
   ];
 
   return (
@@ -806,17 +483,14 @@ export const BlossomDropGame: Component = () => {
       instructions={instructions}
       extraControls={
         /* 進化ツリー順一覧プレビュー */
-        <div class="flex items-center justify-center gap-1 sm:gap-1.5 overflow-x-auto py-1 px-2 max-w-full text-[10px] select-none text-slate-500">
-          <span class="font-bold text-[9px] text-slate-400 shrink-0">進化順:</span>
+        <div class="flex items-center justify-center gap-1 sm:gap-1.5 overflow-x-auto py-1 px-2 max-w-full text-xs select-none text-slate-500">
+          <span class="font-bold text-[10px] text-slate-400 shrink-0">進化順:</span>
           {SWEETS_TIERS.map((t, idx) => (
-            <div class="flex items-center gap-0.5 sm:gap-1 shrink-0">
-              <span
-                class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full inline-block shadow-xs border border-white/40"
-                style={{ 'background-color': t.color }}
-                title={`${idx + 1}. ${t.name}`}
-              />
-              <span class="text-[9px] sm:text-[10px] font-medium hidden sm:inline">{t.name}</span>
-              {idx < SWEETS_TIERS.length - 1 && <span class="text-[8px] text-slate-300 dark:text-slate-600">→</span>}
+            <div class="flex items-center gap-0.5 shrink-0">
+              <span class="text-xs" title={`${idx + 1}. ${t.name}`}>
+                {t.emoji}
+              </span>
+              {idx < SWEETS_TIERS.length - 1 && <span class="text-[8px] text-slate-400">→</span>}
             </div>
           ))}
         </div>
@@ -842,10 +516,9 @@ export const BlossomDropGame: Component = () => {
               fallback={<span class="text-slate-400 dark:text-slate-500 italic text-[11px]">(空)</span>}
             >
               <div class="flex items-center gap-1.5">
-                <span
-                  class="w-4 h-4 rounded-full inline-block shadow-xs border border-white/30"
-                  style={{ 'background-color': SWEETS_TIERS[heldLevel()!].color }}
-                />
+                <span class="text-base">
+                  {SWEETS_TIERS[heldLevel()!].emoji}
+                </span>
                 <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
                   {SWEETS_TIERS[heldLevel()!].name}
                 </span>
@@ -856,10 +529,9 @@ export const BlossomDropGame: Component = () => {
           {/* NEXT表示 */}
           <div class="flex items-center gap-2 px-3 py-1.5 bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-xs">
             <span class="text-slate-400 font-bold text-[11px]">NEXT:</span>
-            <span
-              class="w-4 h-4 rounded-full inline-block shadow-xs border border-white/30"
-              style={{ 'background-color': SWEETS_TIERS[nextLevel()].color }}
-            />
+            <span class="text-base">
+              {SWEETS_TIERS[nextLevel()].emoji}
+            </span>
             <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">
               {SWEETS_TIERS[nextLevel()].name}
             </span>
