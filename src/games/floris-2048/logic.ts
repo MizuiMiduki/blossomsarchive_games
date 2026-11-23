@@ -9,18 +9,18 @@ export interface Tile {
   isNew?: boolean;
 }
 
-export const TILE_CONFIG: Record<number, { emoji: string; name: string; bg: string; text: string }> = {
-  2: { emoji: '🌱', name: 'つぼみ', bg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300', text: 'text-xs' },
-  4: { emoji: '🌿', name: '若葉', bg: 'bg-green-100 text-green-800 dark:bg-green-950/80 dark:text-green-300', text: 'text-xs' },
-  8: { emoji: '☘️', name: '三つ葉', bg: 'bg-teal-100 text-teal-800 dark:bg-teal-950/80 dark:text-teal-300', text: 'text-xs' },
-  16: { emoji: '🌷', name: 'チューリップ', bg: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300', text: 'text-xs' },
-  32: { emoji: '🌻', name: 'ひまわり', bg: 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300', text: 'text-xs' },
-  64: { emoji: '🌹', name: 'バラ', bg: 'bg-red-200 text-red-900 dark:bg-red-950 dark:text-red-200', text: 'text-xs' },
-  128: { emoji: '🌺', name: 'ハイビスカス', bg: 'bg-pink-200 text-pink-900 dark:bg-pink-950 dark:text-pink-200', text: 'text-xs' },
-  256: { emoji: '🌸', name: '満開の桜', bg: 'bg-pink-300 text-pink-950 dark:bg-pink-900 dark:text-pink-100 font-bold', text: 'text-xs' },
-  512: { emoji: '🌼', name: 'デイジー', bg: 'bg-yellow-300 text-yellow-950 dark:bg-yellow-800 dark:text-yellow-100 font-bold', text: 'text-xs' },
-  1024: { emoji: '🪷', name: '蓮華', bg: 'bg-purple-300 text-purple-950 dark:bg-purple-900 dark:text-purple-100 font-bold shadow-md', text: 'text-[11px]' },
-  2048: { emoji: '💐', name: '花束 (満開)', bg: 'bg-gradient-to-tr from-pink-400 via-rose-400 to-amber-300 text-white font-black shadow-lg shadow-rose-400/50', text: 'text-[10px]' },
+export const TILE_CONFIG: Record<number, { name: string; bg: string; text: string }> = {
+  2: { name: '2', bg: 'bg-stone-100 text-stone-800 dark:bg-stone-800 dark:text-stone-100 font-extrabold', text: 'text-2xl sm:text-3xl' },
+  4: { name: '4', bg: 'bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-100 font-extrabold', text: 'text-2xl sm:text-3xl' },
+  8: { name: '8', bg: 'bg-orange-200 text-orange-950 dark:bg-orange-800 dark:text-orange-100 font-extrabold', text: 'text-2xl sm:text-3xl' },
+  16: { name: '16', bg: 'bg-orange-400 text-white font-extrabold shadow-xs', text: 'text-2xl sm:text-3xl' },
+  32: { name: '32', bg: 'bg-orange-500 text-white font-extrabold shadow-xs', text: 'text-2xl sm:text-3xl' },
+  64: { name: '64', bg: 'bg-rose-500 text-white font-extrabold shadow-xs', text: 'text-2xl sm:text-3xl' },
+  128: { name: '128', bg: 'bg-yellow-400 text-white font-black shadow-md', text: 'text-xl sm:text-2xl' },
+  256: { name: '256', bg: 'bg-yellow-500 text-white font-black shadow-md', text: 'text-xl sm:text-2xl' },
+  512: { name: '512', bg: 'bg-yellow-600 text-white font-black shadow-md', text: 'text-xl sm:text-2xl' },
+  1024: { name: '1024', bg: 'bg-amber-500 text-white font-black shadow-lg shadow-amber-500/30 ring-2 ring-yellow-300', text: 'text-lg sm:text-xl' },
+  2048: { name: '2048', bg: 'bg-gradient-to-tr from-yellow-400 via-amber-500 to-rose-500 text-white font-black shadow-xl shadow-yellow-500/50 ring-2 ring-yellow-200', text: 'text-lg sm:text-xl' },
 };
 
 let nextTileId = 1;

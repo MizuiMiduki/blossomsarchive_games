@@ -189,7 +189,7 @@ export const Home: Component = () => {
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center shadow-md shadow-rose-500/30 text-white font-black text-lg">
-              🌸
+              🎮
             </div>
             <div>
               <span class="font-black text-lg sm:text-xl tracking-tight bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600 dark:from-rose-400 dark:via-pink-400 dark:to-amber-300 bg-clip-text text-transparent">
@@ -243,11 +243,11 @@ export const Home: Component = () => {
           </div>
 
           <h2 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
-            スキマ時間に、一輪の花を咲かせる遊びを。
+            スキマ時間にすぐ遊べる、Webミニゲームポータル。
           </h2>
 
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-8">
-            インストールの手間も会員登録も不要。QRコードでスマホともデータ同期できる、全10種の超軽量ミニゲームアーカイブ。
+            インストールの手間も会員登録も不要。QRコードでスマホともデータ同期できる、完全無料・登録不要の軽量ミニゲームコレクション。
           </p>
 
           {/* 検索バー */}
@@ -267,11 +267,11 @@ export const Home: Component = () => {
           {/* カテゴリタブ */}
           <div class="flex items-center justify-center gap-1.5 flex-wrap">
             {[
-              { id: 'all', label: 'すべて (10)' },
+              { id: 'all', label: `すべて (${GAMES.length})` },
               { id: 'board', label: 'ボード♟️' },
               { id: 'puzzle', label: 'パズル🧩' },
               { id: 'card', label: 'カード🃏' },
-              { id: 'casual', label: 'カジュアル🌱' },
+              { id: 'casual', label: 'カジュアル🎲' },
               { id: 'action', label: 'アクション🏃' },
               { id: 'favorite', label: 'お気に入り❤️' },
             ].map((tab) => (

@@ -207,15 +207,15 @@ export const Floris2048Game: Component = () => {
   });
 
   const instructions = [
-    '矢印キー、WASD、またはスワイプで花パネルをスライドさせます。',
-    '同じ花同士がぶつかると合体し、次の段階の花へと進化します。',
-    'つぼみ🌱から育てて、大輪の桜や奇跡の花束💐 (2048) を目指しましょう！',
+    '矢印キー、WASD、または画面スワイプで数字タイルをスライドさせます。',
+    '同じ数字同士がぶつかると合体し、2倍の数字へと進化します。',
+    'タイルを上手くまとめて、幻の「2048」タイルを目指しましょう！',
   ];
 
   return (
     <GameShell
       id="floris-2048"
-      title="Floris 2048"
+      title="2048"
       score={score()}
       isGameOver={isGameOver()}
       isVictory={isVictory()}
@@ -254,7 +254,7 @@ export const Floris2048Game: Component = () => {
       `}</style>
 
       <div
-        class="w-full max-w-[360px] aspect-square bg-rose-200/50 dark:bg-slate-800/80 p-3 rounded-3xl shadow-inner border-2 border-rose-200 dark:border-slate-700 select-none touch-none relative"
+        class="w-full max-w-[360px] aspect-square bg-stone-200/90 dark:bg-stone-800/90 p-3 rounded-3xl shadow-inner border-2 border-stone-300 dark:border-stone-700 select-none touch-none relative"
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
       >
@@ -263,7 +263,7 @@ export const Floris2048Game: Component = () => {
           <For each={Array(16).fill(0)}>
             {() => (
               <div class="p-1 sm:p-1.5 w-full h-full">
-                <div class="w-full h-full rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-rose-100/30 dark:border-slate-800/50 shadow-2xs" />
+                <div class="w-full h-full rounded-2xl bg-stone-300/50 dark:bg-stone-900/50 border border-stone-200/40 dark:border-stone-800/40 shadow-2xs" />
               </div>
             )}
           </For>
@@ -275,10 +275,9 @@ export const Floris2048Game: Component = () => {
             {(tile) => {
               const conf = () =>
                 TILE_CONFIG[tile.value()] || {
-                  emoji: '🌸',
                   name: String(tile.value()),
-                  bg: 'bg-rose-400 text-white font-bold',
-                  text: 'text-xs',
+                  bg: 'bg-amber-500 text-white font-bold',
+                  text: 'text-2xl',
                 };
 
               return (
@@ -296,14 +295,11 @@ export const Floris2048Game: Component = () => {
                   class="p-1 sm:p-1.5"
                 >
                   <div
-                    class={`w-full h-full rounded-2xl flex flex-col items-center justify-center p-1 border shadow-xs select-none transition-transform ${
+                    class={`w-full h-full rounded-2xl flex items-center justify-center p-1 border shadow-xs select-none transition-transform ${
                       conf().bg
                     } ${tile.isNew() ? 'animate-tile-spawn' : tile.isMerged() ? 'animate-tile-pop' : ''}`}
                   >
-                    <span class="text-2xl sm:text-3xl filter drop-shadow-xs leading-none">
-                      {conf().emoji}
-                    </span>
-                    <span class={`mt-0.5 tracking-tight font-bold ${conf().text}`}>
+                    <span class={`font-black font-mono tracking-tight drop-shadow-2xs ${conf().text}`}>
                       {tile.value()}
                     </span>
                   </div>
@@ -311,26 +307,6 @@ export const Floris2048Game: Component = () => {
               );
             }}
           </For>
-        </div>
-      </div>
-
-      {/* 植物の成長ガイド */}
-      <div class="w-full max-w-[360px] mt-4 px-2">
-        <div class="text-[11px] text-slate-500 dark:text-slate-400 mb-1 font-medium">開花チャート:</div>
-        <div class="flex items-center justify-between text-base bg-white/60 dark:bg-slate-900/60 p-2 rounded-xl border border-rose-100/60 dark:border-slate-800 shadow-2xs">
-          <span>🌱</span>
-          <span class="text-slate-300 text-xs">→</span>
-          <span>🌿</span>
-          <span class="text-slate-300 text-xs">→</span>
-          <span>🌷</span>
-          <span class="text-slate-300 text-xs">→</span>
-          <span>🌻</span>
-          <span class="text-slate-300 text-xs">→</span>
-          <span>🌹</span>
-          <span class="text-slate-300 text-xs">→</span>
-          <span>🌸</span>
-          <span class="text-slate-300 text-xs">→</span>
-          <span>💐</span>
         </div>
       </div>
     </GameShell>

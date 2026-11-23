@@ -81,9 +81,9 @@ export interface PatternPreset {
 
 export const PRESETS: PatternPreset[] = [
   {
-    name: 'グライダー (旅する花びら)',
-    emoji: '🍃',
-    description: '斜め方向へ風に乗って永遠に旅を続ける定番パターン',
+    name: 'グライダー',
+    emoji: '✈️',
+    description: '斜め方向へ移動し続けるライフゲームの代表的パターン',
     coords: [
       [0, 1],
       [1, 2],
@@ -91,9 +91,9 @@ export const PRESETS: PatternPreset[] = [
     ],
   },
   {
-    name: 'パルサー (呼吸する大輪)',
-    emoji: '🌺',
-    description: '周期3で規則正しく呼吸するように花びらを開閉する美しい振動子',
+    name: 'パルサー',
+    emoji: '💫',
+    description: '周期3で規則的に伸縮を繰り返す美しい振動子パターン',
     coords: [
       // 上半分
       [-6, -4], [-6, -3], [-6, -2], [-6, 2], [-6, 3], [-6, 4],
@@ -108,9 +108,9 @@ export const PRESETS: PatternPreset[] = [
     ],
   },
   {
-    name: '銀河 (渦巻く花)',
+    name: '銀河',
     emoji: '🌀',
-    description: '2つの腕が螺旋を描きながら回転し続ける華麗なパターン',
+    description: '2つのアームが回転し続ける周期8の優雅なパターン',
     coords: [
       [-4, -4], [-4, -3], [-4, -2], [-4, -1], [-4, 0], [-4, 1],
       [-3, -4], [-3, -3], [-3, -2], [-3, -1], [-3, 0], [-3, 1],
@@ -121,9 +121,9 @@ export const PRESETS: PatternPreset[] = [
     ],
   },
   {
-    name: '花びらの泉 (グライダー銃)',
-    emoji: '⛲',
-    description: '無限に花びら（グライダー）を生み出し続ける奇跡の構造',
+    name: 'グライダー銃',
+    emoji: '🔫',
+    description: '一定周期で次々とグライダーを撃ち出し続けるパターン',
     coords: [
       [4, 0], [4, 1], [5, 0], [5, 1],
       [2, 34], [2, 35], [3, 34], [3, 35],

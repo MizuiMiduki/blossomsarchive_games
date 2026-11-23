@@ -383,7 +383,7 @@ export const ReversiGame: Component = () => {
   return (
     <GameShell
       id="petal-reversi"
-      title="Petal Reversi"
+      title="Reversi (オセロ)"
       score={playerColor() === 'black' ? counts().black : counts().white}
       isGameOver={isGameOver() && !isVictory()}
       isVictory={isVictory()}
@@ -427,7 +427,7 @@ export const ReversiGame: Component = () => {
                 }}
                 class="px-2 py-1 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:text-rose-500"
               >
-                {playerColor() === 'black' ? '先手(🌺)' : '後手(🌸)'}
+                {playerColor() === 'black' ? '先手(黒⚫)' : '後手(白⚪)'}
               </button>
             </div>
           </Show>

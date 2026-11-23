@@ -97,7 +97,7 @@ export const GomokuGame: Component = () => {
   return (
     <GameShell
       id="gomoku-garden"
-      title="Gomoku Garden (五目並べ)"
+      title="Gomoku (五目並べ)"
       score={isVictory() ? (difficulty() === 'hard' ? 3000 : difficulty() === 'normal' ? 1500 : 800) : 0}
       isGameOver={isGameOver() && !isVictory()}
       isVictory={isVictory()}

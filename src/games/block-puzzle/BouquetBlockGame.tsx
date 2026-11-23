@@ -96,7 +96,7 @@ export const BouquetBlockGame: Component = () => {
   return (
     <GameShell
       id="bouquet-block"
-      title="Bouquet Block 10x10"
+      title="Block Puzzle 10×10"
       score={score()}
       isGameOver={isGameOver()}
       onRestart={restart}

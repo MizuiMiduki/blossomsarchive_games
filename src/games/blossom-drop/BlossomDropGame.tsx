@@ -22,7 +22,7 @@ const FRUIT_TIERS: FruitType[] = [
   { level: 7, emoji: '🍍', name: 'パイナップル', radius: 64, score: 256, color: '#eab308' },
   { level: 8, emoji: '🍈', name: 'メロン', radius: 74, score: 512, color: '#22c55e' },
   { level: 9, emoji: '🍉', name: 'スイカ', radius: 84, score: 1024, color: '#16a34a' },
-  { level: 10, emoji: '🌸', name: '桜花繚乱', radius: 95, score: 2048, color: '#f472b6' },
+  { level: 10, emoji: '👑', name: 'キングスイカ', radius: 95, score: 2048, color: '#eab308' },
 ];
 
 interface Circle {
@@ -291,14 +291,14 @@ export const BlossomDropGame: Component = () => {
 
   const instructions = [
     '画面をスワイプ（またはマウス移動）して落とす位置を調整し、指を離すとフルーツが落下します。',
-    '同じ種類の果物・花がぶつかるとマージして一段階大きく成長します！',
-    '上の赤い点線を超えて溢れ出さないように、大輪の桜花🌸を目指しましょう。',
+    '同じ種類のフルーツがぶつかるとマージして一段階大きく成長します！',
+    '上の赤い点線を超えて溢れ出さないように、最高峰のキングスイカ👑を目指しましょう。',
   ];
 
   return (
     <GameShell
       id="blossom-drop"
-      title="Blossom Drop"
+      title="Fruit Drop"
       score={score()}
       isGameOver={isGameOver()}
       onRestart={restart}

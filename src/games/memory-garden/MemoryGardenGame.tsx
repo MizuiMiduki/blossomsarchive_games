@@ -8,17 +8,17 @@ interface Card {
   name: string;
 }
 
-const FLOWERS = [
-  { emoji: '🌷', name: 'チューリップ' },
-  { emoji: '🌻', name: 'ひまわり' },
-  { emoji: '🌹', name: 'バラ' },
-  { emoji: '🌺', name: 'ハイビスカス' },
-  { emoji: '🌸', name: '桜' },
-  { emoji: '🌼', name: 'デイジー' },
-  { emoji: '🪷', name: 'ハス' },
-  { emoji: '💐', name: '花束' },
+const CARD_SYMBOLS = [
+  { emoji: '🌟', name: '星' },
   { emoji: '🍀', name: 'クローバー' },
-  { emoji: '🌾', name: 'ススキ' },
+  { emoji: '💎', name: 'ダイヤ' },
+  { emoji: '🚀', name: 'ロケット' },
+  { emoji: '🍒', name: 'チェリー' },
+  { emoji: '👑', name: '王冠' },
+  { emoji: '🔥', name: '炎' },
+  { emoji: '🎵', name: '音符' },
+  { emoji: '🌸', name: '桜' },
+  { emoji: '🌙', name: '三日月' },
 ];
 
 export const MemoryGardenGame: Component = () => {
@@ -47,10 +47,10 @@ export const MemoryGardenGame: Component = () => {
   const restart = () => {
     if (timer) clearInterval(timer);
     const count = getPairCount();
-    const selectedFlowers = FLOWERS.slice(0, count);
+    const selectedSymbols = CARD_SYMBOLS.slice(0, count);
     const deck: Card[] = [];
 
-    selectedFlowers.forEach((f, idx) => {
+    selectedSymbols.forEach((f, idx) => {
       deck.push({ id: idx * 2, emoji: f.emoji, name: f.name });
       deck.push({ id: idx * 2 + 1, emoji: f.emoji, name: f.name });
     });
@@ -134,7 +134,7 @@ export const MemoryGardenGame: Component = () => {
   });
 
   const instructions = [
-    'カードをタップしてめくり、同じ花のペアを見つけましょう。',
+    'カードをタップしてめくり、同じ絵柄のペアを見つけましょう。',
     '一度にめくれるのは2枚までです。揃うとカードが開いたままになります。',
     '少ない手数＆素早いクリアで高スコアと新記録を目指しましょう！',
   ];
@@ -142,7 +142,7 @@ export const MemoryGardenGame: Component = () => {
   return (
     <GameShell
       id="memory-garden"
-      title="Memory Garden"
+      title="Memory Match (神経衰弱)"
       score={calculateScore()}
       isGameOver={false}
       isVictory={isVictory()}
@@ -210,7 +210,7 @@ export const MemoryGardenGame: Component = () => {
                   when={isOpen()}
                   fallback={
                     <span class="text-white/80 text-xl font-bold flex flex-col items-center">
-                      <span>🌸</span>
+                      <span>✦</span>
                     </span>
                   }
                 >

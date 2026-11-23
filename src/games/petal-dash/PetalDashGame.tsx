@@ -47,12 +47,12 @@ export const PetalDashGame: Component = () => {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, canvasRef.width, canvasRef.height);
 
-    // そよ風に揺れる花びら 🌸
+    // そよ風に揺れる鳥 🐦
     const hoverY = 180 + Math.sin(frame * 0.06) * 8;
     ctx.font = '28px serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('🌸', 60, hoverY);
+    ctx.fillText('🐦', 60, hoverY);
 
     if (!isPlaying() && !isGameOver()) {
       animationId = requestAnimationFrame(renderIdle);
@@ -168,11 +168,11 @@ export const PetalDashGame: Component = () => {
       ctx.fill();
     });
 
-    // プレイヤー描画 (花びら 🌸)
+    // プレイヤー描画 (鳥 🐦)
     ctx.font = '24px serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('🌸', playerX, y);
+    ctx.fillText('🐦', playerX, y);
 
     animationId = requestAnimationFrame(loop);
   };
@@ -200,21 +200,21 @@ export const PetalDashGame: Component = () => {
 
   const instructions = [
     '画面タップまたはスペースキーを押すとゲームがスタートします。',
-    'タップするたびに花びら🌸がふわりと上昇し、放っておくと重力で降下します。',
+    'タップするたびに鳥🐦がふわりと羽ばたき、放っておくと重力で降下します。',
     '上下の障害物を避けて隙間をくぐり続け、ハイスコアを目指しましょう！',
   ];
 
   return (
     <GameShell
       id="petal-dash"
-      title="Petal Dash"
+      title="Tap Dash"
       score={score()}
       isGameOver={isGameOver()}
       onRestart={resetToReady}
       instructions={instructions}
     >
       <div
-        class="w-full max-w-[340px] aspect-[3/4] bg-pink-50 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border-4 border-rose-300 dark:border-slate-700 relative cursor-pointer select-none"
+        class="w-full max-w-[340px] aspect-[3/4] bg-sky-50 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border-4 border-sky-300 dark:border-slate-700 relative cursor-pointer select-none"
         onClick={jump}
         onTouchStart={(e) => {
           e.preventDefault();
@@ -230,9 +230,9 @@ export const PetalDashGame: Component = () => {
 
         <Show when={!isPlaying() && !isGameOver()}>
           <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/20 backdrop-blur-2xs p-4 pointer-events-none">
-            <div class="flex flex-col items-center gap-1.5 px-6 py-4 rounded-3xl bg-white/95 dark:bg-slate-900/95 text-center shadow-xl border border-rose-200 dark:border-slate-800 animate-pulse">
-              <span class="text-3xl">🌸</span>
-              <span class="text-rose-600 dark:text-rose-400 font-bold text-sm">
+            <div class="flex flex-col items-center gap-1.5 px-6 py-4 rounded-3xl bg-white/95 dark:bg-slate-900/95 text-center shadow-xl border border-sky-200 dark:border-slate-800 animate-pulse">
+              <span class="text-3xl">🐦</span>
+              <span class="text-sky-600 dark:text-sky-400 font-bold text-sm">
                 タップ または スペースキーで<br />スタート！
               </span>
               <span class="text-[11px] text-slate-500 dark:text-slate-400">

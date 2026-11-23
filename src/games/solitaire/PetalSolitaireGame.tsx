@@ -142,7 +142,7 @@ export const PetalSolitaireGame: Component = () => {
   return (
     <GameShell
       id="petal-solitaire"
-      title="Petal Solitaire"
+      title="Solitaire (クロンダイク)"
       score={score()}
       isGameOver={false}
       isVictory={isVictory()}

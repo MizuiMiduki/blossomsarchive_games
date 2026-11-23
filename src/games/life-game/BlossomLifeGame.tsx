@@ -213,15 +213,15 @@ export const BlossomLifeGame: Component = () => {
   });
 
   const instructions = [
-    '画面をドラッグ・スワイプして花を種まき（配置）できます。',
-    '【生命のルール】過密でも過疎でも枯れ、適度な隣人がいるマスに新しい花が咲きます。',
-    '下のプリセット（グライダー、パルサー、銀河等）を押して、不思議な幾何学生命のダンスを鑑賞しましょう！',
+    '画面をドラッグ・スワイプしてセルを配置できます。',
+    '【ライフゲームのルール】誕生・生存・過密・過疎の単純な規則から、複雑な生命シミュレーションが生まれます。',
+    '下のプリセット（グライダー、パルサー、銀河、グライダー銃）を選択して、パターンの変化を観察しましょう！',
   ];
 
   return (
     <GameShell
-      id="blossom-life"
-      title="Blossom Life (百花繚乱 ライフゲーム)"
+      id="life-game"
+      title="Conway's Life Game"
       score={livingCount()}
       isGameOver={false}
       onRestart={handleRestart}
@@ -286,7 +286,7 @@ export const BlossomLifeGame: Component = () => {
                     : 'text-slate-500'
                 }`}
               >
-                🌱 植える
+                ✏️ 配置
               </button>
               <button
                 onClick={() => setBrushMode('erase')}
@@ -326,8 +326,8 @@ export const BlossomLifeGame: Component = () => {
           <span class="font-mono font-bold text-rose-400 text-sm">{generation()}</span>
         </div>
         <div class="flex items-center gap-2">
-          <span>開花中:</span>
-          <span class="font-mono font-bold text-emerald-400 text-sm">{livingCount()} 輪</span>
+          <span>生存セル:</span>
+          <span class="font-mono font-bold text-emerald-400 text-sm">{livingCount()}</span>
         </div>
         <div class="flex items-center gap-1 text-[11px] text-slate-400">
           <span>速度:</span>
@@ -376,7 +376,7 @@ export const BlossomLifeGame: Component = () => {
         {/* 初期停止時のガイダンスバッジ */}
         <Show when={!isRunning() && generation() === 0}>
           <div class="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none bg-slate-900/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-white/90 text-[11px] font-semibold border border-white/10 shadow-lg whitespace-nowrap animate-pulse">
-            ▶「再生開始」を押すと開花が始まります
+            ▶「再生開始」を押すとシミュレーションが始まります
           </div>
         </Show>
       </div>

@@ -147,7 +147,7 @@ export const ChessGame: Component = () => {
   return (
     <GameShell
       id="blossom-chess"
-      title="Blossom Chess"
+      title="Chess"
       score={isVictory() ? (difficulty() === 'hard' ? 4000 : difficulty() === 'normal' ? 2000 : 1000) : 0}
       isGameOver={isGameOver() && !isVictory()}
       isVictory={isVictory()}
