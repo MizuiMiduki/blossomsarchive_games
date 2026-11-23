@@ -1,7 +1,7 @@
 import { Component, createSignal, onSettled, onCleanup, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
-import { drawVideoCover } from '../../utils/camera.ts';
+import { drawVideoCover, setupCanvasAutoResize } from '../../utils/camera.ts';
 import confetti from 'canvas-confetti';
 
 interface BubbleItem {
@@ -170,7 +170,7 @@ export const ArBubbleGame: Component = () => {
       setIsFever(true);
       if (feverTimeoutId) clearTimeout(feverTimeoutId);
       feverTimeoutId = window.setTimeout(() => setIsFever(false), 8000);
-      confetti({ particleCount: 35, spread: 70, origin: { x: b.x / 640, y: b.y / 480 } });
+      confetti({ particleCount: 35, spread: 70, origin: { x: b.x / (canvasRef?.width || 640), y: b.y / (canvasRef?.height || 480) } });
     }
 
     // 飛散水滴パーティクル
@@ -367,6 +367,10 @@ export const ArBubbleGame: Component = () => {
 
   onSettled(() => {
     restart();
+    if (canvasRef) {
+      const cleanupResize = setupCanvasAutoResize(canvasRef);
+      onCleanup(cleanupResize);
+    }
     animId = requestAnimationFrame(loop);
 
     onCleanup(() => {
@@ -404,7 +408,7 @@ export const ArBubbleGame: Component = () => {
       onRestart={restart}
       instructions={instructions}
       extraControls={
-        <div class="flex items-center justify-between gap-3 w-full max-w-sm px-2 text-xs">
+        <div class="flex items-center justify-between gap-3 w-full max-w-4xl px-2 text-xs">
           <div class="flex items-center gap-1.5">
             <button
               onClick={() => {
@@ -443,17 +447,15 @@ export const ArBubbleGame: Component = () => {
         </div>
       }
     >
-      <div class="w-full max-w-xl h-full flex flex-col items-center justify-center relative min-h-0 select-none">
+      <div class="w-full max-w-4xl h-full flex flex-col items-center justify-center relative min-h-0 select-none p-1 sm:p-2">
         <video ref={videoRef} playsinline muted class="hidden" />
 
         <div
-          class="w-full aspect-[4/3] max-h-[calc(100dvh-130px)] rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-800 relative bg-slate-950 cursor-pointer touch-none"
+          class="w-full h-full max-h-[calc(100dvh-125px)] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-slate-800 relative bg-slate-950 cursor-pointer touch-none"
           onPointerDown={handlePointerDown}
         >
           <canvas
             ref={canvasRef}
-            width={640}
-            height={480}
             class="w-full h-full block"
           />
 

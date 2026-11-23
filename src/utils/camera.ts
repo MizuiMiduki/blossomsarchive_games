@@ -36,3 +36,33 @@ export function drawVideoCover(
   ctx.drawImage(video, offsetX, offsetY, renderW, renderH);
   ctx.restore();
 }
+
+// キャンバスの描画バッファ解像度をコンテナのCSSピクセルに自動追従させるユーティリティ
+export function setupCanvasAutoResize(
+  canvas: HTMLCanvasElement,
+  onResize?: (width: number, height: number) => void
+): () => void {
+  const updateSize = () => {
+    const rect = canvas.getBoundingClientRect();
+    const w = Math.round(rect.width);
+    const h = Math.round(rect.height);
+    if (w > 0 && h > 0 && (canvas.width !== w || canvas.height !== h)) {
+      canvas.width = w;
+      canvas.height = h;
+      if (onResize) onResize(w, h);
+    }
+  };
+
+  updateSize();
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(updateSize) : null;
+  if (ro) {
+    ro.observe(canvas);
+  }
+
+  const frameId = requestAnimationFrame(updateSize);
+
+  return () => {
+    cancelAnimationFrame(frameId);
+    if (ro) ro.disconnect();
+  };
+}

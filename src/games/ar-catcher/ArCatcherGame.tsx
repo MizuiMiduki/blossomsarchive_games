@@ -1,7 +1,7 @@
 import { Component, createSignal, onSettled, onCleanup, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
-import { drawVideoCover } from '../../utils/camera.ts';
+import { drawVideoCover, setupCanvasAutoResize } from '../../utils/camera.ts';
 import confetti from 'canvas-confetti';
 
 interface FallingItem {
@@ -312,6 +312,13 @@ export const ArCatcherGame: Component = () => {
 
   onSettled(() => {
     restart();
+    if (canvasRef) {
+      const cleanupResize = setupCanvasAutoResize(canvasRef, (w) => {
+        targetBasketX = w / 2;
+        currentBasketX = w / 2;
+      });
+      onCleanup(cleanupResize);
+    }
     animId = requestAnimationFrame(loop);
 
     onCleanup(() => {
@@ -338,7 +345,7 @@ export const ArCatcherGame: Component = () => {
       onRestart={restart}
       instructions={instructions}
       extraControls={
-        <div class="flex items-center justify-between gap-3 w-full max-w-sm px-2 text-xs">
+        <div class="flex items-center justify-between gap-3 w-full max-w-4xl px-2 text-xs">
           <div class="flex items-center gap-1.5">
             <button
               onClick={() => {
@@ -380,18 +387,16 @@ export const ArCatcherGame: Component = () => {
         </div>
       }
     >
-      <div class="w-full max-w-xl h-full flex flex-col items-center justify-center relative min-h-0 select-none">
+      <div class="w-full max-w-4xl h-full flex flex-col items-center justify-center relative min-h-0 select-none p-1 sm:p-2">
         <video ref={videoRef} playsinline muted class="hidden" />
 
         <div
-          class="w-full aspect-[4/3] max-h-[calc(100dvh-130px)] rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-800 relative bg-slate-950 cursor-pointer touch-none"
+          class="w-full h-full max-h-[calc(100dvh-125px)] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-slate-800 relative bg-slate-950 cursor-pointer touch-none"
           onPointerMove={handlePointerMove}
           onPointerDown={handlePointerMove}
         >
           <canvas
             ref={canvasRef}
-            width={640}
-            height={480}
             class="w-full h-full block"
           />
 
