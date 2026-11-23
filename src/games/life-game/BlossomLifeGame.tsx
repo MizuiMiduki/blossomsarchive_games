@@ -229,14 +229,14 @@ export const BlossomLifeGame: Component = () => {
       extraControls={
         <div class="flex flex-col gap-2 w-full max-w-md">
           {/* プリセット一覧 */}
-          <div class="flex items-center justify-between gap-1.5 p-2 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-rose-100 dark:border-slate-800 overflow-x-auto text-xs shadow-2xs">
+          <div class="flex items-center justify-between gap-1.5 p-2 bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-x-auto text-xs shadow-2xs">
             <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap pl-1">プリセット:</span>
             <For each={PRESETS}>
               {(preset) => (
                 <button
                   onClick={() => applyPreset(preset)}
                   title={preset.description}
-                  class="px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-slate-800 text-rose-600 dark:text-rose-300 font-bold hover:bg-rose-100 dark:hover:bg-slate-700 whitespace-nowrap transition-all shadow-2xs"
+                  class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 whitespace-nowrap transition-all shadow-2xs"
                 >
                   {preset.emoji} {preset.name.split(' ')[0]}
                 </button>
@@ -245,7 +245,7 @@ export const BlossomLifeGame: Component = () => {
           </div>
 
           {/* コントロールバー */}
-          <div class="flex items-center justify-between gap-2 p-2 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs shadow-2xs flex-wrap">
+          <div class="flex items-center justify-between gap-2 p-2 bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs flex-wrap">
             {/* 再生 / 停止 / ステップ */}
             <div class="flex items-center gap-1.5">
               <button
@@ -255,10 +255,10 @@ export const BlossomLifeGame: Component = () => {
                   setIsRunning(next);
                   if (next) runLoop();
                 }}
-                class={`px-3 py-1.5 rounded-xl font-bold transition-all shadow-xs flex items-center gap-1 ${
+                class={`px-3 py-1.5 rounded-xl font-semibold transition-all shadow-2xs flex items-center gap-1 ${
                   isRunning()
-                    ? 'bg-amber-500 text-white hover:bg-amber-600'
-                    : 'bg-emerald-600 text-white hover:bg-emerald-700 ring-2 ring-emerald-500/30'
+                    ? 'bg-amber-600 text-white hover:bg-amber-700'
+                    : 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-white'
                 }`}
               >
                 {isRunning() ? '⏸ 一時停止' : '▶ 再生開始'}
@@ -280,9 +280,9 @@ export const BlossomLifeGame: Component = () => {
             <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl">
               <button
                 onClick={() => setBrushMode('draw')}
-                class={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                class={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
                   brushMode() === 'draw'
-                    ? 'bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-300 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
                     : 'text-slate-500'
                 }`}
               >
@@ -290,9 +290,9 @@ export const BlossomLifeGame: Component = () => {
               </button>
               <button
                 onClick={() => setBrushMode('erase')}
-                class={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                class={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
                   brushMode() === 'erase'
-                    ? 'bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-300 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
                     : 'text-slate-500'
                 }`}
               >
@@ -304,13 +304,13 @@ export const BlossomLifeGame: Component = () => {
             <div class="flex items-center gap-1">
               <button
                 onClick={handleRandomize}
-                class="px-2.5 py-1.5 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 font-bold hover:bg-rose-200"
+                class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700"
               >
                 🎲 ランダム
               </button>
               <button
                 onClick={handleClear}
-                class="px-2 py-1.5 rounded-xl text-slate-400 hover:text-rose-500"
+                class="px-2 py-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               >
                 クリア
               </button>
@@ -323,7 +323,7 @@ export const BlossomLifeGame: Component = () => {
       <div class="w-full max-w-[360px] flex items-center justify-between text-xs px-3 py-1.5 bg-slate-900/90 text-white rounded-2xl mb-2 shadow-xs border border-slate-800">
         <div class="flex items-center gap-2">
           <span>世代:</span>
-          <span class="font-mono font-bold text-rose-400 text-sm">{generation()}</span>
+          <span class="font-mono font-bold text-sky-400 text-sm">{generation()}</span>
         </div>
         <div class="flex items-center gap-2">
           <span>生存セル:</span>

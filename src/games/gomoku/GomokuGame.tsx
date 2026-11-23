@@ -104,7 +104,7 @@ export const GomokuGame: Component = () => {
       onRestart={restart}
       instructions={instructions}
       extraControls={
-        <div class="flex items-center gap-2 bg-white/70 dark:bg-slate-900/70 p-1.5 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs">
+        <div class="flex items-center gap-2 bg-white/90 dark:bg-slate-900/90 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">
           <span class="font-bold text-slate-500 pl-1">強さ:</span>
           {(['easy', 'normal', 'hard'] as const).map((diff) => (
             <button
@@ -115,13 +115,13 @@ export const GomokuGame: Component = () => {
                   restart();
                 }
               }}
-              class={`px-2.5 py-1 rounded-xl font-bold transition-all ${
+              class={`px-2.5 py-1 rounded-xl font-semibold transition-all ${
                 difficulty() === diff
-                  ? 'bg-rose-500 text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
+                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              {diff === 'easy' ? '🌱 初級' : diff === 'normal' ? '🌸 中級' : '👑 上級'}
+              {diff === 'easy' ? '初級' : diff === 'normal' ? '中級' : '上級'}
             </button>
           ))}
           <div class="w-px h-4 bg-slate-200 dark:bg-slate-700" />
@@ -132,7 +132,7 @@ export const GomokuGame: Component = () => {
               setPlayerStone(next);
               restart();
             }}
-            class="px-2.5 py-1 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:text-rose-500"
+            class="px-2.5 py-1 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white"
           >
             {playerStone() === 'black' ? '先手(黒⚫)' : '後手(白⚪)'}
           </button>
@@ -142,7 +142,7 @@ export const GomokuGame: Component = () => {
       {/* 手番ステータス */}
       <div class="mb-2 text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2">
         <span>手番:</span>
-        <span class={`font-bold ${turn() === playerStone() ? 'text-rose-500' : 'text-slate-400'}`}>
+        <span class={`font-bold ${turn() === playerStone() ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
           {isAiThinking() ? '相手が思考中...' : turn() === playerStone() ? 'あなたの番です' : '相手の番'}
         </span>
       </div>
@@ -168,12 +168,12 @@ export const GomokuGame: Component = () => {
                         <div
                           class={`w-[82%] h-[82%] rounded-full shadow-md flex items-center justify-center transition-all ${
                             cell === 'black'
-                              ? 'bg-gradient-to-tr from-slate-950 to-slate-800 text-white'
-                              : 'bg-gradient-to-tr from-slate-100 to-white text-slate-900 border border-slate-300'
-                          } ${isWinning() ? 'ring-2 ring-rose-500 animate-bounce' : ''}`}
+                              ? 'bg-slate-950 border border-slate-900 text-white shadow-slate-900/40'
+                              : 'bg-white border border-slate-300 text-slate-900 shadow-slate-400/20'
+                          } ${isWinning() ? 'ring-2 ring-emerald-500 animate-bounce' : ''}`}
                         >
                           <Show when={isLast()}>
-                            <div class="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-500" />
                           </Show>
                         </div>
                       </Show>

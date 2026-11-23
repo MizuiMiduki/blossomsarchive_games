@@ -306,7 +306,7 @@ export const BlossomDropGame: Component = () => {
     >
       <div class="w-full max-w-[340px] flex flex-col items-center">
         {/* 次のフルーツ表示 */}
-        <div class="flex items-center gap-2 mb-2 px-3 py-1 bg-white/80 dark:bg-slate-900/80 rounded-xl border border-rose-100 dark:border-slate-800 text-xs shadow-2xs">
+        <div class="flex items-center gap-2 mb-2 px-3 py-1 bg-white/90 dark:bg-slate-900/90 rounded-xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">
           <span class="text-slate-500">NEXT:</span>
           <span class="text-xl leading-none">{FRUIT_TIERS[nextLevel()].emoji}</span>
           <span class="font-bold text-slate-700 dark:text-slate-300">{FRUIT_TIERS[nextLevel()].name}</span>
@@ -314,7 +314,7 @@ export const BlossomDropGame: Component = () => {
 
         {/* 落下ボックス (Canvas) */}
         <div
-          class="w-full aspect-[3/4] bg-gradient-to-b from-rose-50/60 to-pink-100/50 dark:from-slate-950 dark:to-slate-900 rounded-3xl overflow-hidden shadow-2xl border-4 border-rose-200 dark:border-slate-800 relative cursor-crosshair select-none touch-none"
+          class="w-full aspect-[3/4] bg-slate-100/80 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-xl border-4 border-slate-300 dark:border-slate-800 relative cursor-crosshair select-none touch-none"
           onPointerDown={handlePointerDown}
           onPointerMove={(e) => handlePointerMove(e.clientX)}
           onPointerUp={handlePointerUp}

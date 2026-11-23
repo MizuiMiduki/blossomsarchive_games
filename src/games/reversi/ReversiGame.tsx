@@ -425,7 +425,7 @@ export const ReversiGame: Component = () => {
                   setPlayerColor(next);
                   restart();
                 }}
-                class="px-2 py-1 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:text-rose-500"
+                class="px-2 py-1 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white"
               >
                 {playerColor() === 'black' ? '先手(黒⚫)' : '後手(白⚪)'}
               </button>
@@ -433,17 +433,17 @@ export const ReversiGame: Component = () => {
           </Show>
 
           {/* モード選択 */}
-          <div class="flex items-center justify-center gap-2 bg-white/80 dark:bg-slate-900/80 p-1.5 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs shadow-2xs">
+          <div class="flex items-center justify-center gap-2 bg-white/90 dark:bg-slate-900/90 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">
             <button
               onClick={() => {
                 sound.playPop(420);
                 setPlayMode('npc');
                 restart();
               }}
-              class={`flex-1 py-1 rounded-xl font-bold transition-all text-center ${
+              class={`flex-1 py-1 rounded-xl font-semibold transition-all text-center ${
                 playMode() === 'npc'
-                  ? 'bg-rose-500 text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
+                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               🤖 NPC対戦
@@ -453,10 +453,10 @@ export const ReversiGame: Component = () => {
                 sound.playPop(420);
                 setPlayMode('p2p');
               }}
-              class={`flex-1 py-1 rounded-xl font-bold transition-all text-center ${
+              class={`flex-1 py-1 rounded-xl font-semibold transition-all text-center ${
                 playMode() === 'p2p'
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-emerald-500'
+                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               🔒 P2P暗号化対戦
@@ -649,14 +649,12 @@ export const ReversiGame: Component = () => {
                     >
                       <Show when={cell}>
                         <div
-                          class={`w-[85%] h-[85%] rounded-full flex items-center justify-center text-lg sm:text-xl shadow-md transition-all duration-300 transform scale-100 ${
+                          class={`w-[82%] h-[82%] rounded-full shadow-md transition-all duration-300 transform scale-100 ${
                             cell === 'black'
-                              ? 'bg-gradient-to-tr from-slate-900 to-rose-950 text-white'
-                              : 'bg-gradient-to-tr from-rose-50 to-white text-rose-800'
+                              ? 'bg-slate-950 border border-slate-900 shadow-slate-900/40'
+                              : 'bg-white border border-slate-300 shadow-slate-400/20'
                           }`}
-                        >
-                          {cell === 'black' ? '🌺' : '🌸'}
-                        </div>
+                        />
                       </Show>
 
                       <Show when={isValid()}>

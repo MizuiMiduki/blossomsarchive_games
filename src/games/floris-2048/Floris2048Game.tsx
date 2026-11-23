@@ -226,7 +226,7 @@ export const Floris2048Game: Component = () => {
           <button
             onClick={handleUndo}
             disabled={history().length === 0}
-            class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-rose-300 dark:hover:border-rose-600 disabled:opacity-40 disabled:pointer-events-none transition-all shadow-xs active:scale-95"
+            class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 disabled:opacity-40 disabled:pointer-events-none transition-all shadow-2xs active:scale-95"
           >
             <UndoIcon size={16} />
             <span>1手戻す</span>

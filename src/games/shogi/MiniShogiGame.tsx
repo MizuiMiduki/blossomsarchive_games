@@ -290,7 +290,7 @@ export const MiniShogiGame: Component = () => {
       onRestart={restart}
       instructions={instructions}
       extraControls={
-        <div class="flex items-center gap-2 bg-white/70 dark:bg-slate-900/70 p-1.5 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs">
+        <div class="flex items-center gap-2 bg-white/90 dark:bg-slate-900/90 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">
           <span class="font-bold text-slate-500 pl-1">強さ:</span>
           {(['easy', 'normal', 'hard'] as const).map((diff) => (
             <button
@@ -301,13 +301,13 @@ export const MiniShogiGame: Component = () => {
                   restart();
                 }
               }}
-              class={`px-3 py-1 rounded-xl font-bold transition-all ${
+              class={`px-3 py-1 rounded-xl font-semibold transition-all ${
                 difficulty() === diff
-                  ? 'bg-rose-500 text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
+                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              {diff === 'easy' ? '🌱 初級' : diff === 'normal' ? '🌸 中級' : '👑 上級'}
+              {diff === 'easy' ? '初級' : diff === 'normal' ? '中級' : '上級'}
             </button>
           ))}
         </div>
@@ -354,9 +354,9 @@ export const MiniShogiGame: Component = () => {
                       onClick={() => handleCellClick(rIdx(), cIdx())}
                       class={`relative w-full h-full rounded-lg flex items-center justify-center border transition-all ${
                         isSelected()
-                          ? 'bg-amber-100 dark:bg-amber-800 ring-2 ring-rose-500 scale-98 shadow-inner border-rose-400'
+                          ? 'bg-amber-100 dark:bg-amber-800 ring-2 ring-amber-600 scale-98 shadow-inner border-amber-500'
                           : isValidTarget()
-                          ? 'bg-rose-100/80 dark:bg-rose-950/80 border-rose-400 animate-pulse'
+                          ? 'bg-amber-200/80 dark:bg-amber-900/80 border-amber-500 animate-pulse'
                           : 'bg-amber-100/90 dark:bg-amber-900/60 border-amber-300/60 dark:border-amber-800/60 hover:bg-amber-50 dark:hover:bg-amber-900/90'
                       }`}
                     >
@@ -370,7 +370,7 @@ export const MiniShogiGame: Component = () => {
                         />
                       </Show>
                       <Show when={isValidTarget() && !cell}>
-                        <div class="w-3 h-3 rounded-full bg-rose-400/90 shadow-xs" />
+                        <div class="w-3 h-3 rounded-full bg-amber-600/90 shadow-xs" />
                       </Show>
                     </button>
                   );
@@ -398,7 +398,7 @@ export const MiniShogiGame: Component = () => {
                 }}
                 class={`p-0.5 rounded-lg transition-transform focus:outline-none ${
                   selectedHandPiece() === p
-                    ? 'scale-115 ring-2 ring-rose-500 bg-rose-200/60 dark:bg-rose-950/60'
+                    ? 'scale-115 ring-2 ring-amber-600 bg-amber-200/80 dark:bg-amber-900/60'
                     : 'hover:scale-105'
                 }`}
                 title={`持ち駒: ${PIECE_LABELS[p].normal}（クリックして選択）`}

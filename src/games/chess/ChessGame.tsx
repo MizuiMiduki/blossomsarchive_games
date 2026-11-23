@@ -154,7 +154,7 @@ export const ChessGame: Component = () => {
       onRestart={restart}
       instructions={instructions}
       extraControls={
-        <div class="flex items-center gap-2 bg-white/70 dark:bg-slate-900/70 p-1.5 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs">
+        <div class="flex items-center gap-2 bg-white/90 dark:bg-slate-900/90 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">
           <span class="font-bold text-slate-500 pl-1">強さ:</span>
           {(['easy', 'normal', 'hard'] as const).map((diff) => (
             <button
@@ -165,13 +165,13 @@ export const ChessGame: Component = () => {
                   restart();
                 }
               }}
-              class={`px-3 py-1 rounded-xl font-bold transition-all ${
+              class={`px-3 py-1 rounded-xl font-semibold transition-all ${
                 difficulty() === diff
-                  ? 'bg-rose-500 text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
+                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              {diff === 'easy' ? '🌱 初級' : diff === 'normal' ? '🌸 中級' : '👑 上級'}
+              {diff === 'easy' ? '初級' : diff === 'normal' ? '中級' : '上級'}
             </button>
           ))}
         </div>
@@ -185,7 +185,7 @@ export const ChessGame: Component = () => {
         </div>
         <div class="text-xs">
           {turn() === 'w' ? (
-            <span class="text-rose-500 font-bold">あなたの番</span>
+            <span class="text-slate-900 dark:text-white font-bold">あなたの番</span>
           ) : (
             <span>相手が思考中...</span>
           )}
@@ -216,19 +216,19 @@ export const ChessGame: Component = () => {
                         isLight
                           ? 'bg-amber-100 hover:bg-amber-200/90 text-slate-900'
                           : 'bg-stone-500 hover:bg-stone-400 text-white'
-                      } ${isSelected() ? 'ring-2 ring-rose-500 ring-inset bg-rose-200' : ''}`}
+                      } ${isSelected() ? 'ring-2 ring-blue-500 ring-inset bg-blue-100 dark:bg-blue-900/40' : ''}`}
                     >
                       <Show when={cell}>
                         <span
                           class={`drop-shadow-xs transform transition-transform ${
-                            cell!.color === 'w' ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-slate-100'
+                            cell!.color === 'w' ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : 'text-slate-950'
                           }`}
                         >
                           {CHESS_SYMBOLS[cell!.color][cell!.type]}
                         </span>
                       </Show>
                       <Show when={isValidTarget()}>
-                        <div class="w-3 h-3 rounded-full bg-rose-500/80 absolute shadow-xs" />
+                        <div class="w-3 h-3 rounded-full bg-blue-500/80 absolute shadow-xs" />
                       </Show>
                     </button>
                   );

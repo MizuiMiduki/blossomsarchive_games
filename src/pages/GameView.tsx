@@ -11,7 +11,7 @@ export const GameView: Component = () => {
       when={game()}
       fallback={
         <div class="min-h-screen flex flex-col items-center justify-center p-4 text-center bg-slate-50 dark:bg-slate-950">
-          <div class="text-5xl mb-4">🍂</div>
+          <div class="text-5xl mb-4">🎮</div>
           <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
             ゲームが見つかりませんでした
           </h2>
@@ -20,7 +20,7 @@ export const GameView: Component = () => {
           </p>
           <a
             href="/"
-            class="px-5 py-2.5 rounded-xl bg-rose-500 text-white font-semibold text-xs shadow-md shadow-rose-500/25"
+            class="px-5 py-2.5 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold text-xs shadow-xs hover:bg-slate-800 dark:hover:bg-white transition-all"
           >
             ゲーム一覧へ戻る
           </a>

@@ -94,14 +94,14 @@ export const GameShell: Component<GameShellProps> = (props) => {
   return (
     <div
       ref={containerRef}
-      class="flex flex-col items-center justify-between min-h-screen w-full bg-gradient-to-b from-rose-50/50 via-white to-pink-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 p-2 sm:p-4 select-none"
+      class="flex flex-col items-center justify-between min-h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-2 sm:p-4 select-none"
     >
       {/* 上部ヘッダーコントロール */}
-      <header class="w-full max-w-xl flex items-center justify-between py-2 px-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl border border-rose-100 dark:border-slate-800 shadow-sm mb-3">
+      <header class="w-full max-w-xl flex items-center justify-between py-2 px-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs mb-3">
         <a
           href="/"
           onClick={() => sound.playPop(400)}
-          class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-rose-500 dark:hover:text-rose-400 transition-colors p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-slate-800"
+          class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <ArrowLeftIcon size={18} />
           <span>一覧へ</span>
@@ -113,7 +113,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
           </h1>
           <Show when={props.score !== undefined}>
             <div class="flex items-center justify-center gap-3 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              <span>スコア: <strong class="text-rose-500 font-bold">{props.score}</strong></span>
+              <span>スコア: <strong class="text-slate-900 dark:text-white font-bold">{props.score}</strong></span>
               <span>最高: <strong class="text-slate-700 dark:text-slate-300">{stats().highScore}</strong></span>
             </div>
           </Show>
@@ -126,17 +126,17 @@ export const GameShell: Component<GameShellProps> = (props) => {
               setShowHelp(true);
             }}
             title="遊び方"
-            class="p-2 text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400 rounded-xl hover:bg-rose-50 dark:hover:bg-slate-800 transition-colors"
+            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <InfoIcon size={18} />
           </button>
           <button
             onClick={toggleSound}
             title={isMuted() ? 'ミュート解除' : 'ミュート'}
-            class="p-2 text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400 rounded-xl hover:bg-rose-50 dark:hover:bg-slate-800 transition-colors"
+            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <Show when={isMuted()} fallback={<VolumeIcon size={18} />}>
-              <VolumeXIcon size={18} class="text-rose-400" />
+              <VolumeXIcon size={18} class="text-slate-400" />
             </Show>
           </button>
           <button
@@ -145,14 +145,14 @@ export const GameShell: Component<GameShellProps> = (props) => {
               props.onRestart();
             }}
             title="リスタート"
-            class="p-2 text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400 rounded-xl hover:bg-rose-50 dark:hover:bg-slate-800 transition-colors"
+            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <RotateCcwIcon size={18} />
           </button>
           <button
             onClick={toggleFullscreen}
             title="全画面"
-            class="p-2 hidden sm:flex text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400 rounded-xl hover:bg-rose-50 dark:hover:bg-slate-800 transition-colors"
+            class="p-2 hidden sm:flex text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <MaximizeIcon size={18} />
           </button>
@@ -178,16 +178,16 @@ export const GameShell: Component<GameShellProps> = (props) => {
 
       {/* 遊び方・ルールモーダル */}
       <Show when={showHelp()}>
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-rose-100 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-2xs p-4">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150">
             <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-3">
-              <InfoIcon class="text-rose-500" size={20} />
+              <InfoIcon class="text-slate-600 dark:text-slate-300" size={20} />
               {props.title} の遊び方
             </h3>
             <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300 mb-6">
               {props.instructions.map((item, idx) => (
                 <li class="flex items-start gap-2">
-                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 text-xs font-bold shrink-0 mt-0.5">
+                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold shrink-0 mt-0.5">
                     {idx + 1}
                   </span>
                   <span>{item}</span>
@@ -199,7 +199,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
                 sound.playPop(480);
                 setShowHelp(false);
               }}
-              class="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-medium shadow-md shadow-rose-500/25 transition-all active:scale-95"
+              class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-medium shadow-2xs transition-all active:scale-95"
             >
               閉じる
             </button>
@@ -209,30 +209,30 @@ export const GameShell: Component<GameShellProps> = (props) => {
 
       {/* ゲームオーバー / 勝利モーダル */}
       <Show when={props.isGameOver || props.isVictory}>
-        <div class="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-rose-200 dark:border-slate-800 text-center animate-in fade-in zoom-in-95 duration-200">
-            <div class="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center bg-gradient-to-tr from-rose-100 to-pink-200 dark:from-rose-950 dark:to-slate-800">
-              <Show when={props.isVictory} fallback={<span class="text-3xl">🥀</span>}>
+        <div class="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 text-center animate-in fade-in zoom-in-95 duration-200">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              <Show when={props.isVictory} fallback={<span class="text-3xl">🎮</span>}>
                 <SparklesIcon size={32} class="text-amber-500 animate-spin-slow" />
               </Show>
             </div>
 
             <h2 class="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1">
-              {props.isVictory ? '満開！ステージクリア' : 'ゲームオーバー'}
+              {props.isVictory ? 'ステージクリア！' : 'ゲームオーバー'}
             </h2>
 
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-              {props.isVictory ? '素晴らしい！美しい花が咲き誇りました！' : 'もう一度挑戦して花を咲かせましょう！'}
+              {props.isVictory ? '素晴らしい！見事クリアしました！' : 'もう一度挑戦してみましょう！'}
             </p>
 
             <Show when={props.score !== undefined}>
-              <div class="bg-rose-50 dark:bg-slate-800/80 rounded-2xl p-4 mb-5 border border-rose-100 dark:border-slate-700">
+              <div class="bg-slate-50 dark:bg-slate-800/80 rounded-2xl p-4 mb-5 border border-slate-200 dark:border-slate-700">
                 <div class="text-xs text-slate-500 dark:text-slate-400">最終スコア</div>
-                <div class="text-3xl font-black text-rose-500 tracking-tight my-0.5">
+                <div class="text-3xl font-black text-slate-900 dark:text-white tracking-tight my-0.5">
                   {props.score}
                 </div>
                 <Show when={isNewRecord()}>
-                  <div class="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full mt-1">
+                  <div class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full mt-1">
                     <AwardIcon size={14} />
                     新記録達成！
                   </div>
@@ -246,7 +246,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
                   sound.playPop(520);
                   props.onRestart();
                 }}
-                class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold shadow-lg shadow-rose-500/25 transition-all active:scale-95 flex items-center justify-center gap-2"
+                class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2"
               >
                 <RotateCcwIcon size={18} />
                 もう一度遊ぶ

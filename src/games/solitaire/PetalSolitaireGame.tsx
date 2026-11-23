@@ -156,10 +156,10 @@ export const PetalSolitaireGame: Component = () => {
           <div class="flex items-center gap-2">
             <button
               onClick={drawStock}
-              class="w-11 h-16 sm:w-12 sm:h-18 rounded-lg bg-emerald-700 border-2 border-emerald-500 shadow-sm flex items-center justify-center text-white font-bold hover:scale-105 active:scale-95 transition-all"
+              class="w-11 h-16 sm:w-12 sm:h-18 rounded-lg bg-emerald-700 border-2 border-emerald-500 shadow-sm flex items-center justify-center text-white/80 font-bold hover:scale-105 active:scale-95 transition-all text-sm"
             >
               <Show when={state().stock.length > 0} fallback={<span class="text-xs">🔄</span>}>
-                🌸
+                ✦
               </Show>
             </button>
             <div class="w-11 h-16 sm:w-12 sm:h-18 rounded-lg border-2 border-dashed border-emerald-600 flex items-center justify-center relative">
@@ -171,7 +171,7 @@ export const PetalSolitaireGame: Component = () => {
                     <button
                       onClick={() => handleCardClick(card, 'waste')}
                       class={`w-full h-full rounded-lg bg-white shadow-md border flex flex-col items-center justify-between p-1 ${
-                        info.color === 'red' ? 'text-rose-600' : 'text-slate-900'
+                        info.color === 'red' ? 'text-red-600' : 'text-slate-900'
                       }`}
                     >
                       <span class="font-bold text-xs">{RANK_NAMES[card.rank]}</span>
@@ -195,7 +195,7 @@ export const PetalSolitaireGame: Component = () => {
                       return (
                         <div
                           class={`w-full h-full rounded-lg bg-white shadow-md border flex flex-col items-center justify-between p-1 ${
-                            info.color === 'red' ? 'text-rose-600' : 'text-slate-900'
+                            info.color === 'red' ? 'text-red-600' : 'text-slate-900'
                           }`}
                         >
                           <span class="font-bold text-xs">{RANK_NAMES[top.rank]}</span>
@@ -236,10 +236,10 @@ export const PetalSolitaireGame: Component = () => {
                             : 'bg-emerald-600 border-emerald-500'
                         } ${isSel() ? 'ring-2 ring-amber-400 scale-105 z-20' : 'z-10'}`}
                       >
-                        <Show when={card.faceUp} fallback={<div class="w-full h-full flex items-center justify-center text-xs">🌸</div>}>
+                        <Show when={card.faceUp} fallback={<div class="w-full h-full flex items-center justify-center text-xs text-white/70">✦</div>}>
                           <div
                             class={`w-full h-full flex flex-col items-center justify-between p-1 ${
-                              info.color === 'red' ? 'text-rose-600' : 'text-slate-900'
+                              info.color === 'red' ? 'text-red-600' : 'text-slate-900'
                             }`}
                           >
                             <span class="font-bold text-[11px] leading-tight">{RANK_NAMES[card.rank]}</span>

@@ -123,7 +123,7 @@ export const BouquetBlockGame: Component = () => {
       </div>
 
       {/* 選択可能なピース (3スロット) */}
-      <div class="w-full max-w-[340px] flex items-center justify-around gap-2 p-2 bg-white/70 dark:bg-slate-900/70 rounded-2xl border border-rose-100 dark:border-slate-800 min-h-[90px]">
+      <div class="w-full max-w-[340px] flex items-center justify-around gap-2 p-2 bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 min-h-[90px] shadow-2xs">
         <For each={availableShapes()}>
           {(shape) => {
             const isSel = () => selectedShape()?.id === shape.id;
@@ -135,7 +135,7 @@ export const BouquetBlockGame: Component = () => {
                 }}
                 class={`p-2 rounded-xl flex flex-col gap-1 items-center justify-center transition-all ${
                   isSel()
-                    ? 'ring-2 ring-rose-500 bg-rose-50 dark:bg-slate-800 scale-105 shadow-md'
+                    ? 'ring-2 ring-slate-800 dark:ring-slate-200 bg-slate-100 dark:bg-slate-800 scale-105 shadow-sm'
                     : 'hover:bg-slate-100 dark:hover:bg-slate-800'
                 }`}
               >

@@ -149,7 +149,7 @@ export const MemoryGardenGame: Component = () => {
       onRestart={restart}
       instructions={instructions}
       extraControls={
-        <div class="flex items-center gap-2 bg-white/70 dark:bg-slate-900/70 p-1.5 rounded-2xl border border-rose-100 dark:border-slate-800">
+        <div class="flex items-center gap-1.5 bg-white/90 dark:bg-slate-900/90 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs">
           {(['easy', 'normal', 'hard'] as const).map((diff) => (
             <button
               onClick={() => {
@@ -159,13 +159,13 @@ export const MemoryGardenGame: Component = () => {
                   restart();
                 }
               }}
-              class={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+              class={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 difficulty() === diff
-                  ? 'bg-rose-500 text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
+                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              {diff === 'easy' ? '🌱 初級 12枚' : diff === 'normal' ? '🌸 中級 16枚' : '👑 上級 20枚'}
+              {diff === 'easy' ? '初級 (12枚)' : diff === 'normal' ? '中級 (16枚)' : '上級 (20枚)'}
             </button>
           ))}
         </div>
@@ -174,7 +174,7 @@ export const MemoryGardenGame: Component = () => {
       {/* 状況表示 */}
       <div class="flex items-center gap-6 mb-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
         <div>
-          手数: <span class="text-rose-500 font-bold">{moves()}</span>
+          手数: <span class="text-slate-900 dark:text-white font-bold">{moves()}</span>
         </div>
         <div>
           タイム: <span class="text-slate-800 dark:text-slate-100 font-mono">{seconds()}s</span>
@@ -183,7 +183,7 @@ export const MemoryGardenGame: Component = () => {
 
       {/* カードグリッド */}
       <div
-        class={`grid gap-2.5 p-3 bg-rose-200/40 dark:bg-slate-900/40 rounded-3xl border border-rose-200/60 dark:border-slate-800 max-w-sm w-full ${
+        class={`grid gap-2.5 p-3.5 bg-slate-200/50 dark:bg-slate-900/60 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-sm w-full ${
           difficulty() === 'easy'
             ? 'grid-cols-3'
             : difficulty() === 'normal'
@@ -200,16 +200,16 @@ export const MemoryGardenGame: Component = () => {
             return (
               <button
                 onClick={() => handleCardClick(index())}
-                class={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-300 transform select-none shadow-xs border ${
+                class={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-200 transform select-none shadow-2xs border ${
                   isOpen()
-                    ? 'bg-white dark:bg-slate-800 border-rose-300 dark:border-slate-600 scale-100 rotate-0 shadow-sm'
-                    : 'bg-gradient-to-tr from-rose-400 via-pink-400 to-rose-500 border-rose-300 hover:scale-102 active:scale-95 shadow-xs cursor-pointer'
-                } ${isMatched() ? 'ring-2 ring-emerald-400 opacity-90' : ''}`}
+                    ? 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 scale-100 shadow-xs'
+                    : 'bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 border-slate-700 dark:border-slate-600 hover:scale-102 active:scale-95 shadow-xs cursor-pointer'
+                } ${isMatched() ? 'ring-2 ring-emerald-500 opacity-90' : ''}`}
               >
                 <Show
                   when={isOpen()}
                   fallback={
-                    <span class="text-white/80 text-xl font-bold flex flex-col items-center">
+                    <span class="text-slate-400 dark:text-slate-400 text-lg font-bold flex flex-col items-center">
                       <span>✦</span>
                     </span>
                   }

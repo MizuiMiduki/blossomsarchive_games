@@ -15,12 +15,12 @@ export const TILE_CONFIG: Record<number, { name: string; bg: string; text: strin
   8: { name: '8', bg: 'bg-orange-200 text-orange-950 dark:bg-orange-800 dark:text-orange-100 font-extrabold', text: 'text-2xl sm:text-3xl' },
   16: { name: '16', bg: 'bg-orange-400 text-white font-extrabold shadow-xs', text: 'text-2xl sm:text-3xl' },
   32: { name: '32', bg: 'bg-orange-500 text-white font-extrabold shadow-xs', text: 'text-2xl sm:text-3xl' },
-  64: { name: '64', bg: 'bg-rose-500 text-white font-extrabold shadow-xs', text: 'text-2xl sm:text-3xl' },
+  64: { name: '64', bg: 'bg-red-500 text-white font-extrabold shadow-xs', text: 'text-2xl sm:text-3xl' },
   128: { name: '128', bg: 'bg-yellow-400 text-white font-black shadow-md', text: 'text-xl sm:text-2xl' },
   256: { name: '256', bg: 'bg-yellow-500 text-white font-black shadow-md', text: 'text-xl sm:text-2xl' },
   512: { name: '512', bg: 'bg-yellow-600 text-white font-black shadow-md', text: 'text-xl sm:text-2xl' },
   1024: { name: '1024', bg: 'bg-amber-500 text-white font-black shadow-lg shadow-amber-500/30 ring-2 ring-yellow-300', text: 'text-lg sm:text-xl' },
-  2048: { name: '2048', bg: 'bg-gradient-to-tr from-yellow-400 via-amber-500 to-rose-500 text-white font-black shadow-xl shadow-yellow-500/50 ring-2 ring-yellow-200', text: 'text-lg sm:text-xl' },
+  2048: { name: '2048', bg: 'bg-amber-500 text-white font-black shadow-lg shadow-amber-500/30 ring-2 ring-amber-300', text: 'text-lg sm:text-xl' },
 };
 
 let nextTileId = 1;

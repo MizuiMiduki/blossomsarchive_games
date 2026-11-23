@@ -185,17 +185,17 @@ export const Home: Component = () => {
   return (
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between">
       {/* 共通トップバー */}
-      <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-rose-100 dark:border-slate-800 transition-colors">
+      <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center shadow-md shadow-rose-500/30 text-white font-black text-lg">
+            <div class="w-9 h-9 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 flex items-center justify-center font-bold text-base shadow-2xs">
               🎮
             </div>
-            <div>
-              <span class="font-black text-lg sm:text-xl tracking-tight bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600 dark:from-rose-400 dark:via-pink-400 dark:to-amber-300 bg-clip-text text-transparent">
+            <div class="flex items-center">
+              <span class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white">
                 BlossomsArchive
               </span>
-              <span class="text-xs font-semibold uppercase tracking-wider ml-1.5 px-1.5 py-0.5 rounded-md bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300">
+              <span class="text-xs font-semibold uppercase tracking-wider ml-1.5 px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
                 Games
               </span>
             </div>
@@ -205,7 +205,7 @@ export const Home: Component = () => {
             <button
               onClick={handleOpenDataModal}
               title="端末同期 ＆ セーブデータ管理"
-              class="px-2.5 py-1.5 rounded-xl border border-rose-200 dark:border-slate-800 bg-rose-50/60 dark:bg-slate-900 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-100/80 transition-colors inline-flex items-center gap-1.5 shadow-2xs"
+              class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 shadow-2xs"
             >
               <span>📲 端末間同期</span>
             </button>
@@ -213,20 +213,20 @@ export const Home: Component = () => {
             <button
               onClick={toggleSound}
               title={appData().settings.soundMuted ? 'ミュート解除' : 'ミュート'}
-              class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-800 transition-colors"
+              class="p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               <Show when={appData().settings.soundMuted} fallback={<VolumeIcon size={20} />}>
-                <VolumeXIcon size={20} class="text-rose-400" />
+                <VolumeXIcon size={20} class="text-slate-400" />
               </Show>
             </button>
 
             <button
               onClick={toggleTheme}
               title={appData().settings.darkMode ? 'ライトモード' : 'ダークモード'}
-              class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-800 transition-colors"
+              class="p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               <Show when={appData().settings.darkMode} fallback={<MoonIcon size={20} />}>
-                <SunIcon size={20} class="text-amber-400" />
+                <SunIcon size={20} class="text-amber-500" />
               </Show>
             </button>
           </div>
@@ -237,8 +237,8 @@ export const Home: Component = () => {
       <main class="max-w-5xl mx-auto px-4 py-8 flex-1 w-full">
         {/* ヒーローセクション */}
         <section class="text-center py-6 sm:py-10 relative overflow-hidden">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100/80 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-300 text-xs font-bold mb-4 shadow-2xs">
-            <SparklesIcon size={14} />
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium mb-4 shadow-2xs">
+            <SparklesIcon size={14} class="text-slate-500" />
             <span>完全クライアント完結・DB不要・Solid.js 2.0 駆動</span>
           </div>
 
@@ -260,7 +260,7 @@ export const Home: Component = () => {
               value={searchQuery()}
               onInput={(e) => setSearchQuery(e.currentTarget.value)}
               placeholder="ゲーム名やジャンルで検索..."
-              class="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-rose-100 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400 shadow-sm text-sm"
+              class="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600 shadow-2xs text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
             />
           </div>
 
@@ -282,8 +282,8 @@ export const Home: Component = () => {
                 }}
                 class={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                   selectedCategory() === tab.id
-                    ? 'bg-rose-500 text-white shadow-sm shadow-rose-500/25'
-                    : 'bg-white dark:bg-slate-900 border border-rose-100 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:border-rose-300'
+                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
+                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 {tab.label}
@@ -307,41 +307,41 @@ export const Home: Component = () => {
               const isFav = () => appData().favorites.includes(game.id);
 
               return (
-                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-5 border border-rose-100 dark:border-slate-800 hover:border-rose-300 dark:hover:border-rose-900 shadow-sm hover:shadow-xl hover:shadow-rose-500/5 transition-all duration-300 flex flex-col justify-between">
+                <div class="group bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
                   <div>
                     {/* アイコン & バッジ & お気に入り */}
                     <div class="flex items-start justify-between mb-4">
                       <div
-                        class={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${game.color} flex items-center justify-center text-3xl shadow-md text-white`}
+                        class={`w-13 h-13 rounded-2xl ${game.color} flex items-center justify-center text-2xl shadow-2xs`}
                       >
                         {game.icon}
                       </div>
 
                       <div class="flex items-center gap-1.5">
                         <Show when={game.badge}>
-                          <span class="px-2 py-0.5 rounded-lg text-[11px] font-bold bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300">
+                          <span class="px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
                             {game.badge}
                           </span>
                         </Show>
                         <button
                           onClick={(e) => onToggleFav(game.id, e)}
                           title="お気に入りに追加"
-                          class="p-1.5 text-slate-300 dark:text-slate-600 hover:text-rose-500 transition-colors"
+                          class="p-1.5 text-slate-300 dark:text-slate-600 hover:text-red-500 transition-colors"
                         >
                           <HeartIcon
                             size={18}
                             filled={isFav()}
-                            class={isFav() ? 'text-rose-500' : ''}
+                            class={isFav() ? 'text-red-500' : ''}
                           />
                         </button>
                       </div>
                     </div>
 
                     {/* タイトル & 説明 */}
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
                       {game.title}
                     </h3>
-                    <div class="text-xs text-rose-500/90 font-medium mb-2">{game.titleJp}</div>
+                    <div class="text-xs text-slate-400 font-medium mb-2">{game.titleJp}</div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 mb-4">
                       {game.description}
                     </p>
@@ -349,7 +349,7 @@ export const Home: Component = () => {
 
                   <div>
                     {/* スコア・戦績 */}
-                    <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 py-2 border-t border-rose-50 dark:border-slate-800/80 mb-3">
+                    <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 py-2 border-t border-slate-100 dark:border-slate-800/80 mb-3">
                       <span class="flex items-center gap-1">
                         <AwardIcon size={14} class="text-amber-500" />
                         最高: <strong class="text-slate-700 dark:text-slate-300">{stats.highScore}</strong>
@@ -361,7 +361,7 @@ export const Home: Component = () => {
                     <a
                       href={`/game/${game.id}`}
                       onClick={() => sound.playPop(520)}
-                      class="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-500/20 active:scale-98 transition-all"
+                      class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs active:scale-98 transition-all"
                     >
                       <PlayIcon size={14} />
                       <span>今すぐ遊ぶ</span>
@@ -379,19 +379,19 @@ export const Home: Component = () => {
 
       {/* 端末同期 & データ管理モーダル */}
       <Show when={showDataModal()}>
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-100 dark:border-slate-800 animate-in fade-in zoom-in-95">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95">
             <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
               <span>📲 複数端末同期 & セーブデータ</span>
             </h3>
 
             {/* モーダル内タブ */}
-            <div class="flex border-b border-rose-100 dark:border-slate-800 mb-4">
+            <div class="flex border-b border-slate-200 dark:border-slate-800 mb-4">
               <button
                 onClick={() => setModalTab('qr')}
                 class={`flex-1 py-2 text-xs font-bold transition-all border-b-2 ${
                   modalTab() === 'qr'
-                    ? 'border-rose-500 text-rose-600 dark:text-rose-400'
+                    ? 'border-slate-900 text-slate-900 dark:border-slate-100 dark:text-white'
                     : 'border-transparent text-slate-400 hover:text-slate-600'
                 }`}
               >
@@ -401,7 +401,7 @@ export const Home: Component = () => {
                 onClick={() => setModalTab('json')}
                 class={`flex-1 py-2 text-xs font-bold transition-all border-b-2 ${
                   modalTab() === 'json'
-                    ? 'border-rose-500 text-rose-600 dark:text-rose-400'
+                    ? 'border-slate-900 text-slate-900 dark:border-slate-100 dark:text-white'
                     : 'border-transparent text-slate-400 hover:text-slate-600'
                 }`}
               >
@@ -417,14 +417,14 @@ export const Home: Component = () => {
                 </p>
 
                 <Show when={qrCodeDataUrl()} fallback={<div class="w-48 h-48 bg-slate-100 animate-pulse rounded-2xl mb-4" />}>
-                  <div class="p-3 bg-white rounded-2xl shadow-md border-2 border-rose-100 mb-4">
+                  <div class="p-3 bg-white rounded-2xl shadow-sm border border-slate-200 mb-4">
                     <img src={qrCodeDataUrl()} alt="セーブデータ同期用QRコード" class="w-48 h-48 block mx-auto" />
                   </div>
                 </Show>
 
                 <button
                   onClick={handleCopySyncUrl}
-                  class="w-full py-2.5 rounded-xl border border-rose-200 dark:border-slate-700 hover:bg-rose-50/50 text-rose-600 dark:text-rose-400 font-semibold text-xs mb-3 transition-all"
+                  class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs mb-3 transition-all"
                 >
                   {copyStatus() ? '✓ 同期用URLをコピーしました！' : '🔗 同期用URLをコピー (LINE等で送る)'}
                 </button>
@@ -441,14 +441,14 @@ export const Home: Component = () => {
                   rows={6}
                   value={backupJsonText()}
                   onInput={(e) => setBackupJsonText(e.currentTarget.value)}
-                  class="w-full font-mono text-[11px] p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-400 mb-2"
+                  class="w-full font-mono text-[11px] p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400 mb-2"
                 />
                 <Show when={importStatus()}>
-                  <div class="text-xs font-bold text-rose-500 mb-2">{importStatus()}</div>
+                  <div class="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">{importStatus()}</div>
                 </Show>
                 <button
                   onClick={handleImportJson}
-                  class="w-full py-2 rounded-xl bg-slate-800 text-white dark:bg-slate-700 font-semibold text-xs mb-3"
+                  class="w-full py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white font-semibold text-xs mb-3"
                 >
                   JSONテキストから復元
                 </button>
@@ -470,9 +470,9 @@ export const Home: Component = () => {
 
       {/* URLからの自動同期受信モーダル */}
       <Show when={pendingSyncData()}>
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-rose-300 text-center animate-in zoom-in-95">
-            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-rose-100 dark:bg-rose-950 flex items-center justify-center text-3xl">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-2xs p-4 animate-in fade-in">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 text-center animate-in zoom-in-95">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-3xl">
               📲
             </div>
             <h3 class="text-lg font-black text-slate-900 dark:text-white mb-1">
@@ -487,7 +487,7 @@ export const Home: Component = () => {
             <div class="flex flex-col gap-2">
               <button
                 onClick={acceptSync}
-                class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold text-xs shadow-md shadow-rose-500/25 active:scale-95 transition-all"
+                class="w-full py-3 rounded-xl bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white font-bold text-xs shadow-xs active:scale-95 transition-all"
               >
                 データを統合して同期する
               </button>
@@ -503,9 +503,9 @@ export const Home: Component = () => {
       </Show>
 
       {/* フッター */}
-      <footer class="border-t border-rose-100 dark:border-slate-800 py-6 text-center text-xs text-slate-400">
-        <div class="flex items-center justify-center gap-1 mb-1">
-          <span>🌸</span>
+      <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-400">
+        <div class="flex items-center justify-center gap-1.5 mb-1">
+          <span>🎮</span>
           <span class="font-bold text-slate-600 dark:text-slate-300">BlossomsArchive Games</span>
         </div>
         <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400">

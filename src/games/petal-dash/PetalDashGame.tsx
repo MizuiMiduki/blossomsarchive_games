@@ -40,10 +40,10 @@ export const PetalDashGame: Component = () => {
     frame++;
     ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
 
-    // 背景グラデーション
+    // 背景グラデーション (空)
     const grad = ctx.createLinearGradient(0, 0, 0, canvasRef.height);
-    grad.addColorStop(0, '#fdf2f8');
-    grad.addColorStop(1, '#fce7f3');
+    grad.addColorStop(0, '#f0f9ff');
+    grad.addColorStop(1, '#e0f2fe');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, canvasRef.width, canvasRef.height);
 
@@ -147,10 +147,10 @@ export const PetalDashGame: Component = () => {
     // --- 描画 ---
     ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
 
-    // 背景グラデーション (空と花びら)
+    // 背景グラデーション (空)
     const grad = ctx.createLinearGradient(0, 0, 0, canvasRef.height);
-    grad.addColorStop(0, '#fdf2f8');
-    grad.addColorStop(1, '#fce7f3');
+    grad.addColorStop(0, '#f0f9ff');
+    grad.addColorStop(1, '#e0f2fe');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, canvasRef.width, canvasRef.height);
 
@@ -214,7 +214,7 @@ export const PetalDashGame: Component = () => {
       instructions={instructions}
     >
       <div
-        class="w-full max-w-[340px] aspect-[3/4] bg-sky-50 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border-4 border-sky-300 dark:border-slate-700 relative cursor-pointer select-none"
+        class="w-full max-w-[340px] aspect-[3/4] bg-sky-50 dark:bg-slate-900 rounded-3xl overflow-hidden shadow-xl border-4 border-slate-300 dark:border-slate-700 relative cursor-pointer select-none"
         onClick={jump}
         onTouchStart={(e) => {
           e.preventDefault();
@@ -230,9 +230,9 @@ export const PetalDashGame: Component = () => {
 
         <Show when={!isPlaying() && !isGameOver()}>
           <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/20 backdrop-blur-2xs p-4 pointer-events-none">
-            <div class="flex flex-col items-center gap-1.5 px-6 py-4 rounded-3xl bg-white/95 dark:bg-slate-900/95 text-center shadow-xl border border-sky-200 dark:border-slate-800 animate-pulse">
+            <div class="flex flex-col items-center gap-1.5 px-6 py-4 rounded-3xl bg-white/95 dark:bg-slate-900/95 text-center shadow-xl border border-slate-200 dark:border-slate-800 animate-pulse">
               <span class="text-3xl">🐦</span>
-              <span class="text-sky-600 dark:text-sky-400 font-bold text-sm">
+              <span class="text-slate-900 dark:text-white font-bold text-sm">
                 タップ または スペースキーで<br />スタート！
               </span>
               <span class="text-[11px] text-slate-500 dark:text-slate-400">
