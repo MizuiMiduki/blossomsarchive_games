@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Deploy to FTP
 
 on:
   push:
@@ -14,8 +14,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -73,11 +71,6 @@ jobs:
           name: dist-artifacts
           path: dist/
           retention-days: 1
-
-      - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist/
 
   # ─── 3. FTP デプロイ (シークレット未設定時は安全にスキップ) ───
   deploy-ftp:
@@ -138,16 +131,3 @@ jobs:
             **/*.log
             **/*.lock
             **/*.sql
-
-  # ─── 4. GitHub Pages デプロイ (GitHub Pages 有効時) ───
-  deploy-pages:
-    needs: [quality-gate, build]
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-        continue-on-error: true
