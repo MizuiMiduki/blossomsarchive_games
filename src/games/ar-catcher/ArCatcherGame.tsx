@@ -22,7 +22,7 @@ export const ArCatcherGame: Component = () => {
   const [isGameOver, setIsGameOver] = createSignal(false);
   const [cameraActive, setCameraActive] = createSignal(false);
   const [comboCount, setComboCount] = createSignal(0);
-  const [facingMode, setFacingMode] = createSignal<'environment' | 'user'>('environment');
+  const [facingMode, setFacingMode] = createSignal<'user' | 'environment'>('user');
 
   let videoRef: HTMLVideoElement | undefined;
   let canvasRef: HTMLCanvasElement | undefined;
@@ -76,7 +76,7 @@ export const ArCatcherGame: Component = () => {
   };
 
   const toggleCameraFacing = async () => {
-    const nextMode = facingMode() === 'environment' ? 'user' : 'environment';
+    const nextMode = facingMode() === 'user' ? 'environment' : 'user';
     setFacingMode(nextMode);
     if (cameraActive()) {
       await startCamera();
@@ -373,7 +373,7 @@ export const ArCatcherGame: Component = () => {
                 class="px-2.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-700 transition-all flex items-center gap-1 shadow-2xs"
               >
                 <span>🔄</span>
-                <span>{facingMode() === 'environment' ? 'アウト' : 'イン'}</span>
+                <span>{facingMode() === 'user' ? 'イン' : 'アウト'}</span>
               </button>
             </Show>
           </div>
@@ -402,7 +402,7 @@ export const ArCatcherGame: Component = () => {
 
           <Show when={!cameraActive()}>
             <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-700 text-center text-xs text-slate-200 shadow-xl flex items-center gap-3">
-              <span>カメラで顔の傾きを検知！</span>
+              <span>インカメラで顔の傾きを検知！</span>
               <button
                 onClick={startCamera}
                 class="px-3 py-1 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold transition-all active:scale-95"
