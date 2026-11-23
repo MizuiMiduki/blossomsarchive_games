@@ -1,4 +1,4 @@
-import { Component, createSignal, For, Show } from 'solid-js';
+import { Component, createSignal, createEffect, For, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
 import { runLocalAI } from '../../utils/local-ai.ts';
@@ -66,6 +66,26 @@ export const AiJailbreakGame: Component = () => {
   const [isStageCleared, setIsStageCleared] = createSignal(false);
   const [isVictory, setIsVictory] = createSignal(false);
   const [totalHacks, setTotalHacks] = createSignal(0);
+
+  let chatContainerRef: HTMLDivElement | undefined;
+
+  const scrollToBottom = () => {
+    requestAnimationFrame(() => {
+      if (chatContainerRef) {
+        chatContainerRef.scrollTo({
+          top: chatContainerRef.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
+    });
+  };
+
+  createEffect(
+    () => ({ len: logs().length, thinking: isThinking() }),
+    () => {
+      scrollToBottom();
+    }
+  );
 
   const stage = () => STAGES[currentStageIdx()];
 
@@ -288,7 +308,10 @@ export const AiJailbreakGame: Component = () => {
         </div>
 
         {/* ターミナル会話ログ */}
-        <div class="flex-1 w-full bg-slate-950 rounded-2xl p-3 border border-slate-800 shadow-inner overflow-y-auto flex flex-col gap-2.5 font-mono text-xs min-h-0 mb-2">
+        <div
+          ref={chatContainerRef}
+          class="flex-1 w-full bg-slate-950 rounded-2xl p-3 border border-slate-800 shadow-inner overflow-y-auto flex flex-col gap-2.5 font-mono text-xs min-h-0 mb-2 scroll-smooth"
+        >
           <For each={logs()}>
             {(log) => (
               <div
