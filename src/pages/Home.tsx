@@ -278,6 +278,7 @@ export const Home: Component = () => {
           <div class="flex items-center justify-center gap-1.5 flex-wrap">
             {[
               { id: 'all', label: `すべて (${GAMES.length})` },
+              { id: 'ai', label: 'ローカルAI' },
               { id: 'board', label: 'ボード' },
               { id: 'puzzle', label: 'パズル' },
               { id: 'card', label: 'カード' },

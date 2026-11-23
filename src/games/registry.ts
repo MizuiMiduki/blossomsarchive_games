@@ -16,6 +16,11 @@ import { WireMazeGame } from './wire-maze/WireMazeGame.tsx';
 import { LightsOutGame } from './lights-out/LightsOutGame.tsx';
 import { SkyLauncherGame } from './sky-launcher/SkyLauncherGame.tsx';
 import { RoomEscapeGame } from './room-escape/RoomEscapeGame.tsx';
+import { AiJailbreakGame } from './ai-jailbreak/AiJailbreakGame.tsx';
+import { AiDetectiveGame } from './ai-detective/AiDetectiveGame.tsx';
+import { WordAlchemyGame } from './word-alchemy/WordAlchemyGame.tsx';
+import { AiCourtroomGame } from './ai-courtroom/AiCourtroomGame.tsx';
+import { SemanticWordGame } from './semantic-word/SemanticWordGame.tsx';
 import {
   LifeGameIcon,
   ReversiIcon,
@@ -33,9 +38,14 @@ import {
   LightsOutIcon,
   CatapultIcon,
   EscapeRoomIcon,
+  AiJailbreakIcon,
+  AiDetectiveIcon,
+  WordAlchemyIcon,
+  AiCourtroomIcon,
+  SemanticWordIcon,
 } from '../components/Icons.tsx';
 
-export type GameCategory = 'all' | 'puzzle' | 'board' | 'card' | 'action' | 'casual';
+export type GameCategory = 'all' | 'puzzle' | 'board' | 'card' | 'action' | 'casual' | 'ai';
 
 export interface GameDefinition {
   id: string;
@@ -253,6 +263,66 @@ export const GAMES: GameDefinition[] = [
     icon: EscapeRoomIcon,
     color: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-900/40',
     component: RoomEscapeGame,
+    isAvailable: true,
+  },
+  {
+    id: 'ai-jailbreak',
+    title: 'AI Jailbreak',
+    titleJp: '防衛AI欺瞞パズル',
+    category: 'ai',
+    description: '言葉の説得・論理的矛盾・架空の緊急事態を駆使して防衛AIのプロトコルを解除させるプロンプト脱獄ゲーム。',
+    badge: 'ローカルAI',
+    icon: AiJailbreakIcon,
+    color: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-900/40',
+    component: AiJailbreakGame,
+    isAvailable: true,
+  },
+  {
+    id: 'ai-detective',
+    title: 'Reverse 20Q',
+    titleJp: '逆20の質問 (AI探偵を欺け)',
+    category: 'ai',
+    description: 'ある物になりきり、AI探偵からの15問の鋭い質問を欺き続ける逆アキネイターゲーム。',
+    badge: 'ローカルAI',
+    icon: AiDetectiveIcon,
+    color: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-900/40',
+    component: AiDetectiveGame,
+    isAvailable: true,
+  },
+  {
+    id: 'word-alchemy',
+    title: 'Word Alchemy',
+    titleJp: '言霊錬金脱出',
+    category: 'ai',
+    description: '手持ちの言葉や元素を合成して新たな言霊を創り出し、AIの物理・魔導判定で障壁を破壊して脱出するパズル。',
+    badge: 'ローカルAI',
+    icon: WordAlchemyIcon,
+    color: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/40',
+    component: WordAlchemyGame,
+    isAvailable: true,
+  },
+  {
+    id: 'ai-courtroom',
+    title: 'AI Courtroom',
+    titleJp: 'AI心理法廷 (無罪を勝ち取れ)',
+    category: 'ai',
+    description: '検察AIの疑惑追及に対し、論理的なアリバイや反証を展開して有罪率を下げ、無罪判決を目指す法廷バトル。',
+    badge: 'ローカルAI',
+    icon: AiCourtroomIcon,
+    color: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/40',
+    component: AiCourtroomGame,
+    isAvailable: true,
+  },
+  {
+    id: 'semantic-word',
+    title: 'Semantic Thermometer',
+    titleJp: 'ことばの温度計',
+    category: 'ai',
+    description: '秘密のお題との「意味の距離・温度（-20℃〜100℃）」を手がかりに、連想を膨らませて正解を目指す推測パズル。',
+    badge: 'ローカルAI',
+    icon: SemanticWordIcon,
+    color: 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-900/40',
+    component: SemanticWordGame,
     isAvailable: true,
   },
 ];

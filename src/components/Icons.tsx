@@ -723,3 +723,113 @@ export const EscapeRoomIcon: Component<IconProps> = (props) => (
     <path d="M17 18 L22 18" />
   </svg>
 );
+
+export const AiJailbreakIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+    <circle cx="12" cy="10" r="2" />
+    <path d="m10 13 4 4" />
+    <path d="m14 13-4 4" />
+  </svg>
+);
+
+export const AiDetectiveIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="11" cy="11" r="7" />
+    <path d="m21 21-4.35-4.35" />
+    <circle cx="11" cy="11" r="2" fill="currentColor" opacity="0.3" />
+    <path d="M11 7v1" />
+    <path d="M11 14v1" />
+    <path d="M7 11h1" />
+    <path d="M14 11h1" />
+  </svg>
+);
+
+export const WordAlchemyIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M10 2v5.5L4.5 17.5A3 3 0 0 0 7.1 22h9.8a3 3 0 0 0 2.6-4.5L14 7.5V2" />
+    <path d="M8.5 2h7" />
+    <path d="M7 15h10" />
+    <circle cx="12" cy="18" r="1" fill="currentColor" />
+  </svg>
+);
+
+export const AiCourtroomIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+    <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+    <path d="M7 21h10" />
+    <path d="M12 3v18" />
+    <path d="M3 7h18" />
+  </svg>
+);
+
+export const SemanticWordIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+    <circle cx="11.5" cy="17.5" r="2" fill="currentColor" />
+    <path d="M18 7h2" />
+    <path d="M18 11h2" />
+    <path d="M18 15h2" />
+  </svg>
+);
