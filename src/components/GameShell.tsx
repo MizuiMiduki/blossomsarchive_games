@@ -37,6 +37,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
   const [isMuted, setIsMuted] = createSignal(sound.getMuted());
   const [isNewRecord, setIsNewRecord] = createSignal(false);
   const [stats, setStats] = createSignal(getGameStats(props.id));
+  const [viewportHeight, setViewportHeight] = createSignal<string>('100dvh');
 
   let containerRef: HTMLDivElement | undefined;
 
@@ -79,10 +80,34 @@ export const GameShell: Component<GameShellProps> = (props) => {
   let prevGameOver = false;
   let prevVictory = false;
 
-  // ゲーム開始・マウント時にプレイ回数を加算
+  // ゲーム開始・マウント時にプレイ回数を加算 & ビューポート監視
   onSettled(() => {
     recordGameStart(props.id);
     setStats(getGameStats(props.id));
+
+    if (typeof window !== 'undefined') {
+      const updateViewport = () => {
+        if (window.visualViewport) {
+          setViewportHeight(`${window.visualViewport.height}px`);
+        } else {
+          setViewportHeight(`${window.innerHeight}px`);
+        }
+        if (window.scrollY > 0) {
+          window.scrollTo(0, 0);
+        }
+      };
+
+      updateViewport();
+      window.visualViewport?.addEventListener('resize', updateViewport);
+      window.visualViewport?.addEventListener('scroll', updateViewport);
+      window.addEventListener('scroll', updateViewport);
+
+      return () => {
+        window.visualViewport?.removeEventListener('resize', updateViewport);
+        window.visualViewport?.removeEventListener('scroll', updateViewport);
+        window.removeEventListener('scroll', updateViewport);
+      };
+    }
   });
 
   // リアルタイムハイスコア自動保存
@@ -129,7 +154,8 @@ export const GameShell: Component<GameShellProps> = (props) => {
   return (
     <div
       ref={containerRef}
-      class="flex flex-col items-center justify-between h-[100dvh] max-h-[100dvh] w-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-1 sm:p-2.5 pt-[max(0.35rem,env(safe-area-inset-top))] pb-[max(0.35rem,env(safe-area-inset-bottom))] pl-[max(0.35rem,env(safe-area-inset-left))] pr-[max(0.35rem,env(safe-area-inset-right))] select-none overflow-hidden overscroll-none"
+      style={{ height: viewportHeight() }}
+      class="fixed inset-0 w-full flex flex-col items-center justify-between bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-1 sm:p-2.5 pt-[max(0.35rem,env(safe-area-inset-top))] pb-[max(0.35rem,env(safe-area-inset-bottom))] pl-[max(0.35rem,env(safe-area-inset-left))] pr-[max(0.35rem,env(safe-area-inset-right))] select-none overflow-hidden overscroll-none"
     >
       {/* 上部ヘッダーコントロール */}
       <header class="w-full max-w-3xl shrink-0 flex items-center justify-between py-1.5 px-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs mb-1">

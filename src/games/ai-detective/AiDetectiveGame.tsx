@@ -257,25 +257,25 @@ ${historyStr}
         {/* プレイ画面 */}
         <Show when={isPlaying()}>
           {/* 上部ヘッダーインフォ */}
-          <div class="flex items-center justify-between px-3 py-2 bg-slate-900 text-white rounded-2xl mb-2 text-xs border border-slate-800 shadow-md shrink-0">
+          <div class="flex items-center justify-between px-2.5 sm:px-3 py-1.5 sm:py-2 bg-slate-900 text-white rounded-2xl mb-1.5 text-xs border border-slate-800 shadow-md shrink-0">
             <div class="flex items-center gap-2">
-              <span class="text-slate-400">あなたの正体:</span>
-              <span class="font-bold text-indigo-400 bg-indigo-950/80 px-2 py-0.5 rounded-md border border-indigo-800">
+              <span class="text-slate-400 text-[11px]">正体:</span>
+              <span class="font-bold text-indigo-400 bg-indigo-950/80 px-2 py-0.5 rounded-md border border-indigo-800 text-[11px] sm:text-xs">
                 {secretWord()}
               </span>
             </div>
             <div class="flex items-center gap-3">
-              <span class="text-slate-400">
-                質問: <strong class="text-white text-sm font-mono">{dialogue().length}</strong> / {maxQuestions}
+              <span class="text-slate-400 text-[11px]">
+                質問: <strong class="text-white text-xs sm:text-sm font-mono">{dialogue().length}</strong> / {maxQuestions}
               </span>
-              <span class="text-emerald-400 font-mono text-[11px]">100% On-Device</span>
+              <span class="text-emerald-400 font-mono text-[10px] sm:text-[11px]">100% On-Device</span>
             </div>
           </div>
 
           {/* 質問・回答チャットログ */}
           <div
             ref={chatContainerRef}
-            class="flex-1 w-full bg-slate-950 rounded-2xl p-3 border border-slate-800 shadow-inner overflow-y-auto flex flex-col gap-2.5 font-mono text-xs min-h-0 mb-2 scroll-smooth"
+            class="flex-1 w-full bg-slate-950 rounded-2xl p-2 sm:p-3 border border-slate-800 shadow-inner overflow-y-auto flex flex-col gap-2 font-mono text-xs min-h-0 mb-1.5 scroll-smooth"
           >
             <For each={dialogue()}>
               {(turn) => (
@@ -359,8 +359,11 @@ ${historyStr}
                   placeholder="回答を入力 (例: はい、時々使います)..."
                   value={currentInput()}
                   onInput={(e) => setCurrentInput(e.currentTarget.value)}
+                  onFocus={() => {
+                    if (typeof window !== 'undefined') window.scrollTo(0, 0);
+                  }}
                   disabled={isThinking()}
-                  class="flex-1 p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-800 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  class="flex-1 p-2 sm:p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-800 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
                 <button
                   type="submit"

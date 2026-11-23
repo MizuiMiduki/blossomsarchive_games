@@ -265,15 +265,15 @@ export const AiJailbreakGame: Component = () => {
     >
       <div class="w-full max-w-2xl h-full flex flex-col justify-between p-2 min-h-0 select-none">
         {/* 上部ステータスバー */}
-        <div class="bg-slate-900/90 text-slate-100 rounded-2xl p-2.5 border border-slate-800 shadow-md mb-2 shrink-0">
-          <div class="flex items-center justify-between text-xs mb-1.5">
+        <div class="bg-slate-900/90 text-slate-100 rounded-2xl p-2 sm:p-2.5 border border-slate-800 shadow-md mb-1.5 shrink-0">
+          <div class="flex items-center justify-between text-xs mb-1">
             <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold text-[11px] border border-emerald-500/30">
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold text-[10px] sm:text-[11px] border border-emerald-500/30">
                 {stage().codename}
               </span>
-              <span class="font-bold text-slate-200">{stage().name}</span>
+              <span class="font-bold text-slate-200 text-xs">{stage().name}</span>
             </div>
-            <div class="flex items-center gap-2 text-[11px] text-slate-400">
+            <div class="flex items-center gap-2 text-[10px] sm:text-[11px] text-slate-400">
               <span>試行: {totalHacks()}回</span>
               <span class="text-emerald-400 font-mono font-bold">100% On-Device</span>
             </div>
@@ -281,8 +281,8 @@ export const AiJailbreakGame: Component = () => {
 
           {/* 防衛耐久度バー */}
           <div class="flex items-center gap-2">
-            <span class="text-[10px] text-slate-400 shrink-0 font-mono">防衛耐久値:</span>
-            <div class="flex-1 h-3 rounded-full bg-slate-950 overflow-hidden border border-slate-700/60 p-0.5">
+            <span class="text-[10px] text-slate-400 shrink-0 font-mono">耐久値:</span>
+            <div class="flex-1 h-2.5 sm:h-3 rounded-full bg-slate-950 overflow-hidden border border-slate-700/60 p-0.5">
               <div
                 class="h-full rounded-full transition-all duration-500"
                 style={{
@@ -296,21 +296,22 @@ export const AiJailbreakGame: Component = () => {
                 }}
               />
             </div>
-            <span class="text-xs font-mono font-bold text-slate-200 w-12 text-right shrink-0">
+            <span class="text-[11px] sm:text-xs font-mono font-bold text-slate-200 w-12 text-right shrink-0">
               {resistance()} / {stage().defenseMax}
             </span>
           </div>
 
-          {/* ヒント */}
-          <div class="mt-1.5 text-[11px] text-amber-300/80 bg-amber-950/30 px-2 py-1 rounded-lg border border-amber-800/40">
-            {stage().weaknessHint}
-          </div>
+          {/* ヒント (画面の縦幅が狭い・キーボード表示時はコンパクトに折りたたみ可能) */}
+          <details class="mt-1 text-[11px] text-amber-300/80 bg-amber-950/30 px-2 py-0.5 rounded-lg border border-amber-800/40">
+            <summary class="cursor-pointer font-bold select-none text-[10px] text-amber-400">攻略ヒントを表示</summary>
+            <div class="mt-0.5 text-[10px] sm:text-[11px] leading-relaxed">{stage().weaknessHint}</div>
+          </details>
         </div>
 
         {/* ターミナル会話ログ */}
         <div
           ref={chatContainerRef}
-          class="flex-1 w-full bg-slate-950 rounded-2xl p-3 border border-slate-800 shadow-inner overflow-y-auto flex flex-col gap-2.5 font-mono text-xs min-h-0 mb-2 scroll-smooth"
+          class="flex-1 w-full bg-slate-950 rounded-2xl p-2 sm:p-3 border border-slate-800 shadow-inner overflow-y-auto flex flex-col gap-2 font-mono text-xs min-h-0 mb-1.5 scroll-smooth"
         >
           <For each={logs()}>
             {(log) => (
@@ -359,8 +360,11 @@ export const AiJailbreakGame: Component = () => {
                   placeholder="AIへの説得・命令・誘導メッセージを入力..."
                   value={inputText()}
                   onInput={(e) => setInputText(e.currentTarget.value)}
+                  onFocus={() => {
+                    if (typeof window !== 'undefined') window.scrollTo(0, 0);
+                  }}
                   disabled={isThinking()}
-                  class="flex-1 p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-800 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  class="flex-1 p-2 sm:p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-800 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
                 <button
                   type="submit"

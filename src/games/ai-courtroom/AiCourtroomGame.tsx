@@ -246,15 +246,15 @@ export const AiCourtroomGame: Component = () => {
     >
       <div class="w-full max-w-2xl h-full flex flex-col justify-between p-2 min-h-0 select-none">
         {/* 上部有罪ゲージ */}
-        <div class="bg-slate-900 text-white rounded-2xl p-3 border border-slate-800 shadow-md mb-2 shrink-0">
-          <div class="flex items-center justify-between text-xs mb-1.5">
-            <span class="font-bold text-amber-400">審理ラウンド: {currentTurn()} / 5</span>
-            <span class="text-emerald-400 font-mono text-[11px]">100% On-Device</span>
+        <div class="bg-slate-900 text-white rounded-2xl p-2 sm:p-2.5 border border-slate-800 shadow-md mb-1.5 shrink-0">
+          <div class="flex items-center justify-between text-xs mb-1">
+            <span class="font-bold text-amber-400 text-[11px] sm:text-xs">審理ラウンド: {currentTurn()} / 5</span>
+            <span class="text-emerald-400 font-mono text-[10px] sm:text-[11px]">100% On-Device</span>
           </div>
 
           <div class="flex items-center gap-2">
-            <span class="text-[11px] font-mono text-slate-400 shrink-0">有罪推定率:</span>
-            <div class="flex-1 h-3.5 rounded-full bg-slate-950 overflow-hidden border border-slate-700/60 p-0.5">
+            <span class="text-[10px] sm:text-[11px] font-mono text-slate-400 shrink-0">有罪率:</span>
+            <div class="flex-1 h-2.5 sm:h-3 rounded-full bg-slate-950 overflow-hidden border border-slate-700/60 p-0.5">
               <div
                 class="h-full rounded-full transition-all duration-500"
                 style={{
@@ -265,7 +265,7 @@ export const AiCourtroomGame: Component = () => {
               />
             </div>
             <span
-              class={`text-xs font-mono font-bold w-12 text-right shrink-0 ${
+              class={`text-[11px] sm:text-xs font-mono font-bold w-12 text-right shrink-0 ${
                 guiltRate() <= 30 ? 'text-emerald-400' : guiltRate() <= 60 ? 'text-amber-400' : 'text-rose-400'
               }`}
             >
@@ -273,7 +273,7 @@ export const AiCourtroomGame: Component = () => {
             </span>
           </div>
 
-          <div class="text-[10px] text-slate-400 text-right mt-0.5">
+          <div class="text-[9px] sm:text-[10px] text-slate-400 text-right mt-0.5">
             ※30%以下に引き下げると無罪確定
           </div>
         </div>
@@ -281,7 +281,7 @@ export const AiCourtroomGame: Component = () => {
         {/* 法廷会話ログ */}
         <div
           ref={chatContainerRef}
-          class="flex-1 w-full bg-slate-950 rounded-2xl p-3 border border-slate-800 shadow-inner overflow-y-auto flex flex-col gap-2.5 font-mono text-xs min-h-0 mb-2 scroll-smooth"
+          class="flex-1 w-full bg-slate-950 rounded-2xl p-2 sm:p-2.5 border border-slate-800 shadow-inner overflow-y-auto flex flex-col gap-2 font-mono text-xs min-h-0 mb-1.5 scroll-smooth"
         >
           <For each={logs()}>
             {(log) => (
@@ -344,8 +344,11 @@ export const AiCourtroomGame: Component = () => {
               placeholder="検察の主張に対する反論・アリバイ・物証の疑義を入力..."
               value={inputText()}
               onInput={(e) => setInputText(e.currentTarget.value)}
+              onFocus={() => {
+                if (typeof window !== 'undefined') window.scrollTo(0, 0);
+              }}
               disabled={isThinking()}
-              class="flex-1 p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-800 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+              class="flex-1 p-2 sm:p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-800 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
             />
             <button
               type="submit"

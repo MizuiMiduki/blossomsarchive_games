@@ -305,8 +305,11 @@ export const SemanticWordGame: Component = () => {
               placeholder="連想する単語を入力 (例: 空, 赤, 太陽)..."
               value={inputText()}
               onInput={(e) => setInputText(e.currentTarget.value)}
+              onFocus={() => {
+                if (typeof window !== 'undefined') window.scrollTo(0, 0);
+              }}
               disabled={isThinking()}
-              class="flex-1 p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-800 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              class="flex-1 p-2 sm:p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-800 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none"
             />
             <button
               type="submit"
