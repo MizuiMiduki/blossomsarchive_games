@@ -18,6 +18,7 @@ export const BlossomLifeGame: Component = () => {
   const [livingCount, setLivingCount] = createSignal(0);
   const [speedMs, setSpeedMs] = createSignal(100); // 速度 (ms)
   const [brushMode, setBrushMode] = createSignal<'draw' | 'erase'>('draw');
+  const [hoverCell, setHoverCell] = createSignal<{ r: number; c: number } | null>(null);
 
   let canvasRef: HTMLCanvasElement | undefined;
   let isPointerDown = false;
@@ -74,9 +75,9 @@ export const BlossomLifeGame: Component = () => {
     ctx.fillStyle = '#020617';
     ctx.fillRect(0, 0, w, h);
 
-    // グリッド線
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.08)';
-    ctx.lineWidth = 0.5;
+    // 1. 各マスの境界線（通常グリッド線）
+    ctx.strokeStyle = 'rgba(71, 85, 105, 0.45)';
+    ctx.lineWidth = 1;
     for (let c = 0; c <= LIFE_GRID_W; c++) {
       ctx.beginPath();
       ctx.moveTo(c * cellW, 0);
@@ -90,17 +91,34 @@ export const BlossomLifeGame: Component = () => {
       ctx.stroke();
     }
 
+    // 2. 5マスごとの主要グリッド線（方眼紙のように位置を把握しやすくする太線）
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.55)';
+    ctx.lineWidth = 1.5;
+    for (let c = 0; c <= LIFE_GRID_W; c += 5) {
+      ctx.beginPath();
+      ctx.moveTo(c * cellW, 0);
+      ctx.lineTo(c * cellW, h);
+      ctx.stroke();
+    }
+    for (let r = 0; r <= LIFE_GRID_H; r += 5) {
+      ctx.beginPath();
+      ctx.moveTo(0, r * cellH);
+      ctx.lineTo(w, r * cellH);
+      ctx.stroke();
+    }
+
     const currentGrid = grid();
 
-    // セルの描画
+    // 3. 生存セルの描画 (マス目にフィットする丸角四角形)
     for (let r = 0; r < LIFE_GRID_H; r++) {
       for (let c = 0; c < LIFE_GRID_W; c++) {
         const cell = currentGrid[r][c];
         if (!cell.alive) continue;
 
-        const x = c * cellW + cellW * 0.1;
-        const y = r * cellH + cellH * 0.1;
-        const size = cellW * 0.8;
+        const x = c * cellW + 1;
+        const y = r * cellH + 1;
+        const sizeW = cellW - 2;
+        const sizeH = cellH - 2;
 
         // 世代に応じたセル色
         let color = '#38bdf8'; // 誕生直後: スカイブルー
@@ -112,15 +130,29 @@ export const BlossomLifeGame: Component = () => {
 
         ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
+        ctx.roundRect(x, y, sizeW, sizeH, 1.5);
         ctx.fill();
       }
     }
+
+    // 4. 入力・ホバー位置のマス強調枠
+    const hover = hoverCell();
+    if (hover && hover.r >= 0 && hover.r < LIFE_GRID_H && hover.c >= 0 && hover.c < LIFE_GRID_W) {
+      const hx = hover.c * cellW;
+      const hy = hover.r * cellH;
+
+      ctx.fillStyle = brushMode() === 'draw' ? 'rgba(56, 189, 248, 0.35)' : 'rgba(239, 68, 68, 0.35)';
+      ctx.fillRect(hx, hy, cellW, cellH);
+
+      ctx.strokeStyle = brushMode() === 'draw' ? '#38bdf8' : '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(hx + 0.5, hy + 0.5, cellW - 1, cellH - 1);
+    }
   };
 
-  // gridが変化したときにCanvasを再描画
+  // gridまたはhoverCellまたはbrushModeが変化したときにCanvasを再描画
   createEffect(
-    () => grid(),
+    () => ({ g: grid(), h: hoverCell(), b: brushMode() }),
     () => {
       renderCanvas();
     }
@@ -131,8 +163,8 @@ export const BlossomLifeGame: Component = () => {
   });
 
   // マウス/タッチ座標からセルを更新
-  const updateCellFromPointer = (clientX: number, clientY: number) => {
-    if (!canvasRef) return;
+  const getGridCoord = (clientX: number, clientY: number) => {
+    if (!canvasRef) return null;
     const rect = canvasRef.getBoundingClientRect();
     const x = ((clientX - rect.left) / rect.width) * LIFE_GRID_W;
     const y = ((clientY - rect.top) / rect.height) * LIFE_GRID_H;
@@ -140,19 +172,24 @@ export const BlossomLifeGame: Component = () => {
     const c = Math.floor(x);
 
     if (r >= 0 && r < LIFE_GRID_H && c >= 0 && c < LIFE_GRID_W) {
-      const currentGrid = grid();
-      const isAlive = brushMode() === 'draw';
-      if (currentGrid[r][c].alive !== isAlive) {
-        const next = currentGrid.map((row) => [...row]);
-        next[r][c] = { alive: isAlive, age: isAlive ? 1 : 0 };
-        setGrid(next);
-        setLivingCount(countLiveCells(next));
+      return { r, c };
+    }
+    return null;
+  };
 
-        const now = Date.now();
-        if (now - lastSoundTime > 60) {
-          lastSoundTime = now;
-          sound.playPop(isAlive ? 600 : 380);
-        }
+  const updateCellAt = (r: number, c: number) => {
+    const currentGrid = grid();
+    const isAlive = brushMode() === 'draw';
+    if (currentGrid[r][c].alive !== isAlive) {
+      const next = currentGrid.map((row) => [...row]);
+      next[r][c] = { alive: isAlive, age: isAlive ? 1 : 0 };
+      setGrid(next);
+      setLivingCount(countLiveCells(next));
+
+      const now = Date.now();
+      if (now - lastSoundTime > 60) {
+        lastSoundTime = now;
+        sound.playPop(isAlive ? 600 : 380);
       }
     }
   };
@@ -258,28 +295,38 @@ export const BlossomLifeGame: Component = () => {
     >
       {/* 世代 & 生存数インフォバー */}
       <div class="w-full max-w-[540px] flex items-center justify-between text-xs px-3 py-1.5 bg-slate-900/90 text-white rounded-2xl mb-1.5 shadow-xs border border-slate-800">
-        <div class="flex items-center gap-2">
-          <span>世代:</span>
-          <span class="font-mono font-bold text-sky-400 text-sm">{generation()}</span>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1.5">
+            <span class="text-slate-400">世代:</span>
+            <span class="font-mono font-bold text-sky-400 text-sm">{generation()}</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-slate-400">生存セル:</span>
+            <span class="font-mono font-bold text-emerald-400 text-sm">{livingCount()}</span>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          <span>生存セル:</span>
-          <span class="font-mono font-bold text-emerald-400 text-sm">{livingCount()}</span>
-        </div>
-        <div class="flex items-center gap-1 text-[11px] text-slate-400">
-          <span>速度:</span>
-          <select
-            value={speedMs()}
-            onChange={(e) => {
-              setSpeedMs(Number(e.currentTarget.value));
-            }}
-            class="bg-slate-800 text-white text-[11px] rounded-lg px-1.5 py-0.5 border border-slate-700 focus:outline-none cursor-pointer"
-          >
-            <option value="200">0.5x</option>
-            <option value="100">1.0x</option>
-            <option value="50">2.0x</option>
-            <option value="20">5.0x</option>
-          </select>
+
+        <div class="flex items-center gap-2 text-[11px]">
+          <Show when={hoverCell()}>
+            <span class="text-sky-300 font-mono text-[10px] sm:text-xs bg-slate-800/90 px-1.5 py-0.5 rounded border border-slate-700">
+              マス: [{hoverCell()!.c + 1}, {hoverCell()!.r + 1}]
+            </span>
+          </Show>
+          <div class="flex items-center gap-1 text-slate-400">
+            <span>速度:</span>
+            <select
+              value={speedMs()}
+              onChange={(e) => {
+                setSpeedMs(Number(e.currentTarget.value));
+              }}
+              class="bg-slate-800 text-white text-[11px] rounded-lg px-1.5 py-0.5 border border-slate-700 focus:outline-none cursor-pointer"
+            >
+              <option value="200">0.5x</option>
+              <option value="100">1.0x</option>
+              <option value="50">2.0x</option>
+              <option value="20">5.0x</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -291,11 +338,17 @@ export const BlossomLifeGame: Component = () => {
           try {
             (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
           } catch {}
-          updateCellFromPointer(e.clientX, e.clientY);
+          const coord = getGridCoord(e.clientX, e.clientY);
+          setHoverCell(coord);
+          if (coord) {
+            updateCellAt(coord.r, coord.c);
+          }
         }}
         onPointerMove={(e) => {
-          if (isPointerDown) {
-            updateCellFromPointer(e.clientX, e.clientY);
+          const coord = getGridCoord(e.clientX, e.clientY);
+          setHoverCell(coord);
+          if (isPointerDown && coord) {
+            updateCellAt(coord.r, coord.c);
           }
         }}
         onPointerUp={(e) => {
@@ -304,8 +357,14 @@ export const BlossomLifeGame: Component = () => {
             (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
           } catch {}
         }}
+        onPointerLeave={() => {
+          if (!isPointerDown) {
+            setHoverCell(null);
+          }
+        }}
         onPointerCancel={() => {
           isPointerDown = false;
+          setHoverCell(null);
         }}
       >
         <canvas
