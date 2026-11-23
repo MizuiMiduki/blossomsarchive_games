@@ -1,4 +1,4 @@
-import { Component, createSignal, onSettled, For, Show } from 'solid-js';
+import { Component, createSignal, onSettled, onCleanup, For, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
 import confetti from 'canvas-confetti';
@@ -256,6 +256,32 @@ export const AiWordWolfGame: Component = () => {
   const [guessChoices, setGuessChoices] = createSignal<string[]>([]);
   const [reverseSuccess, setReverseSuccess] = createSignal(false);
   const [voteDetails, setVoteDetails] = createSignal<{ voter: string; target: string }[]>([]);
+  const [thinkingPlayer, setThinkingPlayer] = createSignal<{ name: string; avatar: string } | null>(null);
+
+  let chatContainerRef!: HTMLDivElement;
+  let activeTimers: number[] = [];
+
+  const addTimer = (callback: () => void, ms: number) => {
+    const tid = window.setTimeout(() => {
+      callback();
+      activeTimers = activeTimers.filter((id) => id !== tid);
+    }, ms);
+    activeTimers.push(tid);
+    return tid;
+  };
+
+  const clearAllTimers = () => {
+    activeTimers.forEach((id) => clearTimeout(id));
+    activeTimers = [];
+  };
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (chatContainerRef) {
+        chatContainerRef.scrollTo({ top: chatContainerRef.scrollHeight, behavior: 'smooth' });
+      }
+    }, 40);
+  };
 
   const instructions = [
     '【AIワードウルフ】あなたと3人のAI（アリス・ボブ・キャロル）の中に、1人だけ違うお題を持つ「ウルフ（少数派）」が潜んでいます！',
@@ -271,6 +297,7 @@ export const AiWordWolfGame: Component = () => {
   ];
 
   const restart = (diff = difficulty()) => {
+    clearAllTimers();
     // 難易度に応じたお題の抽出
     const candidates = TOPICS.filter((t) => (diff === 'hard' ? true : t.difficulty === 'normal'));
     const topic = candidates[Math.floor(Math.random() * candidates.length)] || TOPICS[0];
@@ -292,81 +319,120 @@ export const AiWordWolfGame: Component = () => {
     setVotedOutPlayer('');
     setReverseSuccess(false);
     setVoteDetails([]);
+    setLogs([]);
 
-    // 最初のAI（アリス）の発言
+    // 最初のAI（アリス）の思考演出
     const firstSpeaker = AI_PLAYERS[0];
     const isFirstWolf = wolfName === firstSpeaker.name;
     const hints = isFirstWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
 
-    setLogs([
-      {
-        speaker: firstSpeaker.name,
-        avatar: firstSpeaker.avatar,
-        role: 'alice',
-        text: hints[0],
-      },
-    ]);
+    setThinkingPlayer({ name: firstSpeaker.name, avatar: firstSpeaker.avatar });
+    scrollToBottom();
+
+    addTimer(() => {
+      setThinkingPlayer(null);
+      sound.playPop(480);
+      setLogs([
+        {
+          speaker: firstSpeaker.name,
+          avatar: firstSpeaker.avatar,
+          role: 'alice',
+          text: hints[0],
+        },
+      ]);
+      scrollToBottom();
+    }, 900);
   };
 
   const handleSendStatement = () => {
     const text = inputText().trim();
-    if (!text || gameState() !== 'playing') return;
+    if (!text || gameState() !== 'playing' || thinkingPlayer()) return;
 
     sound.playPop(500);
-    const newLogs: ChatMessage[] = [
-      ...logs(),
+    setLogs((prev) => [
+      ...prev,
       { speaker: 'あなた', avatar: '👤', role: 'player', text },
-    ];
+    ]);
+    setInputText('');
+    scrollToBottom();
 
     const currentR = round();
     const topic = currentTopic();
 
-    // ボブの発言
-    const isBobWolf = wolfPlayer() === 'ボブ';
-    const bobHints = isBobWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
-    newLogs.push({
-      speaker: 'ボブ',
-      avatar: '🧑‍🎨',
-      role: 'bob',
-      text: bobHints[Math.min(currentR - 1, bobHints.length - 1)],
-    });
+    // 1. ボブの思考時間演出 (約950ms)
+    setThinkingPlayer({ name: 'ボブ', avatar: '🧑‍🎨' });
+    scrollToBottom();
 
-    // キャロルの発言
-    const isCarolWolf = wolfPlayer() === 'キャロル';
-    const carolHints = isCarolWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
-    newLogs.push({
-      speaker: 'キャロル',
-      avatar: '🕵️‍♀️',
-      role: 'carol',
-      text: carolHints[Math.min(currentR - 1, carolHints.length - 1)],
-    });
+    addTimer(() => {
+      const isBobWolf = wolfPlayer() === 'ボブ';
+      const bobHints = isBobWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
+      sound.playPop(480);
+      setLogs((prev) => [
+        ...prev,
+        {
+          speaker: 'ボブ',
+          avatar: '🧑‍🎨',
+          role: 'bob',
+          text: bobHints[Math.min(currentR - 1, bobHints.length - 1)],
+        },
+      ]);
+      scrollToBottom();
 
-    setLogs(newLogs);
-    setInputText('');
+      // 2. キャロルの思考時間演出 (約1100ms)
+      setThinkingPlayer({ name: 'キャロル', avatar: '🕵️‍♀️' });
+      scrollToBottom();
 
-    if (currentR < 3) {
-      setRound((r) => r + 1);
-      // 次のラウンドのアリスの発言
-      const isAliceWolf = wolfPlayer() === 'アリス';
-      const aliceHints = isAliceWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
-      setTimeout(() => {
-        setLogs((l) => [
-          ...l,
+      addTimer(() => {
+        const isCarolWolf = wolfPlayer() === 'キャロル';
+        const carolHints = isCarolWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
+        sound.playPop(480);
+        setLogs((prev) => [
+          ...prev,
           {
-            speaker: 'アリス',
-            avatar: '👩‍💼',
-            role: 'alice',
-            text: aliceHints[currentR],
+            speaker: 'キャロル',
+            avatar: '🕵️‍♀️',
+            role: 'carol',
+            text: carolHints[Math.min(currentR - 1, carolHints.length - 1)],
           },
         ]);
-      }, 500);
-    } else {
-      // 3ターン終了で投票へ
-      setTimeout(() => {
-        sound.playMatch(5);
-        setGameState('voting');
-      }, 700);
-    }
+        setThinkingPlayer(null);
+        scrollToBottom();
+
+        if (currentR < 3) {
+          setRound((r) => r + 1);
+          // 3. 次のラウンドのアリスの思考時間演出 (約1000ms)
+          setThinkingPlayer({ name: 'アリス', avatar: '👩‍💼' });
+          scrollToBottom();
+
+          addTimer(() => {
+            const isAliceWolf = wolfPlayer() === 'アリス';
+            const aliceHints = isAliceWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
+            sound.playPop(480);
+            setLogs((prev) => [
+              ...prev,
+              {
+                speaker: 'アリス',
+                avatar: '👩‍💼',
+                role: 'alice',
+                text: aliceHints[currentR],
+              },
+            ]);
+            setThinkingPlayer(null);
+            scrollToBottom();
+          }, 1000);
+        } else {
+          // 3ターン終了：全員で熟考してから投票へ (約1200ms)
+          setThinkingPlayer({ name: '全員が推理', avatar: '🤔' });
+          scrollToBottom();
+
+          addTimer(() => {
+            setThinkingPlayer(null);
+            sound.playMatch(5);
+            setGameState('voting');
+          }, 1200);
+        }
+      }, 1100);
+    }, 950);
   };
 
   const handleVote = (target: string) => {
@@ -496,6 +562,10 @@ export const AiWordWolfGame: Component = () => {
     restart();
   });
 
+  onCleanup(() => {
+    clearAllTimers();
+  });
+
   return (
     <GameShell
       id="ai-word-wolf"
@@ -556,7 +626,10 @@ export const AiWordWolfGame: Component = () => {
 
         {/* チャット会話エリア */}
         <div class="w-full flex-1 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col min-h-0">
-          <div class="flex-1 p-3 overflow-y-auto space-y-2.5 text-xs leading-relaxed">
+          <div
+            ref={chatContainerRef}
+            class="flex-1 p-3 overflow-y-auto space-y-2.5 text-xs leading-relaxed scroll-smooth"
+          >
             <For each={logs()}>
               {(msg) => (
                 <div class="flex items-start gap-2">
@@ -576,6 +649,23 @@ export const AiWordWolfGame: Component = () => {
                 </div>
               )}
             </For>
+
+            {/* AI思考中タイピングインジケーター */}
+            <Show when={thinkingPlayer()}>
+              <div class="flex items-start gap-2 animate-in fade-in duration-200">
+                <span class="text-lg shrink-0 mt-0.5">{thinkingPlayer()?.avatar}</span>
+                <div class="flex flex-col max-w-[85%]">
+                  <span class="text-[10px] text-amber-500 font-bold mb-0.5 flex items-center gap-1">
+                    <span>{thinkingPlayer()?.name}が考え中...</span>
+                  </span>
+                  <div class="px-3.5 py-2.5 rounded-2xl rounded-tl-xs bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 shadow-2xs w-fit">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-bounce" style={{ "animation-delay": "0ms" }} />
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-bounce" style={{ "animation-delay": "150ms" }} />
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-bounce" style={{ "animation-delay": "300ms" }} />
+                  </div>
+                </div>
+              </div>
+            </Show>
           </div>
 
           {/* 会話入力フェーズ */}
@@ -583,20 +673,25 @@ export const AiWordWolfGame: Component = () => {
             <div class="p-2.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 shrink-0 flex gap-2">
               <input
                 type="text"
-                placeholder="自分のお題について一言（直接の単語は言わないように！）..."
+                disabled={!!thinkingPlayer()}
+                placeholder={
+                  thinkingPlayer()
+                    ? `⏳ ${thinkingPlayer()?.name}の思考を待っています...`
+                    : '自分のお題について一言（直接の単語は言わないように！）...'
+                }
                 value={inputText()}
                 onInput={(e) => setInputText(e.currentTarget.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSendStatement();
                 }}
-                class="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-amber-500"
+                class="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-amber-500 disabled:opacity-60"
               />
               <button
                 onClick={handleSendStatement}
-                disabled={!inputText().trim()}
+                disabled={!inputText().trim() || !!thinkingPlayer()}
                 class="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-all active:scale-95 shrink-0 cursor-pointer"
               >
-                発言
+                {thinkingPlayer() ? '思考中' : '発言'}
               </button>
             </div>
           </Show>
