@@ -280,3 +280,313 @@ export const SparklesIcon: Component<IconProps> = (props) => (
     <path d="M17 19h4" />
   </svg>
 );
+
+export const GamepadIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 24}
+    height={props.size || 24}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <line x1="6" x2="10" y1="12" y2="12" />
+    <line x1="8" x2="8" y1="10" y2="14" />
+    <line x1="15" x2="15.01" y1="13" y2="13" stroke-width="3" />
+    <line x1="18" x2="18.01" y1="11" y2="11" stroke-width="3" />
+    <rect width="20" height="12" x="2" y="6" rx="6" />
+  </svg>
+);
+
+export const SyncIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 24}
+    height={props.size || 24}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+    <path d="M16 21h5v-5" />
+  </svg>
+);
+
+export const CheckIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 24}
+    height={props.size || 24}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+export const TrophyIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 24}
+    height={props.size || 24}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+    <path d="M4 22h16" />
+    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+  </svg>
+);
+
+// --- 各ゲーム用の洗練されたSVGベクターアイコン ---
+
+export const LifeGameIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    class={props.class}
+    {...props}
+  >
+    <rect x="3" y="3" width="5" height="5" rx="1.5" />
+    <rect x="10" y="3" width="5" height="5" rx="1.5" opacity="0.3" />
+    <rect x="17" y="3" width="5" height="5" rx="1.5" />
+    <rect x="3" y="10" width="5" height="5" rx="1.5" opacity="0.3" />
+    <rect x="10" y="10" width="5" height="5" rx="1.5" />
+    <rect x="17" y="10" width="5" height="5" rx="1.5" opacity="0.3" />
+    <rect x="3" y="17" width="5" height="5" rx="1.5" />
+    <rect x="10" y="17" width="5" height="5" rx="1.5" opacity="0.3" />
+    <rect x="17" y="17" width="5" height="5" rx="1.5" />
+  </svg>
+);
+
+export const ReversiIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="9" cy="12" r="7" fill="currentColor" opacity="0.9" />
+    <circle cx="15" cy="12" r="7" stroke="currentColor" stroke-width="2" fill="none" />
+  </svg>
+);
+
+export const ShogiIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    class={props.class}
+    {...props}
+  >
+    <path
+      d="M12 2 L19 6 L17 21 L7 21 L5 6 Z"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linejoin="round"
+    />
+    <text
+      x="12"
+      y="16.5"
+      text-anchor="middle"
+      font-size="9"
+      font-weight="bold"
+      fill="currentColor"
+      font-family="serif"
+    >
+      王
+    </text>
+  </svg>
+);
+
+export const ChessIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M19 21H5" />
+    <path d="M7 21v-2c0-.55.45-1 1-1h8c.55 0 1 .45 1 1v2" />
+    <path d="M8 18l1-5h6l1 5" />
+    <path d="M9 13V9a3 3 0 0 1 6 0v4" />
+    <circle cx="12" cy="5" r="2" />
+  </svg>
+);
+
+export const GomokuIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    class={props.class}
+    {...props}
+  >
+    <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.5" opacity="0.4" />
+    <line x1="12" y1="3" x2="12" y2="21" stroke="currentColor" stroke-width="1.5" opacity="0.4" />
+    <circle cx="12" cy="12" r="4.5" fill="currentColor" />
+    <circle cx="6" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+    <circle cx="18" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+  </svg>
+);
+
+export const FruitDropIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="12" cy="14" r="7" />
+    <path d="M12 7V4" stroke-linecap="round" />
+    <path d="M12 4c2 0 3-1 3-2" stroke-linecap="round" />
+    <circle cx="12" cy="14" r="3" stroke-dasharray="2 2" opacity="0.5" />
+  </svg>
+);
+
+export const Puzzle2048Icon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    class={props.class}
+    {...props}
+  >
+    <rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="currentColor" stroke-width="1.8" />
+    <text
+      x="12"
+      y="16"
+      text-anchor="middle"
+      font-size="9"
+      font-weight="900"
+      fill="currentColor"
+      letter-spacing="-0.5"
+    >
+      2048
+    </text>
+  </svg>
+);
+
+export const MemoryCardsIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <rect x="3" y="5" width="11" height="15" rx="2" />
+    <rect x="10" y="4" width="11" height="15" rx="2" fill="currentColor" fill-opacity="0.15" />
+  </svg>
+);
+
+export const SolitaireCardIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    class={props.class}
+    {...props}
+  >
+    <rect x="4" y="3" width="16" height="18" rx="2.5" stroke="currentColor" stroke-width="1.8" />
+    <path
+      d="M12 7.5 C10.5 9.5 8 11.5 8 13.5 C8 15 9.5 16 11 15 C11.5 15.5 11 17 10.5 18 L13.5 18 C13 17 12.5 15.5 13 15 C14.5 16 16 15 16 13.5 C16 11.5 13.5 9.5 12 7.5 Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+export const BlockPuzzleIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" fill-opacity="0.2" />
+    <rect x="14" y="3" width="7" height="7" rx="1.5" />
+    <rect x="3" y="14" width="7" height="7" rx="1.5" />
+    <rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor" fill-opacity="0.2" />
+  </svg>
+);
+
+export const DashRunnerIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor" fill-opacity="0.2" />
+  </svg>
+);

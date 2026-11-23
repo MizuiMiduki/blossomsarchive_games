@@ -4,21 +4,22 @@ import { sound } from '../../utils/sound.ts';
 
 interface Card {
   id: number;
-  emoji: string;
-  name: string;
+  rank: string;
+  suit: string;
+  color: 'red' | 'black';
 }
 
-const CARD_SYMBOLS = [
-  { emoji: '🌟', name: '星' },
-  { emoji: '🍀', name: 'クローバー' },
-  { emoji: '💎', name: 'ダイヤ' },
-  { emoji: '🚀', name: 'ロケット' },
-  { emoji: '🍒', name: 'チェリー' },
-  { emoji: '👑', name: '王冠' },
-  { emoji: '🔥', name: '炎' },
-  { emoji: '🎵', name: '音符' },
-  { emoji: '🌸', name: '桜' },
-  { emoji: '🌙', name: '三日月' },
+const CARD_PAIRS = [
+  { rank: 'A', suit: '♠', color: 'black' as const },
+  { rank: 'K', suit: '♥', color: 'red' as const },
+  { rank: 'Q', suit: '♦', color: 'red' as const },
+  { rank: 'J', suit: '♣', color: 'black' as const },
+  { rank: '10', suit: '♠', color: 'black' as const },
+  { rank: '9', suit: '♥', color: 'red' as const },
+  { rank: '8', suit: '♦', color: 'red' as const },
+  { rank: '7', suit: '♣', color: 'black' as const },
+  { rank: '6', suit: '♠', color: 'black' as const },
+  { rank: '5', suit: '♥', color: 'red' as const },
 ];
 
 export const MemoryGardenGame: Component = () => {
@@ -47,12 +48,12 @@ export const MemoryGardenGame: Component = () => {
   const restart = () => {
     if (timer) clearInterval(timer);
     const count = getPairCount();
-    const selectedSymbols = CARD_SYMBOLS.slice(0, count);
+    const selectedPairs = CARD_PAIRS.slice(0, count);
     const deck: Card[] = [];
 
-    selectedSymbols.forEach((f, idx) => {
-      deck.push({ id: idx * 2, emoji: f.emoji, name: f.name });
-      deck.push({ id: idx * 2 + 1, emoji: f.emoji, name: f.name });
+    selectedPairs.forEach((f, idx) => {
+      deck.push({ id: idx * 2, rank: f.rank, suit: f.suit, color: f.color });
+      deck.push({ id: idx * 2 + 1, rank: f.rank, suit: f.suit, color: f.color });
     });
 
     // シャッフル
@@ -93,7 +94,7 @@ export const MemoryGardenGame: Component = () => {
       const firstCard = currentCards[firstIdx];
       const secondCard = currentCards[secondIdx];
 
-      if (firstCard.emoji === secondCard.emoji) {
+      if (firstCard.rank === secondCard.rank && firstCard.suit === secondCard.suit) {
         // マッチ！
         sound.playMatch(5);
         const nextMatched = new Set(matchedCardIds());
@@ -200,7 +201,7 @@ export const MemoryGardenGame: Component = () => {
             return (
               <button
                 onClick={() => handleCardClick(index())}
-                class={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-200 transform select-none shadow-2xs border ${
+                class={`aspect-[3/4] rounded-xl flex flex-col items-center justify-between p-1.5 transition-all duration-200 transform select-none shadow-2xs border ${
                   isOpen()
                     ? 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 scale-100 shadow-xs'
                     : 'bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 border-slate-700 dark:border-slate-600 hover:scale-102 active:scale-95 shadow-xs cursor-pointer'
@@ -209,17 +210,28 @@ export const MemoryGardenGame: Component = () => {
                 <Show
                   when={isOpen()}
                   fallback={
-                    <span class="text-slate-400 dark:text-slate-400 text-lg font-bold flex flex-col items-center">
-                      <span>✦</span>
-                    </span>
+                    <div class="w-full h-full rounded-lg border border-slate-700/60 dark:border-slate-600/60 flex items-center justify-center text-slate-500 text-sm">
+                      ✦
+                    </div>
                   }
                 >
-                  <span class="text-3xl sm:text-4xl filter drop-shadow-xs animate-in zoom-in-75 duration-150">
-                    {card.emoji}
-                  </span>
-                  <span class="text-[10px] font-bold text-slate-600 dark:text-slate-300 mt-1">
-                    {card.name}
-                  </span>
+                  <div
+                    class={`w-full h-full flex flex-col justify-between items-center ${
+                      card.color === 'red' ? 'text-red-600' : 'text-slate-900 dark:text-slate-100'
+                    }`}
+                  >
+                    <div class="w-full flex justify-between items-center font-bold text-xs leading-none">
+                      <span>{card.rank}</span>
+                      <span class="text-[10px]">{card.suit}</span>
+                    </div>
+                    <span class="text-2xl sm:text-3xl leading-none">
+                      {card.suit}
+                    </span>
+                    <div class="w-full flex justify-between items-center font-bold text-xs leading-none rotate-180">
+                      <span>{card.rank}</span>
+                      <span class="text-[10px]">{card.suit}</span>
+                    </div>
+                  </div>
                 </Show>
               </button>
             );

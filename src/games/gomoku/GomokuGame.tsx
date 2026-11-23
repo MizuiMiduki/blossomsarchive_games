@@ -134,7 +134,7 @@ export const GomokuGame: Component = () => {
             }}
             class="px-2.5 py-1 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white"
           >
-            {playerStone() === 'black' ? '先手(黒⚫)' : '後手(白⚪)'}
+            {playerStone() === 'black' ? '先手 (黒)' : '後手 (白)'}
           </button>
         </div>
       }

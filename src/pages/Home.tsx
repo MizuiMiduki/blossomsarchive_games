@@ -11,6 +11,9 @@ import {
   VolumeXIcon,
   AwardIcon,
   SparklesIcon,
+  GamepadIcon,
+  SyncIcon,
+  CheckIcon,
 } from '../components/Icons.tsx';
 import { sound } from '../utils/sound.ts';
 import {
@@ -189,7 +192,7 @@ export const Home: Component = () => {
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <div class="w-9 h-9 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 flex items-center justify-center font-bold text-base shadow-2xs">
-              🎮
+              <GamepadIcon size={20} />
             </div>
             <div class="flex items-center">
               <span class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white">
@@ -207,7 +210,8 @@ export const Home: Component = () => {
               title="端末同期 ＆ セーブデータ管理"
               class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 shadow-2xs"
             >
-              <span>📲 端末間同期</span>
+              <SyncIcon size={14} />
+              <span>端末同期</span>
             </button>
 
             <button
@@ -268,12 +272,12 @@ export const Home: Component = () => {
           <div class="flex items-center justify-center gap-1.5 flex-wrap">
             {[
               { id: 'all', label: `すべて (${GAMES.length})` },
-              { id: 'board', label: 'ボード♟️' },
-              { id: 'puzzle', label: 'パズル🧩' },
-              { id: 'card', label: 'カード🃏' },
-              { id: 'casual', label: 'カジュアル🎲' },
-              { id: 'action', label: 'アクション🏃' },
-              { id: 'favorite', label: 'お気に入り❤️' },
+              { id: 'board', label: 'ボード' },
+              { id: 'puzzle', label: 'パズル' },
+              { id: 'card', label: 'カード' },
+              { id: 'casual', label: 'カジュアル' },
+              { id: 'action', label: 'アクション' },
+              { id: 'favorite', label: 'お気に入り' },
             ].map((tab) => (
               <button
                 onClick={() => {
@@ -305,6 +309,7 @@ export const Home: Component = () => {
             {(game) => {
               const stats = getGameStats(game.id);
               const isFav = () => appData().favorites.includes(game.id);
+              const GameIcon = game.icon;
 
               return (
                 <div class="group bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
@@ -312,9 +317,9 @@ export const Home: Component = () => {
                     {/* アイコン & バッジ & お気に入り */}
                     <div class="flex items-start justify-between mb-4">
                       <div
-                        class={`w-13 h-13 rounded-2xl ${game.color} flex items-center justify-center text-2xl shadow-2xs`}
+                        class={`w-13 h-13 rounded-2xl ${game.color} flex items-center justify-center shadow-2xs`}
                       >
-                        {game.icon}
+                        <GameIcon size={26} />
                       </div>
 
                       <div class="flex items-center gap-1.5">
@@ -382,7 +387,8 @@ export const Home: Component = () => {
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
           <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95">
             <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-              <span>📲 複数端末同期 & セーブデータ</span>
+              <SyncIcon size={20} class="text-slate-700 dark:text-slate-300" />
+              <span>端末間セーブデータ同期</span>
             </h3>
 
             {/* モーダル内タブ */}
@@ -413,7 +419,7 @@ export const Home: Component = () => {
             <Show when={modalTab() === 'qr'}>
               <div class="text-center flex flex-col items-center">
                 <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  スマートフォンのカメラで以下のQRコードを読み取るだけで、現在のハイスコアやお気に入りが即座に引き継がれます！
+                  スマートフォンのカメラで以下のQRコードを読み取るだけで、現在のハイスコアやお気に入りが即座に引き継がれます。
                 </p>
 
                 <Show when={qrCodeDataUrl()} fallback={<div class="w-48 h-48 bg-slate-100 animate-pulse rounded-2xl mb-4" />}>
@@ -424,9 +430,12 @@ export const Home: Component = () => {
 
                 <button
                   onClick={handleCopySyncUrl}
-                  class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs mb-3 transition-all"
+                  class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs mb-3 transition-all flex items-center justify-center gap-1.5"
                 >
-                  {copyStatus() ? '✓ 同期用URLをコピーしました！' : '🔗 同期用URLをコピー (LINE等で送る)'}
+                  <Show when={copyStatus()} fallback={<span>同期用URLをコピー</span>}>
+                    <CheckIcon size={14} class="text-emerald-600" />
+                    <span>同期用URLをコピーしました</span>
+                  </Show>
                 </button>
               </div>
             </Show>
@@ -472,15 +481,15 @@ export const Home: Component = () => {
       <Show when={pendingSyncData()}>
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-2xs p-4 animate-in fade-in">
           <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 text-center animate-in zoom-in-95">
-            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-3xl">
-              📲
+            <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300">
+              <SyncIcon size={24} />
             </div>
             <h3 class="text-lg font-black text-slate-900 dark:text-white mb-1">
-              別端末のデータが見つかりました！
+              別端末のデータが見つかりました
             </h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
               QRコードまたは共有リンクからセーブデータを受信しました。<br />
-              現在の記録とマージして同期しますか？<br />
+              現在の記録と統合して同期しますか？<br />
               （※ハイスコアは高い方がキープされます）
             </p>
 
@@ -505,7 +514,7 @@ export const Home: Component = () => {
       {/* フッター */}
       <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-400">
         <div class="flex items-center justify-center gap-1.5 mb-1">
-          <span>🎮</span>
+          <GamepadIcon size={15} class="text-slate-400" />
           <span class="font-bold text-slate-600 dark:text-slate-300">BlossomsArchive Games</span>
         </div>
         <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400">

@@ -291,8 +291,8 @@ export const BlossomDropGame: Component = () => {
 
   const instructions = [
     '画面をスワイプ（またはマウス移動）して落とす位置を調整し、指を離すとフルーツが落下します。',
-    '同じ種類のフルーツがぶつかるとマージして一段階大きく成長します！',
-    '上の赤い点線を超えて溢れ出さないように、最高峰のキングスイカ👑を目指しましょう。',
+    '同じ種類のフルーツがぶつかるとマージして一段階大きく成長します。',
+    '上の赤い点線を超えて溢れ出さないように、最高峰のキングスイカを目指しましょう。',
   ];
 
   return (
@@ -307,8 +307,11 @@ export const BlossomDropGame: Component = () => {
       <div class="w-full max-w-[340px] flex flex-col items-center">
         {/* 次のフルーツ表示 */}
         <div class="flex items-center gap-2 mb-2 px-3 py-1 bg-white/90 dark:bg-slate-900/90 rounded-xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">
-          <span class="text-slate-500">NEXT:</span>
-          <span class="text-xl leading-none">{FRUIT_TIERS[nextLevel()].emoji}</span>
+          <span class="text-slate-500 font-medium">NEXT:</span>
+          <span
+            class="w-3.5 h-3.5 rounded-full inline-block shadow-2xs border border-black/10 dark:border-white/20"
+            style={{ 'background-color': FRUIT_TIERS[nextLevel()].color }}
+          />
           <span class="font-bold text-slate-700 dark:text-slate-300">{FRUIT_TIERS[nextLevel()].name}</span>
         </div>
 

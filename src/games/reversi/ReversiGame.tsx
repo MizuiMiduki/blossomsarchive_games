@@ -427,7 +427,7 @@ export const ReversiGame: Component = () => {
                 }}
                 class="px-2 py-1 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white"
               >
-                {playerColor() === 'black' ? '先手(黒⚫)' : '後手(白⚪)'}
+                {playerColor() === 'black' ? '先手 (黒)' : '後手 (白)'}
               </button>
             </div>
           </Show>
@@ -446,7 +446,7 @@ export const ReversiGame: Component = () => {
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              🤖 NPC対戦
+              NPC対戦
             </button>
             <button
               onClick={() => {
@@ -459,7 +459,7 @@ export const ReversiGame: Component = () => {
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              🔒 P2P暗号化対戦
+              P2P対戦
             </button>
           </div>
         </div>

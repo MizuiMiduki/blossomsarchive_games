@@ -9,7 +9,8 @@ import {
   VolumeIcon,
   VolumeXIcon,
   AwardIcon,
-  SparklesIcon,
+  GamepadIcon,
+  TrophyIcon,
 } from './Icons.tsx';
 import { sound } from '../utils/sound.ts';
 import { recordGamePlay, getGameStats } from '../utils/storage.ts';
@@ -212,8 +213,8 @@ export const GameShell: Component<GameShellProps> = (props) => {
         <div class="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
           <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 text-center animate-in fade-in zoom-in-95 duration-200">
             <div class="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-              <Show when={props.isVictory} fallback={<span class="text-3xl">🎮</span>}>
-                <SparklesIcon size={32} class="text-amber-500 animate-spin-slow" />
+              <Show when={props.isVictory} fallback={<GamepadIcon size={32} class="text-slate-400" />}>
+                <TrophyIcon size={32} class="text-amber-500 animate-spin-slow" />
               </Show>
             </div>
 

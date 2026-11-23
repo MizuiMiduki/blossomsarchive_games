@@ -1,6 +1,49 @@
 import { Component, createSignal, onSettled, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
+import { DashRunnerIcon } from '../../components/Icons.tsx';
+
+function drawPlayer(ctx: CanvasRenderingContext2D, px: number, py: number, f: number) {
+  ctx.save();
+  // Body
+  ctx.fillStyle = '#f59e0b';
+  ctx.strokeStyle = '#b45309';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.ellipse(px, py, 13, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+
+  // Wing
+  const wingOffset = Math.sin(f * 0.35) * 3;
+  ctx.fillStyle = '#fef3c7';
+  ctx.strokeStyle = '#d97706';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.ellipse(px - 4, py + 1 + wingOffset, 6, 4, 0.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+
+  // Eye
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(px + 5, py - 3, 3.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath();
+  ctx.arc(px + 6.5, py - 3, 1.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Beak
+  ctx.fillStyle = '#ea580c';
+  ctx.beginPath();
+  ctx.moveTo(px + 10, py - 1);
+  ctx.lineTo(px + 17, py + 2);
+  ctx.lineTo(px + 9, py + 5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
 
 export const PetalDashGame: Component = () => {
   const [score, setScore] = createSignal(0);
@@ -47,12 +90,9 @@ export const PetalDashGame: Component = () => {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, canvasRef.width, canvasRef.height);
 
-    // そよ風に揺れる鳥 🐦
+    // 浮遊待機中のプレイヤー描画
     const hoverY = 180 + Math.sin(frame * 0.06) * 8;
-    ctx.font = '28px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🐦', 60, hoverY);
+    drawPlayer(ctx, 60, hoverY, frame);
 
     if (!isPlaying() && !isGameOver()) {
       animationId = requestAnimationFrame(renderIdle);
@@ -168,11 +208,8 @@ export const PetalDashGame: Component = () => {
       ctx.fill();
     });
 
-    // プレイヤー描画 (鳥 🐦)
-    ctx.font = '24px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🐦', playerX, y);
+    // プレイヤー描画
+    drawPlayer(ctx, playerX, y, frame);
 
     animationId = requestAnimationFrame(loop);
   };
@@ -200,7 +237,7 @@ export const PetalDashGame: Component = () => {
 
   const instructions = [
     '画面タップまたはスペースキーを押すとゲームがスタートします。',
-    'タップするたびに鳥🐦がふわりと羽ばたき、放っておくと重力で降下します。',
+    'タップするたびにふわりと羽ばたき、放っておくと重力で降下します。',
     '上下の障害物を避けて隙間をくぐり続け、ハイスコアを目指しましょう！',
   ];
 
@@ -231,9 +268,9 @@ export const PetalDashGame: Component = () => {
         <Show when={!isPlaying() && !isGameOver()}>
           <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/20 backdrop-blur-2xs p-4 pointer-events-none">
             <div class="flex flex-col items-center gap-1.5 px-6 py-4 rounded-3xl bg-white/95 dark:bg-slate-900/95 text-center shadow-xl border border-slate-200 dark:border-slate-800 animate-pulse">
-              <span class="text-3xl">🐦</span>
+              <DashRunnerIcon size={32} class="text-slate-800 dark:text-slate-100" />
               <span class="text-slate-900 dark:text-white font-bold text-sm">
-                タップ または スペースキーで<br />スタート！
+                タップ または スペースキーで<br />スタート
               </span>
               <span class="text-[11px] text-slate-500 dark:text-slate-400">
                 障害物を避けて飛び続けよう

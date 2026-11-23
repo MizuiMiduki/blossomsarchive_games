@@ -74,7 +74,6 @@ export function stepLifeGrid(grid: LifeGrid): { nextGrid: LifeGrid; births: numb
 // プリセットパターン
 export interface PatternPreset {
   name: string;
-  emoji: string;
   description: string;
   coords: [number, number][]; // 相対座標 [r, c]
 }
@@ -82,7 +81,6 @@ export interface PatternPreset {
 export const PRESETS: PatternPreset[] = [
   {
     name: 'グライダー',
-    emoji: '✈️',
     description: '斜め方向へ移動し続けるライフゲームの代表的パターン',
     coords: [
       [0, 1],
@@ -92,7 +90,6 @@ export const PRESETS: PatternPreset[] = [
   },
   {
     name: 'パルサー',
-    emoji: '💫',
     description: '周期3で規則的に伸縮を繰り返す美しい振動子パターン',
     coords: [
       // 上半分
@@ -109,7 +106,6 @@ export const PRESETS: PatternPreset[] = [
   },
   {
     name: '銀河',
-    emoji: '🌀',
     description: '2つのアームが回転し続ける周期8の優雅なパターン',
     coords: [
       [-4, -4], [-4, -3], [-4, -2], [-4, -1], [-4, 0], [-4, 1],
@@ -122,7 +118,6 @@ export const PRESETS: PatternPreset[] = [
   },
   {
     name: 'グライダー銃',
-    emoji: '🔫',
     description: '一定周期で次々とグライダーを撃ち出し続けるパターン',
     coords: [
       [4, 0], [4, 1], [5, 0], [5, 1],

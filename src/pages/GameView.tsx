@@ -1,6 +1,7 @@
 import { Component, Show } from 'solid-js';
 import { useParams } from '@solidjs/router';
 import { GAMES } from '../games/registry.ts';
+import { GamepadIcon } from '../components/Icons.tsx';
 
 export const GameView: Component = () => {
   const params = useParams();
@@ -11,7 +12,7 @@ export const GameView: Component = () => {
       when={game()}
       fallback={
         <div class="min-h-screen flex flex-col items-center justify-center p-4 text-center bg-slate-50 dark:bg-slate-950">
-          <div class="text-5xl mb-4">🎮</div>
+          <GamepadIcon size={48} class="text-slate-400 mb-4" />
           <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
             ゲームが見つかりませんでした
           </h2>

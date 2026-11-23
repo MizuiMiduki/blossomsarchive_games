@@ -238,7 +238,7 @@ export const BlossomLifeGame: Component = () => {
                   title={preset.description}
                   class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 whitespace-nowrap transition-all shadow-2xs"
                 >
-                  {preset.emoji} {preset.name.split(' ')[0]}
+                  {preset.name.split(' ')[0]}
                 </button>
               )}
             </For>
@@ -261,7 +261,7 @@ export const BlossomLifeGame: Component = () => {
                     : 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-white'
                 }`}
               >
-                {isRunning() ? '⏸ 一時停止' : '▶ 再生開始'}
+                {isRunning() ? '一時停止' : '再生'}
               </button>
 
               <button
@@ -272,7 +272,7 @@ export const BlossomLifeGame: Component = () => {
                 }}
                 class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold"
               >
-                ⏭ 1歩進む
+                1ステップ
               </button>
             </div>
 
@@ -286,7 +286,7 @@ export const BlossomLifeGame: Component = () => {
                     : 'text-slate-500'
                 }`}
               >
-                ✏️ 配置
+                配置
               </button>
               <button
                 onClick={() => setBrushMode('erase')}
@@ -296,7 +296,7 @@ export const BlossomLifeGame: Component = () => {
                     : 'text-slate-500'
                 }`}
               >
-                🧹 消す
+                消去
               </button>
             </div>
 
@@ -306,7 +306,7 @@ export const BlossomLifeGame: Component = () => {
                 onClick={handleRandomize}
                 class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700"
               >
-                🎲 ランダム
+                ランダム
               </button>
               <button
                 onClick={handleClear}
@@ -376,7 +376,7 @@ export const BlossomLifeGame: Component = () => {
         {/* 初期停止時のガイダンスバッジ */}
         <Show when={!isRunning() && generation() === 0}>
           <div class="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none bg-slate-900/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-white/90 text-[11px] font-semibold border border-white/10 shadow-lg whitespace-nowrap animate-pulse">
-            ▶「再生開始」を押すとシミュレーションが始まります
+            「再生」を押すとシミュレーションが始まります
           </div>
         </Show>
       </div>
