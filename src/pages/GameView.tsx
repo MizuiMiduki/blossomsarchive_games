@@ -1,5 +1,6 @@
 import { Component, Show } from 'solid-js';
 import { useParams } from '@solidjs/router';
+import { Link } from '../components/Link.tsx';
 import { GAMES } from '../games/registry.ts';
 import { GamepadIcon } from '../components/Icons.tsx';
 
@@ -19,12 +20,12 @@ export const GameView: Component = () => {
           <p class="text-xs text-slate-500 mb-4">
             指定されたゲームは存在しないか、現在準備中です。
           </p>
-          <a
+          <Link
             href="/"
             class="px-5 py-2.5 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold text-xs shadow-xs hover:bg-slate-800 dark:hover:bg-white transition-all"
           >
             ゲーム一覧へ戻る
-          </a>
+          </Link>
         </div>
       }
     >

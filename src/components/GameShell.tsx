@@ -1,4 +1,5 @@
 import { Component, createSignal, createEffect, onSettled, onCleanup, Show } from 'solid-js';
+import { Link } from './Link.tsx';
 import type { JSX } from '@solidjs/web';
 import confetti from 'canvas-confetti';
 import {
@@ -64,12 +65,31 @@ export const GameShell: Component<GameShellProps> = (props) => {
       }
     }
 
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+    let copied = false;
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
       try {
         await navigator.clipboard.writeText(`${text}${url}`);
-        setShareCopied(true);
-        setTimeout(() => setShareCopied(false), 2500);
+        copied = true;
       } catch {}
+    }
+
+    if (!copied && typeof document !== 'undefined') {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = `${text}${url}`;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        copied = true;
+      } catch {}
+    }
+
+    if (copied) {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2500);
     }
   };
 
@@ -200,14 +220,14 @@ export const GameShell: Component<GameShellProps> = (props) => {
     >
       {/* 上部ヘッダーコントロール */}
       <header class="w-full max-w-3xl shrink-0 flex items-center justify-between py-1.5 px-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs mb-1">
-        <a
+        <Link
           href="/"
           onClick={() => sound.playPop(400)}
           class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <ArrowLeftIcon size={18} />
           <span>一覧へ</span>
-        </a>
+        </Link>
 
         <div class="text-center">
           <h1 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1 justify-center">
@@ -367,13 +387,13 @@ export const GameShell: Component<GameShellProps> = (props) => {
                 <RotateCcwIcon size={18} />
                 もう一度遊ぶ
               </button>
-              <a
+              <Link
                 href="/"
                 onClick={() => sound.playPop(400)}
                 class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs"
               >
                 ゲーム一覧へ戻る
-              </a>
+              </Link>
             </div>
           </div>
         </div>

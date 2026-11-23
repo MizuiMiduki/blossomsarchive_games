@@ -1,4 +1,5 @@
 import { Component, createSignal, For, Show, createMemo, onSettled } from 'solid-js';
+import { Link } from '../components/Link.tsx';
 import confetti from 'canvas-confetti';
 import { GAMES, GameCategory } from '../games/registry.ts';
 import {
@@ -381,14 +382,14 @@ export const Home: Component = () => {
                     </div>
 
                     {/* プレイボタン */}
-                    <a
+                    <Link
                       href={`/game/${game.id}`}
                       onClick={() => sound.playPop(520)}
                       class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs active:scale-98 transition-all"
                     >
                       <PlayIcon size={14} />
                       <span>今すぐ遊ぶ</span>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               );
