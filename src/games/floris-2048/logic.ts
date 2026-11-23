@@ -6,6 +6,7 @@ export interface Tile {
   row: number;
   col: number;
   merged?: boolean;
+  isNew?: boolean;
 }
 
 export const TILE_CONFIG: Record<number, { emoji: string; name: string; bg: string; text: string }> = {
@@ -47,6 +48,7 @@ export function spawnRandomTile(grid: (Tile | null)[][]): { grid: (Tile | null)[
     value,
     row: randomCell.r,
     col: randomCell.c,
+    isNew: true,
   };
 
   return { grid: newGrid, spawned: true };
