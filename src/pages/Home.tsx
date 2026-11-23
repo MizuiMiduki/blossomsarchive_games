@@ -52,6 +52,12 @@ export const Home: Component = () => {
   onSettled(() => {
     setAppData(loadAppData());
 
+    // 旧式ハッシュURL (#/game/...) からの自動リダイレクト対応
+    if (window.location.hash.startsWith('#/')) {
+      const cleanRoute = window.location.hash.slice(1);
+      window.history.replaceState(null, '', cleanRoute);
+    }
+
     let encoded: string | null = null;
     const searchParams = new URLSearchParams(window.location.search);
     if (searchParams.has('sync')) {
@@ -70,8 +76,7 @@ export const Home: Component = () => {
         sound.playVictory();
         setPendingSyncData(data);
         // URLの同期パラメータを消去して履歴をクリーンに保つ
-        const cleanPath = window.location.pathname + (window.location.hash.startsWith('#/game/') ? window.location.hash : '#/');
-        window.history.replaceState(null, '', cleanPath);
+        window.history.replaceState(null, '', window.location.pathname);
       }
     }
   });
@@ -377,7 +382,7 @@ export const Home: Component = () => {
 
                     {/* プレイボタン */}
                     <a
-                      href={`#/game/${game.id}`}
+                      href={`/game/${game.id}`}
                       onClick={() => sound.playPop(520)}
                       class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs active:scale-98 transition-all"
                     >

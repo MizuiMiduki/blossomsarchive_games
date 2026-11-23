@@ -1,5 +1,5 @@
 import { Component, onSettled } from 'solid-js';
-import { createRouter, hashHistory } from '@solidjs/router';
+import { createRouter, browserHistory } from '@solidjs/router';
 import { Home } from './pages/Home.tsx';
 import { GameView } from './pages/GameView.tsx';
 import { loadAppData } from './utils/storage.ts';
@@ -7,7 +7,7 @@ import { sound } from './utils/sound.ts';
 import { initThirdPartyScripts } from './utils/analytics.ts';
 
 const AppRouter = createRouter({
-  history: hashHistory(),
+  history: browserHistory(),
   routes: [
     { path: '/', component: () => <Home /> },
     { path: '/game/:id', component: () => <GameView /> },
