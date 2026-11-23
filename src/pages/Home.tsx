@@ -10,7 +10,6 @@ import {
   VolumeIcon,
   VolumeXIcon,
   AwardIcon,
-  SparklesIcon,
   GamepadIcon,
   SyncIcon,
   CheckIcon,
@@ -253,11 +252,6 @@ export const Home: Component = () => {
       <main class="max-w-5xl mx-auto px-4 py-8 flex-1 w-full">
         {/* ヒーローセクション */}
         <section class="text-center py-6 sm:py-10 relative overflow-hidden">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium mb-4 shadow-2xs">
-            <SparklesIcon size={14} class="text-slate-500" />
-            <span>ブラウザですぐ遊べるミニゲームポータル</span>
-          </div>
-
           <h2 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
             スキマ時間にすぐ遊べる、Webミニゲームポータル。
           </h2>
