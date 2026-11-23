@@ -60,6 +60,55 @@ export function canPlaceShape(
   return true;
 }
 
+export function canShapeBePlacedAnywhere(
+  grid: (string | null)[][],
+  shape: Shape
+): boolean {
+  for (let r = 0; r < GRID_SIZE; r++) {
+    for (let c = 0; c < GRID_SIZE; c++) {
+      if (canPlaceShape(grid, shape, r, c)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+export function getLinesToClearPreview(
+  grid: (string | null)[][],
+  shape: Shape,
+  startR: number,
+  startC: number
+): { rows: number[]; cols: number[] } {
+  if (!canPlaceShape(grid, shape, startR, startC)) {
+    return { rows: [], cols: [] };
+  }
+  const tempGrid = grid.map((row) => [...row]);
+  for (let r = 0; r < shape.matrix.length; r++) {
+    for (let c = 0; c < shape.matrix[r].length; c++) {
+      if (shape.matrix[r][c] === 1) {
+        tempGrid[startR + r][startC + c] = shape.color;
+      }
+    }
+  }
+  const rows: number[] = [];
+  const cols: number[] = [];
+  for (let r = 0; r < GRID_SIZE; r++) {
+    if (tempGrid[r].every((cell) => cell !== null)) rows.push(r);
+  }
+  for (let c = 0; c < GRID_SIZE; c++) {
+    let full = true;
+    for (let r = 0; r < GRID_SIZE; r++) {
+      if (tempGrid[r][c] === null) {
+        full = false;
+        break;
+      }
+    }
+    if (full) cols.push(c);
+  }
+  return { rows, cols };
+}
+
 export function hasAnyValidMove(grid: (string | null)[][], shapes: Shape[]): boolean {
   for (const shape of shapes) {
     for (let r = 0; r < GRID_SIZE; r++) {
