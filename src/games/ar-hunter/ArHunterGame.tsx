@@ -134,9 +134,15 @@ export const ArHunterGame: Component = () => {
     }
 
     const handleOrientation = (e: DeviceOrientationEvent) => {
-      if (e.alpha !== null && e.beta !== null) {
-        playerYaw = 360 - e.alpha; // 方位角
-        playerPitch = Math.max(-60, Math.min(60, (e.beta - 50) * 0.8)); // 仰角
+      const compass = (e as unknown as { webkitCompassHeading?: number }).webkitCompassHeading;
+      if (typeof compass === 'number' && !isNaN(compass)) {
+        playerYaw = compass;
+      } else if (e.alpha !== null) {
+        playerYaw = (360 - e.alpha) % 360;
+      }
+
+      if (e.beta !== null) {
+        playerPitch = Math.max(-60, Math.min(60, (e.beta - 80) * 0.9));
       }
     };
 
@@ -254,7 +260,7 @@ export const ArHunterGame: Component = () => {
         while (dYaw < -180) dYaw += 360;
 
         const sx = cx + (dYaw / 60) * width;
-        const sy = cy + ((i * 13 % 60 - 30 - playerPitch) / 45) * height;
+        const sy = cy - ((i * 13 % 60 - 30 - playerPitch) / 45) * height;
 
         if (sx >= 0 && sx <= width && sy >= 0 && sy <= height) {
           ctx.beginPath();
@@ -288,7 +294,7 @@ export const ArHunterGame: Component = () => {
       // 視野内（FOV 70度）にある場合投影
       if (Math.abs(dYaw) < 45 && Math.abs(dPitch) < 35) {
         const sx = cx + (dYaw / 40) * cx;
-        const sy = cy + (dPitch / 30) * cy + Math.sin(s.phase) * 6;
+        const sy = cy - (dPitch / 30) * cy + Math.sin(s.phase) * 6;
         const baseRadius = (220 / s.distance) * (s.isCaptured ? s.capturedScale : 1);
 
         if (s.isCaptured) {
@@ -338,7 +344,7 @@ export const ArHunterGame: Component = () => {
 
     // 3. ナビゲーション矢印（画面外の最寄り精霊を指し示す）
     if (nearestSpirit && minAngDist > 18) {
-      const angle = Math.atan2(nearestSpirit.dPitch, nearestSpirit.dYaw);
+      const angle = Math.atan2(-nearestSpirit.dPitch, nearestSpirit.dYaw);
       const arrowDist = Math.min(width, height) * 0.38;
       const ax = cx + Math.cos(angle) * arrowDist;
       const ay = cy + Math.sin(angle) * arrowDist;
@@ -465,7 +471,7 @@ export const ArHunterGame: Component = () => {
     const dx = e.clientX - lastTouchX;
     const dy = e.clientY - lastTouchY;
     playerYaw = (playerYaw - dx * 0.35 + 360) % 360;
-    playerPitch = Math.max(-60, Math.min(60, playerPitch + dy * 0.3));
+    playerPitch = Math.max(-60, Math.min(60, playerPitch - dy * 0.35));
     lastTouchX = e.clientX;
     lastTouchY = e.clientY;
   };
