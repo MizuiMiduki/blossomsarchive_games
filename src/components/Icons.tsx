@@ -951,3 +951,218 @@ export const ArBubbleIcon: Component<IconProps> = (props) => (
     <path d="M8 10a4 4 0 0 1 4-4" />
   </svg>
 );
+
+export const ArTossIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 3v18" />
+    <path d="M3 12h18" />
+    <circle cx="12" cy="12" r="5" stroke-dasharray="2 2" />
+    <path d="M17 7l4-4" />
+  </svg>
+);
+
+export const ArColorHuntIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 8v8" />
+    <path d="M8 12h8" />
+    <circle cx="12" cy="12" r="3" fill="currentColor" fill-opacity="0.3" />
+    <path d="M19 5l2-2" />
+  </svg>
+);
+
+export const ArAquariumIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M6 12c3-4 8-4 12 0-4 4-9 4-12 0z" />
+    <circle cx="15" cy="11" r="1" fill="currentColor" />
+    <path d="M6 12L2 9v6l4-3z" />
+    <circle cx="18" cy="6" r="1.5" />
+    <circle cx="21" cy="4" r="1" />
+  </svg>
+);
+
+export const AiInterviewIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <rect x="4" y="3" width="16" height="18" rx="2" />
+    <path d="M8 7h8" />
+    <path d="M8 11h8" />
+    <path d="M8 15h5" />
+    <circle cx="16" cy="16" r="3" />
+    <path d="M16 14.5v1.5l1 1" />
+  </svg>
+);
+
+export const AiWordWolfIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M12 3l4 7h5l-4 4 1.5 6L12 17l-6.5 3 1.5-6-4-4h5l4-7z" />
+    <circle cx="12" cy="12" r="2" fill="currentColor" />
+  </svg>
+);
+
+export const MinesweeperIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="12" cy="12" r="6" fill="currentColor" fill-opacity="0.2" />
+    <path d="M12 2v4" />
+    <path d="M12 18v4" />
+    <path d="M2 12h4" />
+    <path d="M18 12h4" />
+    <path d="M4.93 4.93l2.83 2.83" />
+    <path d="M16.24 16.24l2.83 2.83" />
+    <path d="M4.93 19.07l2.83-2.83" />
+    <path d="M16.24 7.76l2.83-2.83" />
+  </svg>
+);
+
+export const SudokuIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    class={props.class}
+    {...props}
+  >
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <line x1="9" y1="3" x2="9" y2="21" />
+    <line x1="15" y1="3" x2="15" y2="21" />
+    <line x1="3" y1="9" x2="21" y2="9" />
+    <line x1="3" y1="15" x2="21" y2="15" />
+  </svg>
+);
+
+export const SokobanIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor" fill-opacity="0.15" />
+    <path d="M3 12h4m10 0h4" />
+    <path d="M12 3v4m0 10v4" />
+  </svg>
+);
+
+export const RhythmBeatsIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M9 18V5l12-2v13" />
+    <circle cx="6" cy="18" r="3" fill="currentColor" fill-opacity="0.2" />
+    <circle cx="18" cy="16" r="3" fill="currentColor" fill-opacity="0.2" />
+  </svg>
+);
+
+export const SpeedTypingIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <rect x="2" y="4" width="20" height="16" rx="3" />
+    <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01" />
+    <path d="M6 12h.01M10 12h.01M14 12h.01M18 12h.01" />
+    <path d="M8 16h8" />
+  </svg>
+);

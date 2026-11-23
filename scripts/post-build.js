@@ -14,35 +14,10 @@ const indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
 // Copy to 404.html
 fs.writeFileSync(path.join(distDir, '404.html'), indexHtml);
 
-// All game IDs from src/games/registry.ts
-const gameIds = [
-  'blossom-life',
-  'petal-reversi',
-  'mini-shogi',
-  'standard-shogi',
-  'blossom-chess',
-  'gomoku-garden',
-  'blossom-drop',
-  'floris-2048',
-  'memory-garden',
-  'petal-solitaire',
-  'bouquet-block',
-  'petal-dash',
-  'ito-toshi',
-  'wire-maze',
-  'lights-out',
-  'sky-catapult',
-  'room-escape',
-  'ai-jailbreak',
-  'ai-detective',
-  'word-alchemy',
-  'ai-courtroom',
-  'semantic-word',
-  'ar-slicer',
-  'ar-hunter',
-  'ar-catcher',
-  'ar-bubble',
-];
+// Dynamically extract all game IDs from src/games/registry.ts
+const registryContent = fs.readFileSync(path.resolve('src/games/registry.ts'), 'utf8');
+const idMatches = [...registryContent.matchAll(/id:\s*['"]([^'"]+)['"]/g)].map((m) => m[1]);
+const gameIds = [...new Set(idMatches)];
 
 for (const id of gameIds) {
   const gameDir = path.join(distDir, 'game', id);
