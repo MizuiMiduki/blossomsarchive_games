@@ -863,3 +863,91 @@ export const ShareIcon: Component<IconProps> = (props) => (
     <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
   </svg>
 );
+
+export const ArSlicerIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <path d="M14.5 4l-4 4 6 6 4-4a2.83 2.83 0 0 0 0-4l-2-2a2.83 2.83 0 0 0-4 0z" />
+    <path d="M10.5 8l-6 6a2 2 0 0 0 0 2.83l1.17 1.17a2 2 0 0 0 2.83 0l6-6" />
+    <line x1="2" y1="2" x2="6" y2="6" />
+    <line x1="18" y1="18" x2="22" y2="22" />
+  </svg>
+);
+
+export const ArHunterIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="12" cy="12" r="9" />
+    <line x1="12" y1="3" x2="12" y2="7" />
+    <line x1="12" y1="17" x2="12" y2="21" />
+    <line x1="3" y1="12" x2="7" y2="12" />
+    <line x1="17" y1="12" x2="21" y2="12" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+export const ArCatcherIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="12" cy="12" r="9" />
+    <path d="M8 13c1 2 3 2.5 4 2.5s3-.5 4-2.5" />
+    <circle cx="9" cy="9.5" r="1.2" fill="currentColor" />
+    <circle cx="15" cy="9.5" r="1.2" fill="currentColor" />
+    <path d="M4 4l3 3" />
+    <path d="M20 4l-3 3" />
+  </svg>
+);
+
+export const ArBubbleIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 28}
+    height={props.size || 28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="10" cy="13" r="7" />
+    <circle cx="17.5" cy="7.5" r="4.5" />
+    <circle cx="6" cy="6" r="2.5" />
+    <path d="M8 10a4 4 0 0 1 4-4" />
+  </svg>
+);

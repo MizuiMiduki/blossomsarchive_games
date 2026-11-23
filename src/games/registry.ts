@@ -21,6 +21,10 @@ import { AiDetectiveGame } from './ai-detective/AiDetectiveGame.tsx';
 import { WordAlchemyGame } from './word-alchemy/WordAlchemyGame.tsx';
 import { AiCourtroomGame } from './ai-courtroom/AiCourtroomGame.tsx';
 import { SemanticWordGame } from './semantic-word/SemanticWordGame.tsx';
+import { ArSlicerGame } from './ar-slicer/ArSlicerGame.tsx';
+import { ArHunterGame } from './ar-hunter/ArHunterGame.tsx';
+import { ArCatcherGame } from './ar-catcher/ArCatcherGame.tsx';
+import { ArBubbleGame } from './ar-bubble/ArBubbleGame.tsx';
 import {
   LifeGameIcon,
   ReversiIcon,
@@ -43,9 +47,13 @@ import {
   WordAlchemyIcon,
   AiCourtroomIcon,
   SemanticWordIcon,
+  ArSlicerIcon,
+  ArHunterIcon,
+  ArCatcherIcon,
+  ArBubbleIcon,
 } from '../components/Icons.tsx';
 
-export type GameCategory = 'all' | 'puzzle' | 'board' | 'card' | 'action' | 'casual' | 'ai';
+export type GameCategory = 'all' | 'ar' | 'ai' | 'puzzle' | 'board' | 'card' | 'action' | 'casual';
 
 export interface GameDefinition {
   id: string;
@@ -323,6 +331,54 @@ export const GAMES: GameDefinition[] = [
     icon: SemanticWordIcon,
     color: 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-900/40',
     component: SemanticWordGame,
+    isAvailable: true,
+  },
+  {
+    id: 'ar-slicer',
+    title: 'AR Blade Slicer',
+    titleJp: 'ARブレードスライサー (カメラ空手)',
+    category: 'ar',
+    description: 'カメラに映る手の動きをリアルタイム検知！画面を舞う的を手刀やパンチで豪快に切り裂く爽快アクション。',
+    badge: 'AR体感',
+    icon: ArSlicerIcon,
+    color: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/40',
+    component: ArSlicerGame,
+    isAvailable: true,
+  },
+  {
+    id: 'ar-hunter',
+    title: 'AR 360 Spirit Hunter',
+    titleJp: 'AR 360° ゴーストハンター',
+    category: 'ar',
+    description: 'スマホを部屋の周囲にかざすと現実空間に隠れた精霊が出現！360°見渡してロックオン・捕獲するAR探索シューター。',
+    badge: '360°AR',
+    icon: ArHunterIcon,
+    color: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-900/40',
+    component: ArHunterGame,
+    isAvailable: true,
+  },
+  {
+    id: 'ar-catcher',
+    title: 'AR Face Catcher',
+    titleJp: 'ARフェイスキャッチャー',
+    category: 'ar',
+    description: 'インカメラで顔の傾きを検出！頭を左右に動かしてカゴを操り、降ってくるスイーツをキャッチする手ぶらゲーム。',
+    badge: '顔認識AR',
+    icon: ArCatcherIcon,
+    color: 'bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 border border-pink-200/60 dark:border-pink-900/40',
+    component: ArCatcherGame,
+    isAvailable: true,
+  },
+  {
+    id: 'ar-bubble',
+    title: 'AR Real Bubble Pop',
+    titleJp: 'AR 空間シャボン玉',
+    category: 'ar',
+    description: '部屋の中にふわふわ浮かぶ虹色のシャボン玉を、リアルな手の動きやタップでパチンと割る癒やしのARゲーム。',
+    badge: '空間AR',
+    icon: ArBubbleIcon,
+    color: 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-900/40',
+    component: ArBubbleGame,
     isAvailable: true,
   },
 ];

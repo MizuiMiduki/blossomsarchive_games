@@ -38,6 +38,10 @@ const gameIds = [
   'word-alchemy',
   'ai-courtroom',
   'semantic-word',
+  'ar-slicer',
+  'ar-hunter',
+  'ar-catcher',
+  'ar-bubble',
 ];
 
 for (const id of gameIds) {
