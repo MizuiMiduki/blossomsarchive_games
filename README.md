@@ -7,20 +7,22 @@
 
 ## ✨ 特徴
 
-- ⚡ **Solid.js 2.0 駆動**: 仮想DOMなし・細粒度リアクティビティによる爆速ロード＆60FPSの滑らかな操作性（全10ゲーム入ってJSバンドルわずか約58KB gzip）。
+- ⚡ **Solid.js 2.0 駆動**: 仮想DOMなし・細粒度リアクティビティによる爆速ロード＆60FPSの滑らかな操作性（全10ゲーム入ってJSバンドルわずか約74KB gzip）。
 - 🛡️ **Zero Backend (完全静的)**: サーバーサイド処理不要。インフラ費用ゼロで Cloudflare Pages / GitHub Pages / Vercel などに即座にデプロイ可能。
+- 🔒 **ゼロトラスト P2P 暗号化対戦**: サーバーを介さずブラウザ同士が直接直結。SHA-256盤面ハッシュ相互検証と二重ルールバリデーションでチート・改ざんを完全防御。
 - 🤖 **クライアント完結NPC AI**: オセロ、将棋、チェス、五目並べの思考ルーチンがすべてブラウザ上で高速動作。
-- 💾 **セーブデータ永続化**: ハイスコア、プレイ回数、クリア状況、お気に入り設定を `localStorage` に自動保存。バックアップ（JSONエクスポート/インポート）機能つき。
+- 📲 **QRコード 端末間データ同期**: データベース不要で、PCからスマホへQRコードをかざすだけでセーブデータ（ハイスコア・お気に入り）を一瞬で安全同期。
 - 🎵 **プロシージャル効果音**: Web Audio API による合成音（外部mp3ファイルの読み込み不要で軽量）。
 - 📱 **レスポンシブ & PWAフレンドリー**: スマートフォンのスワイプ/タッチ操作・PCキーボード両対応。
 - 🌓 **テーマ切り替え**: ダークモード / ライトモード対応。
+- 📊 **AdSense & GA4 対応**: ユーザーの初期操作までスクリプト読み込みを遅延させ、LCP・Core Web Vitalsを損なわない設計。
 
 ---
 
 ## 🎮 収録ミニゲーム一覧（全10タイトル）
 
-### ♟️ ボードゲーム（NPC対戦）
-1. **Petal Reversi (花弁オセロ)**: 椿🌺と桜🌸で挟み合う本格オセロ。初級〜上級のAlpha-Beta探索AIとヒント機能付き。
+### ♟️ ボードゲーム（NPC対戦 ＆ サーバーレスP2P対戦）
+1. **Petal Reversi (花弁オセロ)**: 椿🌺と桜🌸で挟み合う本格オセロ。初級〜上級NPC対戦 ＆ 🔒暗号化P2Pオンライン対戦対応。
 2. **Mini Shogi (5×5 ミニ将棋)**: 王・金・銀・角・飛・歩のミニ将棋。持ち駒や成りも完全対応。
 3. **Blossom Chess (チェス)**: 知性的な思考エンジンを搭載したクラシック・チェス。
 4. **Gomoku Garden (五目並べ)**: 碁盤の上に石を5つ並べる定番頭脳ゲーム。
@@ -48,7 +50,25 @@
 - **Language**: TypeScript 5.8
 - **Audio**: Web Audio API Procedural Synthesizer
 - **Physics**: 2D Circle Impulse Physics Engine (自前実装・依存ゼロ)
+- **P2P/Security**: WebRTC DataChannel (DTLS) + Web Crypto API (SHA-256)
 - **FX**: `canvas-confetti`
+
+---
+
+## ⚙️ 環境変数設定 (.env)
+
+必要に応じて `.env` に設定してください（設定されていない場合は自動的に無効化され、エラーなく動作します）：
+
+```bash
+# Google Analytics (GA4) Measurement ID (e.g., G-XXXXXXXXXX)
+VITE_GA_MEASUREMENT_ID=
+
+# Google AdSense Client ID (e.g., ca-pub-XXXXXXXXXXXXXXXX)
+VITE_ADSENSE_CLIENT_ID=
+
+# Google AdSense default ad slot ID
+VITE_ADSENSE_DEFAULT_SLOT=
+```
 
 ---
 

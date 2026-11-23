@@ -28,6 +28,7 @@ import {
   deserializeFromSync,
   mergeIncomingData,
 } from '../utils/sync.ts';
+import AdSense from '../components/AdSense.tsx';
 
 export const Home: Component = () => {
   const [appData, setAppData] = createSignal<AppData>(loadAppData());
@@ -371,6 +372,9 @@ export const Home: Component = () => {
             }}
           </For>
         </section>
+
+        {/* AdSense 広告エリア */}
+        <AdSense class="mt-8" />
       </main>
 
       {/* 端末同期 & データ管理モーダル */}

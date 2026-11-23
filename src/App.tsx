@@ -4,6 +4,7 @@ import { Home } from './pages/Home.tsx';
 import { GameView } from './pages/GameView.tsx';
 import { loadAppData } from './utils/storage.ts';
 import { sound } from './utils/sound.ts';
+import { initThirdPartyScripts } from './utils/analytics.ts';
 
 const AppRouter = createRouter({
   routes: [
@@ -23,6 +24,9 @@ export const App: Component = () => {
     }
     sound.setMuted(data.settings.soundMuted);
     sound.setVolume(data.settings.volume);
+
+    // Google Analytics & AdSense の遅延初期化
+    initThirdPartyScripts();
   });
 
   return (
