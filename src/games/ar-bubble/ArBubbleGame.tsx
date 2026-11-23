@@ -55,10 +55,10 @@ export const ArBubbleGame: Component = () => {
   let spawnCooldown = 0;
 
   const instructions = [
-    '【部屋の中にシャボン玉が出現】カメラを起動すると、部屋の空間をふわふわ漂う虹色のシャボン玉が浮かんできます。',
-    'カメラの前で実際に手を振って触れるか、画面を直接タップしてパチンと割りましょう！',
+    '【部屋の中にシャボン玉が出現】カメラを起動すると、部屋の中にシャボン玉が浮かんできます。',
+    'カメラの前で手を振って触れるか、画面を直接タップして割りましょう！',
     '【ボーナス】桜の花びら入りや、金色のスター入りシャボン玉は高得点！',
-    '虹色に輝く「フィーバー玉」を割ると、一定時間すべてのシャボン玉の得点が2倍に跳ね上がります！',
+    '「フィーバー玉」を割ると、一定時間すべてのシャボン玉の得点が2倍になります。',
     '【プライバシー保護】カメラ映像は端末内のみで処理され、外部への送信・保存は一切行われません。',
   ];
 
@@ -402,7 +402,7 @@ export const ArBubbleGame: Component = () => {
   return (
     <GameShell
       id="ar-bubble"
-      title="AR Real Bubble Pop"
+      title="AR Bubble Pop"
       score={score()}
       isGameOver={isGameOver()}
       onRestart={restart}
