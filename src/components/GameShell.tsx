@@ -166,10 +166,15 @@ export const GameShell: Component<GameShellProps> = (props) => {
 
       {/* 画面下の追加コントロール（Undoボタンなどがあれば） */}
       <Show when={props.extraControls}>
-        <footer class="w-full max-w-xl mt-3 flex items-center justify-center">
+        <div class="w-full max-w-xl mt-3 flex items-center justify-center">
           {props.extraControls}
-        </footer>
+        </div>
       </Show>
+
+      {/* フッターコピーライト */}
+      <footer class="mt-3 text-[10px] text-slate-400 dark:text-slate-500 text-center select-none">
+        ©2017 - {new Date().getFullYear()} BlossomsArchive
+      </footer>
 
       {/* 遊び方・ルールモーダル */}
       <Show when={showHelp()}>
