@@ -91,19 +91,21 @@ export const GomokuGame: Component = () => {
   const instructions = [
     '縦・横・斜めのいずれかに自分の石を「連続して5つ」並べると勝利です。',
     '相手の4連や3連を見逃さずに阻止しつつ、自分の連を広げましょう！',
+    '【NPC対戦】初級・中級・上級からNPCの強さを選んで対局できます。',
   ];
 
   return (
     <GameShell
       id="gomoku-garden"
       title="Gomoku Garden (五目並べ)"
-      score={isVictory() ? 1000 : 0}
+      score={isVictory() ? (difficulty() === 'hard' ? 3000 : difficulty() === 'normal' ? 1500 : 800) : 0}
       isGameOver={isGameOver() && !isVictory()}
       isVictory={isVictory()}
       onRestart={restart}
       instructions={instructions}
       extraControls={
         <div class="flex items-center gap-2 bg-white/70 dark:bg-slate-900/70 p-1.5 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs">
+          <span class="font-bold text-slate-500 pl-1">強さ:</span>
           {(['easy', 'normal', 'hard'] as const).map((diff) => (
             <button
               onClick={() => {
@@ -113,13 +115,13 @@ export const GomokuGame: Component = () => {
                   restart();
                 }
               }}
-              class={`px-2.5 py-1 rounded-xl font-semibold transition-all ${
+              class={`px-2.5 py-1 rounded-xl font-bold transition-all ${
                 difficulty() === diff
                   ? 'bg-rose-500 text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
               }`}
             >
-              {diff === 'easy' ? '初級' : diff === 'normal' ? '中級' : '上級'}
+              {diff === 'easy' ? '🌱 初級' : diff === 'normal' ? '🌸 中級' : '👑 上級'}
             </button>
           ))}
           <div class="w-px h-4 bg-slate-200 dark:bg-slate-700" />

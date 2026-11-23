@@ -25,7 +25,7 @@ export const ReversiGame: Component = () => {
   const [board, setBoard] = createSignal<BoardState>(createInitialBoard());
   const [turn, setTurn] = createSignal<Player>('black');
   const [playerColor, setPlayerColor] = createSignal<Player>('black');
-  const [difficulty] = createSignal<'easy' | 'normal' | 'hard'>('normal');
+  const [difficulty, setDifficulty] = createSignal<'easy' | 'normal' | 'hard'>('normal');
   const [playMode, setPlayMode] = createSignal<PlayMode>('npc');
   const [isAiThinking, setIsAiThinking] = createSignal(false);
   const [showGuide] = createSignal(true);
@@ -390,35 +390,78 @@ export const ReversiGame: Component = () => {
       onRestart={restart}
       instructions={instructions}
       extraControls={
-        <div class="flex items-center gap-2 bg-white/80 dark:bg-slate-900/80 p-1.5 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs">
+        <div class="flex flex-col gap-2 w-full max-w-sm">
+          {/* NPC難易度 & 先手後手 (NPCモード時) */}
+          <Show when={playMode() === 'npc'}>
+            <div class="flex items-center justify-between p-1.5 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs shadow-2xs">
+              <span class="font-bold text-slate-500 pl-1">強さ:</span>
+              <div class="flex items-center gap-1">
+                {(['easy', 'normal', 'hard'] as const).map((diff) => (
+                  <button
+                    onClick={() => {
+                      if (difficulty() !== diff) {
+                        sound.playPop(450);
+                        setDifficulty(diff);
+                        restart();
+                      }
+                    }}
+                    class={`px-2.5 py-1 rounded-xl font-bold transition-all ${
+                      difficulty() === diff
+                        ? 'bg-rose-500 text-white shadow-xs'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
+                    }`}
+                  >
+                    {diff === 'easy' ? '🌱 初級' : diff === 'normal' ? '🌸 中級' : '👑 上級'}
+                  </button>
+                ))}
+              </div>
+
+              <div class="w-px h-4 bg-slate-200 dark:bg-slate-700" />
+
+              <button
+                onClick={() => {
+                  const next: Player = playerColor() === 'black' ? 'white' : 'black';
+                  sound.playPop(420);
+                  setPlayerColor(next);
+                  restart();
+                }}
+                class="px-2 py-1 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:text-rose-500"
+              >
+                {playerColor() === 'black' ? '先手(🌺)' : '後手(🌸)'}
+              </button>
+            </div>
+          </Show>
+
           {/* モード選択 */}
-          <button
-            onClick={() => {
-              sound.playPop(420);
-              setPlayMode('npc');
-              restart();
-            }}
-            class={`px-3 py-1 rounded-xl font-bold transition-all ${
-              playMode() === 'npc'
-                ? 'bg-rose-500 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
-            }`}
-          >
-            🤖 NPC対戦
-          </button>
-          <button
-            onClick={() => {
-              sound.playPop(420);
-              setPlayMode('p2p');
-            }}
-            class={`px-3 py-1 rounded-xl font-bold transition-all ${
-              playMode() === 'p2p'
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:text-emerald-500'
-            }`}
-          >
-            🔒 P2P暗号化対戦 (サーバー不要)
-          </button>
+          <div class="flex items-center justify-center gap-2 bg-white/80 dark:bg-slate-900/80 p-1.5 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs shadow-2xs">
+            <button
+              onClick={() => {
+                sound.playPop(420);
+                setPlayMode('npc');
+                restart();
+              }}
+              class={`flex-1 py-1 rounded-xl font-bold transition-all text-center ${
+                playMode() === 'npc'
+                  ? 'bg-rose-500 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
+              }`}
+            >
+              🤖 NPC対戦
+            </button>
+            <button
+              onClick={() => {
+                sound.playPop(420);
+                setPlayMode('p2p');
+              }}
+              class={`flex-1 py-1 rounded-xl font-bold transition-all text-center ${
+                playMode() === 'p2p'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-emerald-500'
+              }`}
+            >
+              🔒 P2P暗号化対戦
+            </button>
+          </div>
         </div>
       }
     >

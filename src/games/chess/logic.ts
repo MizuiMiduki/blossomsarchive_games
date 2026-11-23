@@ -1,4 +1,4 @@
-// チェス コアロジック & 軽量NPC AI
+// チェス コアロジック & 3段階難易度NPC AI
 
 export type ChessColor = 'w' | 'b'; // w: player (白), b: ai (黒)
 export type ChessPieceType = 'p' | 'n' | 'b' | 'r' | 'q' | 'k';
@@ -21,14 +21,12 @@ let chessId = 1;
 export function createInitialChessBoard(): ChessBoard {
   const b: ChessBoard = Array.from({ length: 8 }, () => Array(8).fill(null));
 
-  // 黒 (AI) - r=0, 1
   const backRow: ChessPieceType[] = ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'];
   for (let c = 0; c < 8; c++) {
     b[0][c] = { id: chessId++, type: backRow[c], color: 'b' };
     b[1][c] = { id: chessId++, type: 'p', color: 'b' };
   }
 
-  // 白 (Player) - r=6, 7
   for (let c = 0; c < 8; c++) {
     b[6][c] = { id: chessId++, type: 'p', color: 'w' };
     b[7][c] = { id: chessId++, type: backRow[c], color: 'w' };
@@ -54,12 +52,12 @@ export function getValidChessMoves(
     const dest = board[nr][nc];
     if (!dest) {
       moves.push([nr, nc]);
-      return true; // 空きマスなのでスライド継続
+      return true;
     }
     if (dest.color === oppColor) {
-      moves.push([nr, nc]); // 敵の駒を取る
+      moves.push([nr, nc]);
     }
-    return false; // 自駒または敵駒に衝突
+    return false;
   };
 
   const trySlide = (dr: number, dc: number) => {
@@ -71,16 +69,13 @@ export function getValidChessMoves(
 
   if (p.type === 'p') {
     const dir = color === 'w' ? -1 : 1;
-    // 1マス前進
     if (r + dir >= 0 && r + dir < 8 && !board[r + dir][c]) {
       moves.push([r + dir, c]);
-      // 初期位置からの2マス前進
       const startRow = color === 'w' ? 6 : 1;
       if (r === startRow && !board[r + dir * 2][c]) {
         moves.push([r + dir * 2, c]);
       }
     }
-    // 斜め取り
     [-1, 1].forEach((dc) => {
       const nr = r + dir;
       const nc = c + dc;
@@ -89,25 +84,20 @@ export function getValidChessMoves(
       }
     });
   } else if (p.type === 'n') {
-    // ナイト
     [
       [-2, -1], [-2, 1], [-1, -2], [-1, 2],
       [1, -2],  [1, 2],  [2, -1],  [2, 1],
     ].forEach(([dr, dc]) => tryAdd(r + dr, c + dc));
   } else if (p.type === 'b') {
-    // ビショップ
     [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(([dr, dc]) => trySlide(dr, dc));
   } else if (p.type === 'r') {
-    // ルーク
     [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(([dr, dc]) => trySlide(dr, dc));
   } else if (p.type === 'q') {
-    // クイーン
     [
       [-1, -1], [-1, 1], [1, -1], [1, 1],
       [-1, 0],  [1, 0],  [0, -1], [0, 1],
     ].forEach(([dr, dc]) => trySlide(dr, dc));
   } else if (p.type === 'k') {
-    // キング
     [
       [-1, -1], [-1, 0], [-1, 1],
       [0, -1],           [0, 1],
@@ -127,7 +117,11 @@ const CHESS_VALUES: Record<ChessPieceType, number> = {
   p: 100,
 };
 
-export function chooseChessMove(board: ChessBoard, aiColor: ChessColor = 'b'): { from: [number, number]; to: [number, number] } | null {
+export function chooseChessMove(
+  board: ChessBoard,
+  aiColor: ChessColor = 'b',
+  difficulty: 'easy' | 'normal' | 'hard' = 'normal'
+): { from: [number, number]; to: [number, number] } | null {
   const allMoves: { from: [number, number]; to: [number, number]; score: number }[] = [];
 
   for (let r = 0; r < 8; r++) {
@@ -137,19 +131,20 @@ export function chooseChessMove(board: ChessBoard, aiColor: ChessColor = 'b'): {
         const moves = getValidChessMoves(board, r, c);
         for (const [nr, nc] of moves) {
           const target = board[nr][nc];
-          let score = Math.random() * 20;
+          let score = Math.random() * (difficulty === 'hard' ? 5 : 25);
 
           if (target) {
-            score += CHESS_VALUES[target.type] * 2 - CHESS_VALUES[p.type] * 0.1;
+            score += CHESS_VALUES[target.type] * (difficulty === 'hard' ? 2.5 : 1.8) - CHESS_VALUES[p.type] * 0.1;
+            if (target.type === 'k') score += 100000;
           }
 
           // 中央制御ボーナス
           const centerDist = Math.abs(nr - 3.5) + Math.abs(nc - 3.5);
-          score += (7 - centerDist) * 5;
+          score += (7 - centerDist) * (difficulty === 'hard' ? 12 : 5);
 
-          // ポーンの昇格ボーナス
+          // ポーン昇格
           if (p.type === 'p' && (nr === 7 || nr === 0)) {
-            score += 800;
+            score += 900;
           }
 
           allMoves.push({ from: [r, c], to: [nr, nc], score });
@@ -159,6 +154,19 @@ export function chooseChessMove(board: ChessBoard, aiColor: ChessColor = 'b'): {
   }
 
   if (allMoves.length === 0) return null;
+
+  // 初級: 40%ランダム
+  if (difficulty === 'easy') {
+    // 相手キングを取れる手があれば最優先
+    const kingKill = allMoves.find((m) => board[m.to[0]][m.to[1]]?.type === 'k');
+    if (kingKill) return { from: kingKill.from, to: kingKill.to };
+
+    if (Math.random() < 0.45) {
+      const randMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+      return { from: randMove.from, to: randMove.to };
+    }
+  }
+
   allMoves.sort((a, b) => b.score - a.score);
   return { from: allMoves[0].from, to: allMoves[0].to };
 }

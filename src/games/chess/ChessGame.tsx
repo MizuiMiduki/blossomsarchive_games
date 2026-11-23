@@ -13,6 +13,7 @@ export const ChessGame: Component = () => {
   const [board, setBoard] = createSignal<ChessBoard>(createInitialChessBoard());
   const [selectedCell, setSelectedCell] = createSignal<[number, number] | null>(null);
   const [turn, setTurn] = createSignal<'w' | 'b'>('w');
+  const [difficulty, setDifficulty] = createSignal<'easy' | 'normal' | 'hard'>('normal');
   const [isAiThinking, setIsAiThinking] = createSignal(false);
   const [capturedByPlayer, setCapturedByPlayer] = createSignal<string[]>([]);
   const [, setCapturedByAi] = createSignal<string[]>([]);
@@ -33,7 +34,7 @@ export const ChessGame: Component = () => {
   const triggerAi = (currentBoard: ChessBoard) => {
     setIsAiThinking(true);
     setTimeout(() => {
-      const move = chooseChessMove(currentBoard, 'b');
+      const move = chooseChessMove(currentBoard, 'b', difficulty());
       if (!move) {
         setIsGameOver(true);
         setIsVictory(true);
@@ -49,7 +50,6 @@ export const ChessGame: Component = () => {
         setCapturedByAi((prev) => [...prev, CHESS_SYMBOLS[target.color][target.type]]);
         sound.playMatch(4);
         if (target.type === 'k') {
-          // 白キングが倒された
           setIsGameOver(true);
           setIsVictory(false);
         }
@@ -57,7 +57,6 @@ export const ChessGame: Component = () => {
         sound.playPop(420);
       }
 
-      // ポーンプロモーション (クイーンに昇格)
       let finalType = p.type;
       if (p.type === 'p' && move.to[0] === 7) {
         finalType = 'q';
@@ -93,7 +92,6 @@ export const ChessGame: Component = () => {
           setCapturedByPlayer((prev) => [...prev, CHESS_SYMBOLS[target.color][target.type]]);
           sound.playMatch(5);
           if (target.type === 'k') {
-            // 黒キングを倒した！
             setIsGameOver(true);
             setIsVictory(true);
           }
@@ -101,7 +99,6 @@ export const ChessGame: Component = () => {
           sound.playPop(520);
         }
 
-        // 白ポーンの昇格
         let finalType = movingPiece.type;
         if (movingPiece.type === 'p' && r === 0) {
           finalType = 'q';
@@ -120,7 +117,6 @@ export const ChessGame: Component = () => {
         return;
       }
 
-      // 別の自駒を選択
       if (cell && cell.color === 'w') {
         setSelectedCell([r, c]);
         sound.playPop(350);
@@ -145,17 +141,41 @@ export const ChessGame: Component = () => {
     '白（手前）を操作して、相手のキング♔を倒しましょう！',
     'ポーンは前進、ルークは直線、ナイトはL字、ビショップは斜め、クイーンは全方向へ移動できます。',
     'ポーンが一番奥の列まで到達すると強力なクイーンへ昇格します。',
+    '【NPC対戦】初級・中級・上級からNPCの強さを選んで対局できます。',
   ];
 
   return (
     <GameShell
       id="blossom-chess"
       title="Blossom Chess"
-      score={isVictory() ? 2000 : 0}
+      score={isVictory() ? (difficulty() === 'hard' ? 4000 : difficulty() === 'normal' ? 2000 : 1000) : 0}
       isGameOver={isGameOver() && !isVictory()}
       isVictory={isVictory()}
       onRestart={restart}
       instructions={instructions}
+      extraControls={
+        <div class="flex items-center gap-2 bg-white/70 dark:bg-slate-900/70 p-1.5 rounded-2xl border border-rose-100 dark:border-slate-800 text-xs">
+          <span class="font-bold text-slate-500 pl-1">強さ:</span>
+          {(['easy', 'normal', 'hard'] as const).map((diff) => (
+            <button
+              onClick={() => {
+                if (difficulty() !== diff) {
+                  sound.playPop(450);
+                  setDifficulty(diff);
+                  restart();
+                }
+              }}
+              class={`px-3 py-1 rounded-xl font-bold transition-all ${
+                difficulty() === diff
+                  ? 'bg-rose-500 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-rose-500'
+              }`}
+            >
+              {diff === 'easy' ? '🌱 初級' : diff === 'normal' ? '🌸 中級' : '👑 上級'}
+            </button>
+          ))}
+        </div>
+      }
     >
       {/* 獲得した駒 */}
       <div class="w-full max-w-[340px] flex items-center justify-between text-xs px-2 py-1 mb-1 text-slate-500">
