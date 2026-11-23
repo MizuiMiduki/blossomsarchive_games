@@ -1,6 +1,7 @@
-import { Component, createSignal, onSettled, For, Show } from 'solid-js';
+import { Component, createSignal, onSettled, onCleanup, For, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
+import { ZeroTrustP2P } from '../../utils/p2p.ts';
 import {
   ShogiBoard,
   PieceType,
@@ -92,17 +93,32 @@ const ShogiPieceView: Component<ShogiPieceViewProps> = (props) => {
   );
 };
 
+type PlayMode = 'npc' | 'local' | 'p2p';
+
 export const MiniShogiGame: Component = () => {
   const [board, setBoard] = createSignal<ShogiBoard>(createInitialShogiBoard());
   const [playerHand, setPlayerHand] = createSignal<PieceType[]>([]);
   const [aiHand, setAiHand] = createSignal<PieceType[]>([]);
   const [selectedCell, setSelectedCell] = createSignal<[number, number] | null>(null);
   const [selectedHandPiece, setSelectedHandPiece] = createSignal<PieceType | null>(null);
+  const [selectedHandOwner, setSelectedHandOwner] = createSignal<'player' | 'ai' | null>(null);
   const [turn, setTurn] = createSignal<'player' | 'ai'>('player');
+  const [playerSide, setPlayerSide] = createSignal<'player' | 'ai'>('player');
   const [difficulty, setDifficulty] = createSignal<'easy' | 'normal' | 'hard'>('normal');
+  const [playMode, setPlayMode] = createSignal<PlayMode>('npc');
   const [isAiThinking, setIsAiThinking] = createSignal(false);
   const [isGameOver, setIsGameOver] = createSignal(false);
   const [isVictory, setIsVictory] = createSignal(false);
+
+  // P2P 関連状態
+  const [p2pRole, setP2pRole] = createSignal<'host' | 'guest' | null>(null);
+  const [p2pStatus, setP2pStatus] = createSignal<'idle' | 'waiting_answer' | 'connected' | 'error'>('idle');
+  const [hostOfferCode, setHostOfferCode] = createSignal<string>('');
+  const [guestInputOffer, setGuestInputOffer] = createSignal<string>('');
+  const [guestAnswerCode, setGuestAnswerCode] = createSignal<string>('');
+  const [hostInputAnswer, setHostInputAnswer] = createSignal<string>('');
+  const [copyStatus, setCopyStatus] = createSignal<string | null>(null);
+  let p2pInstance: ZeroTrustP2P | null = null;
 
   const restart = () => {
     setBoard(createInitialShogiBoard());
@@ -110,10 +126,79 @@ export const MiniShogiGame: Component = () => {
     setAiHand([]);
     setSelectedCell(null);
     setSelectedHandPiece(null);
+    setSelectedHandOwner(null);
     setTurn('player');
     setIsAiThinking(false);
     setIsGameOver(false);
     setIsVictory(false);
+  };
+
+  const initP2p = () => {
+    if (p2pInstance) p2pInstance.close();
+    p2pInstance = new ZeroTrustP2P({
+      onConnected: () => {
+        sound.playVictory();
+        setP2pStatus('connected');
+        restart();
+      },
+      onMessage: (data: any) => {
+        if (data.type === 'move' && data.from && data.to) {
+          executeMoveAction(data.from, data.to, 'ai', false);
+        } else if (data.type === 'drop' && data.dropType && data.to) {
+          executeDropAction(data.dropType, data.to, 'ai', false);
+        }
+      },
+      onError: (err) => {
+        console.error('P2P Error:', err);
+        setP2pStatus('error');
+      },
+      onDisconnected: () => {
+        setP2pStatus('idle');
+      },
+    });
+  };
+
+  const handleHostCreateRoom = async () => {
+    initP2p();
+    setP2pRole('host');
+    setPlayerSide('player'); // 先手
+    try {
+      const offer = await p2pInstance!.createHostOffer();
+      setHostOfferCode(offer);
+      setP2pStatus('waiting_answer');
+    } catch (err) {
+      setP2pStatus('error');
+    }
+  };
+
+  const handleGuestJoin = async () => {
+    if (!guestInputOffer().trim()) return;
+    initP2p();
+    setP2pRole('guest');
+    setPlayerSide('ai'); // 後手
+    try {
+      const answer = await p2pInstance!.joinGuest(guestInputOffer().trim());
+      setGuestAnswerCode(answer);
+      setP2pStatus('waiting_answer');
+    } catch (err) {
+      setP2pStatus('error');
+    }
+  };
+
+  const handleHostComplete = async () => {
+    if (!hostInputAnswer().trim() || !p2pInstance) return;
+    try {
+      await p2pInstance.completeHostConnection(hostInputAnswer().trim());
+    } catch (err) {
+      setP2pStatus('error');
+    }
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopyStatus(`${label}をコピーしました！`);
+    sound.playPop(500);
+    setTimeout(() => setCopyStatus(null), 2500);
   };
 
   const triggerAi = (currentBoard: ShogiBoard, currentAiHand: PieceType[], currentPlayerHand: PieceType[]) => {
@@ -124,6 +209,7 @@ export const MiniShogiGame: Component = () => {
         setIsGameOver(true);
         setIsVictory(true);
         setIsAiThinking(false);
+        sound.playVictory();
         return;
       }
 
@@ -153,6 +239,7 @@ export const MiniShogiGame: Component = () => {
             setIsGameOver(true);
             setIsVictory(false);
             setIsAiThinking(false);
+            sound.playGameOver();
             return;
           }
         } else {
@@ -171,88 +258,164 @@ export const MiniShogiGame: Component = () => {
       setPlayerHand(nextPlayerHand);
       setTurn('player');
       setIsAiThinking(false);
-    }, 600);
+    }, 450);
+  };
+
+  // 駒の移動アクション
+  const executeMoveAction = (
+    from: [number, number],
+    to: [number, number],
+    movingSide: 'player' | 'ai',
+    sendP2p = true
+  ) => {
+    const currentBoard = board();
+    const [sr, sc] = from;
+    const [r, c] = to;
+    const movingPiece = currentBoard[sr][sc]!;
+    const targetPiece = currentBoard[r][c];
+    const nextBoard = currentBoard.map((row) => [...row]);
+    let nextPlayerHand = [...playerHand()];
+    let nextAiHand = [...aiHand()];
+
+    if (targetPiece) {
+      if (movingSide === 'player') {
+        nextPlayerHand.push(targetPiece.type);
+      } else {
+        nextAiHand.push(targetPiece.type);
+      }
+      sound.playMatch(5);
+      if (targetPiece.type === 'K') {
+        nextBoard[sr][sc] = null;
+        nextBoard[r][c] = movingPiece;
+        setBoard(nextBoard);
+        setPlayerHand(nextPlayerHand);
+        setAiHand(nextAiHand);
+        setIsGameOver(true);
+        setIsVictory(movingSide === playerSide());
+        sound.playVictory();
+        return;
+      }
+    } else {
+      sound.playPop(500);
+    }
+
+    // 成り判定 (5五将棋は1段目突入で自動成)
+    let promoted = movingPiece.promoted;
+    if (!promoted && movingPiece.type !== 'K' && movingPiece.type !== 'G') {
+      if (movingSide === 'player' && (r === 0 || sr === 0)) {
+        promoted = true;
+      } else if (movingSide === 'ai' && (r === 4 || sr === 4)) {
+        promoted = true;
+      }
+    }
+
+    nextBoard[sr][sc] = null;
+    nextBoard[r][c] = { ...movingPiece, promoted };
+
+    setBoard(nextBoard);
+    setPlayerHand(nextPlayerHand);
+    setAiHand(nextAiHand);
+    setSelectedCell(null);
+
+    const nextTurn = movingSide === 'player' ? 'ai' : 'player';
+    setTurn(nextTurn);
+
+    if (sendP2p && playMode() === 'p2p') {
+      p2pInstance?.send({ type: 'move', from, to });
+    }
+
+    if (playMode() === 'npc' && nextTurn === 'ai') {
+      triggerAi(nextBoard, nextAiHand, nextPlayerHand);
+    }
+  };
+
+  // 持ち駒を打つアクション
+  const executeDropAction = (
+    dropType: PieceType,
+    to: [number, number],
+    droppingSide: 'player' | 'ai',
+    sendP2p = true
+  ) => {
+    const currentBoard = board();
+    const [r, c] = to;
+    const nextBoard = currentBoard.map((row) => [...row]);
+    nextBoard[r][c] = {
+      id: Date.now(),
+      type: dropType,
+      promoted: false,
+      side: droppingSide,
+    };
+
+    let nextPlayerHand = [...playerHand()];
+    let nextAiHand = [...aiHand()];
+
+    if (droppingSide === 'player') {
+      const idx = nextPlayerHand.indexOf(dropType);
+      if (idx >= 0) nextPlayerHand.splice(idx, 1);
+    } else {
+      const idx = nextAiHand.indexOf(dropType);
+      if (idx >= 0) nextAiHand.splice(idx, 1);
+    }
+
+    setBoard(nextBoard);
+    setPlayerHand(nextPlayerHand);
+    setAiHand(nextAiHand);
+    setSelectedHandPiece(null);
+    setSelectedHandOwner(null);
+    sound.playPop(520);
+
+    const nextTurn = droppingSide === 'player' ? 'ai' : 'player';
+    setTurn(nextTurn);
+
+    if (sendP2p && playMode() === 'p2p') {
+      p2pInstance?.send({ type: 'drop', dropType, to });
+    }
+
+    if (playMode() === 'npc' && nextTurn === 'ai') {
+      triggerAi(nextBoard, nextAiHand, nextPlayerHand);
+    }
   };
 
   const handleCellClick = (r: number, c: number) => {
-    if (turn() !== 'player' || isAiThinking() || isGameOver()) return;
+    if (isGameOver()) return;
+    const mode = playMode();
+    const curTurn = turn();
+
+    if (mode === 'npc') {
+      if (curTurn !== 'player' || isAiThinking()) return;
+    } else if (mode === 'p2p') {
+      if (p2pStatus() !== 'connected' || curTurn !== playerSide()) return;
+    }
 
     const currentBoard = board();
     const cell = currentBoard[r][c];
     const sel = selectedCell();
     const handPiece = selectedHandPiece();
+    const activeSide = curTurn;
 
-    if (handPiece) {
+    // 1. 持ち駒を打つ処理
+    if (handPiece && selectedHandOwner() === activeSide) {
       if (!cell) {
-        const nextBoard = currentBoard.map((row) => [...row]);
-        nextBoard[r][c] = {
-          id: Date.now(),
-          type: handPiece,
-          promoted: false,
-          side: 'player',
-        };
-        const nextHand = [...playerHand()];
-        const idx = nextHand.indexOf(handPiece);
-        if (idx >= 0) nextHand.splice(idx, 1);
-
-        setBoard(nextBoard);
-        setPlayerHand(nextHand);
-        setSelectedHandPiece(null);
-        sound.playPop(520);
-
-        setTurn('ai');
-        triggerAi(nextBoard, aiHand(), nextHand);
+        executeDropAction(handPiece, [r, c], activeSide);
       } else {
         setSelectedHandPiece(null);
+        setSelectedHandOwner(null);
       }
       return;
     }
 
+    // 2. 盤上の駒を移動する処理
     if (sel) {
       const [sr, sc] = sel;
       const validMoves = getValidShogiMoves(currentBoard, sr, sc);
       const isMoveValid = validMoves.some(([mr, mc]) => mr === r && mc === c);
 
       if (isMoveValid) {
-        const movingPiece = currentBoard[sr][sc]!;
-        const targetPiece = currentBoard[r][c];
-        const nextBoard = currentBoard.map((row) => [...row]);
-        let nextPlayerHand = [...playerHand()];
-
-        if (targetPiece) {
-          nextPlayerHand.push(targetPiece.type);
-          sound.playMatch(5);
-          if (targetPiece.type === 'K') {
-            nextBoard[sr][sc] = null;
-            nextBoard[r][c] = movingPiece;
-            setBoard(nextBoard);
-            setPlayerHand(nextPlayerHand);
-            setIsGameOver(true);
-            setIsVictory(true);
-            return;
-          }
-        } else {
-          sound.playPop(500);
-        }
-
-        let promoted = movingPiece.promoted;
-        if (!promoted && movingPiece.type !== 'K' && movingPiece.type !== 'G' && (r === 0 || sr === 0)) {
-          promoted = true;
-        }
-
-        nextBoard[sr][sc] = null;
-        nextBoard[r][c] = { ...movingPiece, promoted };
-
-        setBoard(nextBoard);
-        setPlayerHand(nextPlayerHand);
-        setSelectedCell(null);
-
-        setTurn('ai');
-        triggerAi(nextBoard, aiHand(), nextPlayerHand);
+        executeMoveAction([sr, sc], [r, c], activeSide);
         return;
       }
 
-      if (cell && cell.side === 'player') {
+      if (cell && cell.side === activeSide) {
         setSelectedCell([r, c]);
         sound.playPop(350);
         return;
@@ -262,155 +425,396 @@ export const MiniShogiGame: Component = () => {
       return;
     }
 
-    if (cell && cell.side === 'player') {
+    // 3. 駒を選択
+    if (cell && cell.side === activeSide) {
       setSelectedCell([r, c]);
       setSelectedHandPiece(null);
+      setSelectedHandOwner(null);
       sound.playPop(440);
     }
+  };
+
+  const handleHandClick = (type: PieceType, owner: 'player' | 'ai') => {
+    if (isGameOver()) return;
+    const mode = playMode();
+    const curTurn = turn();
+
+    if (mode === 'npc') {
+      if (curTurn !== 'player' || isAiThinking() || owner !== 'player') return;
+    } else if (mode === 'p2p') {
+      if (p2pStatus() !== 'connected' || curTurn !== playerSide() || owner !== playerSide()) return;
+    } else if (mode === 'local') {
+      if (curTurn !== owner) return;
+    }
+
+    if (selectedHandPiece() === type && selectedHandOwner() === owner) {
+      setSelectedHandPiece(null);
+      setSelectedHandOwner(null);
+      return;
+    }
+
+    setSelectedHandPiece(type);
+    setSelectedHandOwner(owner);
+    setSelectedCell(null);
+    sound.playPop(380);
   };
 
   onSettled(() => {
     restart();
   });
 
+  onCleanup(() => {
+    if (p2pInstance) {
+      p2pInstance.close();
+      p2pInstance = null;
+    }
+  });
+
   const instructions = [
-    '王・金・銀・角・飛・歩のミニ将棋。相手の「玉」を取ると勝利です！',
-    '取った相手の駒は「持ち駒」として空いているマスに打つことができます。',
-    '敵陣（一番奥の列）に進むと自動的に強力な駒へ「成る」ことができます。',
+    '5×5盤のコンパクトなミニ将棋です。王将（玉将）を詰ませば勝利！',
+    '相手の駒を取ると自分の「持ち駒」になり、空いているマスに打つことができます。',
+    '敵陣の1段目に進むと成ることができます（金・王以外）。',
     '【NPC対戦】初級・中級・上級からNPCの強さを選んで対局できます。',
+    '【対面対戦】1台のスマホ/PCで先手と後手を交代で指して対局できます。',
+    '【P2P対戦】招待コードを交換して離れた友達とオンライン直接対局！',
   ];
 
   return (
     <GameShell
       id="mini-shogi"
-      title="5×5 ミニ将棋"
+      title="5五将棋 (Mini Shogi)"
       score={isVictory() ? (difficulty() === 'hard' ? 3000 : difficulty() === 'normal' ? 1500 : 800) : 0}
       isGameOver={isGameOver() && !isVictory()}
       isVictory={isVictory()}
       onRestart={restart}
       instructions={instructions}
       extraControls={
-        <div class="flex items-center gap-2 bg-white/90 dark:bg-slate-900/90 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">
-          <span class="font-bold text-slate-500 pl-1">強さ:</span>
-          {(['easy', 'normal', 'hard'] as const).map((diff) => (
+        <div class="flex flex-col sm:flex-row items-center gap-2 w-full max-w-md">
+          {/* 対戦モード切り替えタブ */}
+          <div class="flex items-center gap-1 bg-white/90 dark:bg-slate-900/90 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs w-full justify-between">
             <button
               onClick={() => {
-                if (difficulty() !== diff) {
-                  sound.playPop(450);
-                  setDifficulty(diff);
-                  restart();
-                }
+                sound.playPop(420);
+                setPlayMode('npc');
+                restart();
               }}
-              class={`px-3 py-1 rounded-xl font-semibold transition-all ${
-                difficulty() === diff
+              class={`flex-1 py-1 rounded-xl font-bold transition-all text-center ${
+                playMode() === 'npc'
                   ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              {diff === 'easy' ? '初級' : diff === 'normal' ? '中級' : '上級'}
+              NPC対戦
             </button>
-          ))}
+            <button
+              onClick={() => {
+                sound.playPop(420);
+                setPlayMode('local');
+                restart();
+              }}
+              class={`flex-1 py-1 rounded-xl font-bold transition-all text-center ${
+                playMode() === 'local'
+                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              対面対戦
+            </button>
+            <button
+              onClick={() => {
+                sound.playPop(420);
+                setPlayMode('p2p');
+              }}
+              class={`flex-1 py-1 rounded-xl font-bold transition-all text-center ${
+                playMode() === 'p2p'
+                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              P2P通信
+            </button>
+          </div>
+
+          {/* NPC モード時の難易度 */}
+          <Show when={playMode() === 'npc'}>
+            <div class="flex items-center gap-1 bg-white/90 dark:bg-slate-900/90 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs shrink-0">
+              {(['easy', 'normal', 'hard'] as const).map((diff) => (
+                <button
+                  onClick={() => {
+                    if (difficulty() !== diff) {
+                      sound.playPop(450);
+                      setDifficulty(diff);
+                      restart();
+                    }
+                  }}
+                  class={`px-2 py-0.5 rounded-lg font-semibold transition-all ${
+                    difficulty() === diff
+                      ? 'bg-amber-600 text-white'
+                      : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  {diff === 'easy' ? '初級' : diff === 'normal' ? '中級' : '上級'}
+                </button>
+              ))}
+            </div>
+          </Show>
         </div>
       }
     >
-      {/* AIの持ち駒 */}
-      <div class="w-full max-w-[460px] flex items-center justify-between px-3 py-2 bg-amber-100/70 dark:bg-amber-950/50 rounded-xl mb-2 text-xs border border-amber-300/60 dark:border-amber-900/60 shadow-xs">
-        <span class="font-bold text-slate-700 dark:text-slate-300">相手の持ち駒:</span>
-        <div class="flex items-center gap-1.5 min-h-[34px]">
-          <Show when={aiHand().length === 0}>
-            <span class="text-slate-400 text-[11px] italic">なし</span>
-          </Show>
-          <For each={aiHand()}>
-            {(p) => (
-              <ShogiPieceView type={p} isAi={true} size="sm" />
-            )}
-          </For>
-        </div>
-      </div>
+      <div class="flex flex-col items-center gap-1.5 w-full max-w-lg">
+        {/* P2P 接続パネル */}
+        <Show when={playMode() === 'p2p' && p2pStatus() !== 'connected'}>
+          <div class="w-full bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-xl border border-emerald-500/30 text-xs animate-in fade-in">
+            <div class="flex items-center justify-between mb-2 border-b border-slate-100 dark:border-slate-800 pb-2">
+              <span class="font-bold text-slate-800 dark:text-slate-100">P2P オンライン5五将棋</span>
+              <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-bold">
+                E2EE 暗号化通信
+              </span>
+            </div>
 
-      {/* 将棋盤 (5x5) */}
-      <div class="w-full max-w-[460px] max-h-[calc(100dvh-170px)] aspect-square bg-amber-200 dark:bg-amber-950 p-2 sm:p-2.5 rounded-2xl shadow-xl border-4 border-amber-400 dark:border-amber-900 select-none">
-        <div class="grid grid-cols-5 grid-rows-5 gap-1 w-full h-full bg-amber-400/40 dark:bg-amber-900/40 p-1 rounded-xl">
-          <For each={board()}>
-            {(row, rIdx) => (
-              <For each={row}>
-                {(cell, cIdx) => {
-                  const isSelected = () =>
-                    Boolean(selectedCell() && selectedCell()![0] === rIdx() && selectedCell()![1] === cIdx());
+            <Show when={p2pStatus() === 'idle'}>
+              <div class="flex flex-col gap-2.5">
+                <p class="text-slate-500 text-[11px]">
+                  サーバーを介さずブラウザ同士が直接P2P通信で接続して5五将棋を対局します。
+                </p>
+                <div class="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={handleHostCreateRoom}
+                    class="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-sm active:scale-95 transition-all"
+                  >
+                    部屋を作る (先手/下側)
+                  </button>
+                  <button
+                    onClick={() => {
+                      setP2pRole('guest');
+                      setP2pStatus('waiting_answer');
+                    }}
+                    class="py-2.5 rounded-xl border border-emerald-500 text-emerald-600 dark:text-emerald-400 font-bold active:scale-95 transition-all hover:bg-emerald-50"
+                  >
+                    部屋に参加 (後手/上側)
+                  </button>
+                </div>
+              </div>
+            </Show>
 
-                  const isValidTarget = () => {
-                    if (selectedCell()) {
-                      const moves = getValidShogiMoves(board(), selectedCell()![0], selectedCell()![1]);
-                      return moves.some(([mr, mc]) => mr === rIdx() && mc === cIdx());
-                    }
-                    if (selectedHandPiece()) {
-                      return cell === null;
-                    }
-                    return false;
-                  };
+            {/* ホスト */}
+            <Show when={p2pRole() === 'host' && p2pStatus() === 'waiting_answer'}>
+              <div class="flex flex-col gap-2">
+                <span class="font-bold text-slate-700 dark:text-slate-200">1. 招待コードを相手に共有</span>
+                <button
+                  onClick={() => copyToClipboard(hostOfferCode(), '招待コード')}
+                  class="w-full py-2 rounded-xl bg-slate-800 text-white font-bold text-xs hover:bg-slate-700"
+                >
+                  {copyStatus() || '招待コードをコピー'}
+                </button>
+                <span class="font-bold text-slate-700 dark:text-slate-200 mt-1">2. 相手からの応答コードを入力</span>
+                <div class="flex gap-1.5">
+                  <input
+                    type="text"
+                    placeholder="応答コードを貼り付け..."
+                    value={hostInputAnswer()}
+                    onInput={(e) => setHostInputAnswer(e.currentTarget.value)}
+                    class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-xs"
+                  />
+                  <button
+                    onClick={handleHostComplete}
+                    class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs active:scale-95"
+                  >
+                    接続
+                  </button>
+                </div>
+              </div>
+            </Show>
 
-                  return (
+            {/* ゲスト */}
+            <Show when={p2pRole() === 'guest' && p2pStatus() === 'waiting_answer'}>
+              <div class="flex flex-col gap-2">
+                <Show when={!guestAnswerCode()}>
+                  <span class="font-bold text-slate-700 dark:text-slate-200">ホストの招待コードを貼り付け</span>
+                  <div class="flex gap-1.5">
+                    <input
+                      type="text"
+                      placeholder="招待コードを貼り付け..."
+                      value={guestInputOffer()}
+                      onInput={(e) => setGuestInputOffer(e.currentTarget.value)}
+                      class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-xs"
+                    />
                     <button
-                      onClick={() => handleCellClick(rIdx(), cIdx())}
-                      class={`relative w-full h-full rounded-lg flex items-center justify-center border transition-all ${
-                        isSelected()
-                          ? 'bg-amber-100 dark:bg-amber-800 ring-2 ring-amber-600 scale-98 shadow-inner border-amber-500'
-                          : isValidTarget()
-                          ? 'bg-amber-200/80 dark:bg-amber-900/80 border-amber-500 animate-pulse'
-                          : 'bg-amber-100/90 dark:bg-amber-900/60 border-amber-300/60 dark:border-amber-800/60 hover:bg-amber-50 dark:hover:bg-amber-900/90'
+                      onClick={handleGuestJoin}
+                      class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs active:scale-95"
+                    >
+                      応答生成
+                    </button>
+                  </div>
+                </Show>
+
+                <Show when={guestAnswerCode()}>
+                  <span class="font-bold text-slate-700 dark:text-slate-200">生成された応答コードをホストに送信</span>
+                  <button
+                    onClick={() => copyToClipboard(guestAnswerCode(), '応答コード')}
+                    class="w-full py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-500"
+                  >
+                    {copyStatus() || '応答コードをコピーして送る'}
+                  </button>
+                  <p class="text-[11px] text-slate-400 animate-pulse text-center">
+                    ホストが応答コードを入力すると自動的に対局が始まります...
+                  </p>
+                </Show>
+              </div>
+            </Show>
+          </div>
+        </Show>
+
+        {/* 後手 持ち駒台 */}
+        <div class="w-full flex items-center justify-between px-3 py-1.5 bg-amber-50/70 dark:bg-slate-900/80 rounded-xl border border-amber-200/80 dark:border-slate-800 text-xs shadow-2xs">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px]">
+              {playMode() === 'local' ? '後手 持ち駒:' : '後手 (相手) 持ち駒:'}
+            </span>
+            <div class="flex items-center gap-1 flex-wrap min-h-[30px]">
+              <For each={aiHand()}>
+                {(type) => {
+                  const isHandSelected = () =>
+                    selectedHandPiece() === type && selectedHandOwner() === 'ai';
+                  return (
+                    <div
+                      onClick={() => handleHandClick(type, 'ai')}
+                      class={`cursor-pointer transition-transform transform ${
+                        isHandSelected() ? '-translate-y-1.5 ring-2 ring-rose-500 rounded-md' : 'hover:scale-105'
                       }`}
                     >
-                      <Show when={cell}>
-                        <ShogiPieceView
-                          type={cell!.type}
-                          promoted={cell!.promoted}
-                          isAi={cell!.side === 'ai'}
-                          isSelected={isSelected()}
-                          size="board"
-                        />
-                      </Show>
-                      <Show when={isValidTarget() && !cell}>
-                        <div class="w-3 h-3 rounded-full bg-amber-600/90 shadow-xs" />
-                      </Show>
-                    </button>
+                      <ShogiPieceView type={type} size="sm" isAi={true} isSelected={isHandSelected()} />
+                    </div>
                   );
                 }}
               </For>
-            )}
-          </For>
+              <Show when={aiHand().length === 0}>
+                <span class="text-slate-400 text-[11px]">なし</span>
+              </Show>
+            </div>
+          </div>
+          <span class="text-[11px] font-semibold text-slate-500">{aiHand().length}枚</span>
         </div>
-      </div>
 
-      {/* プレイヤーの持ち駒 */}
-      <div class="w-full max-w-[460px] flex items-center justify-between px-3 py-2 bg-amber-100/70 dark:bg-amber-950/50 rounded-xl mt-2 text-xs border border-amber-300/60 dark:border-amber-900/60 shadow-xs">
-        <span class="font-bold text-slate-700 dark:text-slate-300">あなたの持ち駒:</span>
-        <div class="flex items-center gap-1.5 min-h-[34px] flex-wrap">
-          <Show when={playerHand().length === 0}>
-            <span class="text-slate-400 text-[11px] italic">なし</span>
-          </Show>
-          <For each={playerHand()}>
-            {(p) => (
-              <button
-                onClick={() => {
-                  sound.playPop(400);
-                  setSelectedHandPiece((prev) => (prev === p ? null : p));
-                  setSelectedCell(null);
+        {/* 手番ステータス */}
+        <div class="w-full flex items-center justify-between px-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+          <div class="flex items-center gap-2">
+            <span>手番:</span>
+            <span
+              class={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                turn() === 'player'
+                  ? 'bg-amber-100 text-amber-950 border border-amber-300 dark:bg-amber-950 dark:text-amber-200'
+                  : 'bg-stone-800 text-white border border-stone-700'
+              }`}
+            >
+              {turn() === 'player' ? '☗ 先手番' : '☖ 後手番'}
+            </span>
+          </div>
+
+          <div class="font-bold text-slate-800 dark:text-slate-200">
+            {playMode() === 'npc'
+              ? isAiThinking()
+                ? 'NPC思考中...'
+                : turn() === 'player'
+                ? 'あなたの番'
+                : 'NPCの番'
+              : playMode() === 'local'
+              ? `${turn() === 'player' ? '先手' : '後手'}の番です`
+              : p2pStatus() === 'connected'
+              ? turn() === playerSide()
+                ? 'あなたの番'
+                : '相手の番'
+              : '接続待機中'}
+          </div>
+        </div>
+
+        {/* 5五将棋盤 */}
+        <div class="w-full max-w-[420px] aspect-square bg-[#e6bf83] dark:bg-[#b08850] p-2 sm:p-3 rounded-2xl shadow-xl border-4 border-[#8c5e2d] relative select-none">
+          <div class="grid grid-cols-5 grid-rows-5 gap-0 w-full h-full border border-amber-950/80 bg-[#f7d8a5] dark:bg-[#cca36a]">
+            <For each={board()}>
+              {(row, rIdx) => (
+                <For each={row}>
+                  {(cell, cIdx) => {
+                    const r = () => rIdx();
+                    const c = () => cIdx();
+                    const selected = () =>
+                      selectedCell() && selectedCell()![0] === r() && selectedCell()![1] === c();
+
+                    const highlight = () => {
+                      if (selectedCell()) {
+                        const moves = getValidShogiMoves(board(), selectedCell()![0], selectedCell()![1]);
+                        return moves.some(([mr, mc]) => mr === r() && mc === c());
+                      }
+                      if (selectedHandPiece() && selectedHandOwner()) {
+                        return !board()[r()][c()];
+                      }
+                      return false;
+                    };
+
+                    return (
+                      <div
+                        onClick={() => handleCellClick(r(), c())}
+                        class={`relative w-full h-full flex items-center justify-center border-r border-b border-amber-950/40 cursor-pointer ${
+                          selected()
+                            ? 'bg-rose-400/35'
+                            : 'hover:bg-amber-200/50 dark:hover:bg-amber-700/40'
+                        }`}
+                      >
+                        {/* 移動可能マスのマーカー */}
+                        <Show when={highlight()}>
+                          <div class="w-3 h-3 rounded-full bg-rose-500/80 absolute z-20 animate-pulse pointer-events-none" />
+                        </Show>
+
+                        {/* 駒 */}
+                        <Show when={cell}>
+                          {(p) => (
+                            <ShogiPieceView
+                              type={p().type}
+                              promoted={p().promoted}
+                              isAi={p().side === 'ai'}
+                              isSelected={Boolean(selected())}
+                              size="board"
+                            />
+                          )}
+                        </Show>
+                      </div>
+                    );
+                  }}
+                </For>
+              )}
+            </For>
+          </div>
+        </div>
+
+        {/* 先手 持ち駒台 */}
+        <div class="w-full flex items-center justify-between px-3 py-1.5 bg-amber-50/70 dark:bg-slate-900/80 rounded-xl border border-amber-200/80 dark:border-slate-800 text-xs shadow-2xs">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-700 dark:text-slate-200 text-[11px]">
+              {playMode() === 'local' ? '先手 持ち駒:' : '先手 (あなた) 持ち駒:'}
+            </span>
+            <div class="flex items-center gap-1 flex-wrap min-h-[30px]">
+              <For each={playerHand()}>
+                {(type) => {
+                  const isHandSelected = () =>
+                    selectedHandPiece() === type && selectedHandOwner() === 'player';
+                  return (
+                    <div
+                      onClick={() => handleHandClick(type, 'player')}
+                      class={`cursor-pointer transition-transform transform ${
+                        isHandSelected() ? '-translate-y-1.5 ring-2 ring-rose-500 rounded-md' : 'hover:scale-105'
+                      }`}
+                    >
+                      <ShogiPieceView type={type} size="sm" isSelected={isHandSelected()} />
+                    </div>
+                  );
                 }}
-                class={`p-0.5 rounded-lg transition-transform focus:outline-none ${
-                  selectedHandPiece() === p
-                    ? 'scale-115 ring-2 ring-amber-600 bg-amber-200/80 dark:bg-amber-900/60'
-                    : 'hover:scale-105'
-                }`}
-                title={`持ち駒: ${PIECE_LABELS[p].normal}（クリックして選択）`}
-              >
-                <ShogiPieceView
-                  type={p}
-                  size="sm"
-                  isSelected={selectedHandPiece() === p}
-                />
-              </button>
-            )}
-          </For>
+              </For>
+              <Show when={playerHand().length === 0}>
+                <span class="text-slate-400 text-[11px]">なし</span>
+              </Show>
+            </div>
+          </div>
+          <span class="text-[11px] font-semibold text-slate-500">{playerHand().length}枚</span>
         </div>
       </div>
     </GameShell>
