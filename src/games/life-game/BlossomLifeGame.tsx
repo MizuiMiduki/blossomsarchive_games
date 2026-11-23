@@ -1,42 +1,28 @@
-import { Component, createSignal, onSettled, For, Show } from 'solid-js';
+import { Component, createSignal, onSettled, Show } from 'solid-js';
 import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
+import { PlayIcon, PauseIcon } from '../../components/Icons.tsx';
 import {
   LIFE_GRID_W,
   LIFE_GRID_H,
   LifeGrid,
   createEmptyLifeGrid,
-  createRandomLifeGrid,
   stepLifeGrid,
-  PRESETS,
-  PatternPreset,
+  countLiveCells,
 } from './logic.ts';
 
-function createPresetGrid(preset: PatternPreset): { grid: LifeGrid; count: number } {
-  const next = createEmptyLifeGrid();
-  const centerR = Math.floor(LIFE_GRID_H / 2);
-  const centerC = Math.floor(LIFE_GRID_W / 2);
-
-  for (const [dr, dc] of preset.coords) {
-    const r = (centerR + dr + LIFE_GRID_H) % LIFE_GRID_H;
-    const c = (centerC + dc + LIFE_GRID_W) % LIFE_GRID_W;
-    next[r][c] = { alive: true, age: 3 };
-  }
-  return { grid: next, count: preset.coords.length };
-}
-
 export const BlossomLifeGame: Component = () => {
-  const initial = createPresetGrid(PRESETS[1]); // パルサー (呼吸する大輪)
-  const [grid, setGrid] = createSignal<LifeGrid>(initial.grid);
+  const [grid, setGrid] = createSignal<LifeGrid>(createEmptyLifeGrid());
   const [isRunning, setIsRunning] = createSignal(false);
   const [generation, setGeneration] = createSignal(0);
-  const [livingCount, setLivingCount] = createSignal(initial.count);
+  const [livingCount, setLivingCount] = createSignal(0);
   const [speedMs, setSpeedMs] = createSignal(100); // 速度 (ms)
   const [brushMode, setBrushMode] = createSignal<'draw' | 'erase'>('draw');
 
   let canvasRef: HTMLCanvasElement | undefined;
   let timerId: number | null = null;
   let isPointerDown = false;
+  let lastSoundTime = 0;
 
   // 1ステップ進行
   const advanceStep = () => {
@@ -46,9 +32,14 @@ export const BlossomLifeGame: Component = () => {
     setGeneration((g) => g + 1);
     setLivingCount(count);
 
-    if (births > 0 && Math.random() < 0.3) {
-      // 穏やかなアンビエント音
-      const notes = [523.25, 587.33, 659.25, 783.99, 880.0]; // C D E G A ペンタトニック
+    if (count === 0 && isRunning()) {
+      setIsRunning(false);
+      if (timerId) window.clearTimeout(timerId);
+      return;
+    }
+
+    if (births > 0 && Math.random() < 0.25) {
+      const notes = [523.25, 587.33, 659.25, 783.99, 880.0]; // C D E G A
       const note = notes[Math.floor(Math.random() * notes.length)];
       sound.playPop(note);
     }
@@ -74,12 +65,12 @@ export const BlossomLifeGame: Component = () => {
     const cellW = w / LIFE_GRID_W;
     const cellH = h / LIFE_GRID_H;
 
-    // 暗めの背景 (ボタニカル・ナイトガーデン)
-    ctx.fillStyle = '#090d16';
+    // 背景 (ダークスレート)
+    ctx.fillStyle = '#020617';
     ctx.fillRect(0, 0, w, h);
 
     // グリッド線
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.08)';
     ctx.lineWidth = 0.5;
     for (let c = 0; c <= LIFE_GRID_W; c++) {
       ctx.beginPath();
@@ -96,7 +87,7 @@ export const BlossomLifeGame: Component = () => {
 
     const currentGrid = grid();
 
-    // セルの描画 (生命の年齢に応じたグラデーション・グロー)
+    // セルの描画
     for (let r = 0; r < LIFE_GRID_H; r++) {
       for (let c = 0; c < LIFE_GRID_W; c++) {
         const cell = currentGrid[r][c];
@@ -106,24 +97,18 @@ export const BlossomLifeGame: Component = () => {
         const y = r * cellH + cellH * 0.1;
         const size = cellW * 0.8;
 
-        // 年齢による開花カラー
-        let color = '#4ade80'; // 芽生え: 若葉グリーン
-        if (cell.age >= 8) {
-          color = '#fbbf24'; // 長寿の神秘花: ゴールド
-        } else if (cell.age >= 4) {
-          color = '#f43f5e'; // 満開: クリムゾンローズ
-        } else if (cell.age >= 2) {
-          color = '#fb7185'; // 開花: 桜ピンク
+        // 世代に応じたセル色
+        let color = '#38bdf8'; // 誕生直後: スカイブルー
+        if (cell.age >= 6) {
+          color = '#818cf8'; // 成熟: インディゴ
+        } else if (cell.age >= 3) {
+          color = '#34d399'; // 安定生存: エメラルド
         }
 
         ctx.fillStyle = color;
-        ctx.shadowColor = color;
-        ctx.shadowBlur = cell.age > 3 ? 6 : 2;
-
         ctx.beginPath();
         ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
       }
     }
   };
@@ -138,55 +123,25 @@ export const BlossomLifeGame: Component = () => {
     const c = Math.floor(x);
 
     if (r >= 0 && r < LIFE_GRID_H && c >= 0 && c < LIFE_GRID_W) {
-      const next = grid().map((row) => [...row]);
+      const currentGrid = grid();
       const isAlive = brushMode() === 'draw';
-      if (next[r][c].alive !== isAlive) {
+      if (currentGrid[r][c].alive !== isAlive) {
+        const next = currentGrid.map((row) => [...row]);
         next[r][c] = { alive: isAlive, age: isAlive ? 1 : 0 };
         setGrid(next);
+        setLivingCount(countLiveCells(next));
         renderCanvas();
+
+        const now = Date.now();
+        if (now - lastSoundTime > 60) {
+          lastSoundTime = now;
+          sound.playPop(isAlive ? 600 : 380);
+        }
       }
     }
   };
 
-  // プリセット適用
-  const applyPreset = (preset: PatternPreset) => {
-    sound.playMatch(5);
-    const { grid: next, count } = createPresetGrid(preset);
-    setGrid(next);
-    setGeneration(0);
-    setLivingCount(count);
-    renderCanvas();
-  };
-
-  // 初期状態にリセット
-  const handleRestart = () => {
-    sound.playPop(450);
-    setIsRunning(false);
-    if (timerId) window.clearTimeout(timerId);
-    const initial = createPresetGrid(PRESETS[1]);
-    setGrid(initial.grid);
-    setGeneration(0);
-    setLivingCount(initial.count);
-    renderCanvas();
-  };
-
-  // ランダム花畑
-  const handleRandomize = () => {
-    sound.playPop(520);
-    const rand = createRandomLifeGrid(0.2);
-    let count = 0;
-    for (const row of rand) {
-      for (const cell of row) {
-        if (cell.alive) count++;
-      }
-    }
-    setGrid(rand);
-    setGeneration(0);
-    setLivingCount(count);
-    renderCanvas();
-  };
-
-  // 全クリア
+  // 初期化・全消去 (0から再スタート)
   const handleClear = () => {
     sound.playPop(350);
     setIsRunning(false);
@@ -213,37 +168,22 @@ export const BlossomLifeGame: Component = () => {
   });
 
   const instructions = [
-    '画面をドラッグ・スワイプしてセルを配置できます。',
-    '【ライフゲームのルール】誕生・生存・過密・過疎の単純な規則から、複雑な生命シミュレーションが生まれます。',
-    '下のプリセット（グライダー、パルサー、銀河、グライダー銃）を選択して、パターンの変化を観察しましょう！',
+    '画面をタップまたはドラッグして、セルを自由に描いて配置できます。',
+    '「再生」を押すとシミュレーションが始まります。「一時停止」でいつでも止めて編集可能です。',
+    '【ルール】誕生・生存・過密・過疎の単純な規則から、複雑な生命シミュレーションが生まれます。',
+    '「1ステップ」で1世代ずつ進めることもできます。',
   ];
 
   return (
     <GameShell
-      id="life-game"
+      id="blossom-life"
       title="Conway's Life Game"
       score={livingCount()}
       isGameOver={false}
-      onRestart={handleRestart}
+      onRestart={handleClear}
       instructions={instructions}
       extraControls={
         <div class="flex flex-col gap-2 w-full max-w-md">
-          {/* プリセット一覧 */}
-          <div class="flex items-center justify-between gap-1.5 p-2 bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-x-auto text-xs shadow-2xs">
-            <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap pl-1">プリセット:</span>
-            <For each={PRESETS}>
-              {(preset) => (
-                <button
-                  onClick={() => applyPreset(preset)}
-                  title={preset.description}
-                  class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 whitespace-nowrap transition-all shadow-2xs"
-                >
-                  {preset.name.split(' ')[0]}
-                </button>
-              )}
-            </For>
-          </div>
-
           {/* コントロールバー */}
           <div class="flex items-center justify-between gap-2 p-2 bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs flex-wrap">
             {/* 再生 / 停止 / ステップ */}
@@ -255,13 +195,16 @@ export const BlossomLifeGame: Component = () => {
                   setIsRunning(next);
                   if (next) runLoop();
                 }}
-                class={`px-3 py-1.5 rounded-xl font-semibold transition-all shadow-2xs flex items-center gap-1 ${
+                class={`px-3.5 py-1.5 rounded-xl font-semibold transition-all shadow-2xs flex items-center gap-1.5 ${
                   isRunning()
                     ? 'bg-amber-600 text-white hover:bg-amber-700'
                     : 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-white'
                 }`}
               >
-                {isRunning() ? '一時停止' : '再生'}
+                <Show when={isRunning()} fallback={<PlayIcon size={14} />}>
+                  <PauseIcon size={14} />
+                </Show>
+                <span>{isRunning() ? '一時停止' : '再生'}</span>
               </button>
 
               <button
@@ -270,7 +213,7 @@ export const BlossomLifeGame: Component = () => {
                   setIsRunning(false);
                   advanceStep();
                 }}
-                class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold"
+                class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-slate-700 dark:text-slate-300 transition-colors"
               >
                 1ステップ
               </button>
@@ -279,38 +222,38 @@ export const BlossomLifeGame: Component = () => {
             {/* ブラシ切替 */}
             <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl">
               <button
-                onClick={() => setBrushMode('draw')}
-                class={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                onClick={() => {
+                  sound.playPop(450);
+                  setBrushMode('draw');
+                }}
+                class={`px-3 py-1 rounded-lg font-semibold transition-all ${
                   brushMode() === 'draw'
                     ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
-                    : 'text-slate-500'
+                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                 }`}
               >
                 配置
               </button>
               <button
-                onClick={() => setBrushMode('erase')}
-                class={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                onClick={() => {
+                  sound.playPop(450);
+                  setBrushMode('erase');
+                }}
+                class={`px-3 py-1 rounded-lg font-semibold transition-all ${
                   brushMode() === 'erase'
                     ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
-                    : 'text-slate-500'
+                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                 }`}
               >
                 消去
               </button>
             </div>
 
-            {/* ランダム & クリア */}
+            {/* クリア */}
             <div class="flex items-center gap-1">
               <button
-                onClick={handleRandomize}
-                class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700"
-              >
-                ランダム
-              </button>
-              <button
                 onClick={handleClear}
-                class="px-2 py-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold transition-colors"
               >
                 クリア
               </button>
@@ -373,10 +316,15 @@ export const BlossomLifeGame: Component = () => {
           class="w-full h-full block"
         />
 
-        {/* 初期停止時のガイダンスバッジ */}
-        <Show when={!isRunning() && generation() === 0}>
-          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none bg-slate-900/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-white/90 text-[11px] font-semibold border border-white/10 shadow-lg whitespace-nowrap animate-pulse">
-            「再生」を押すとシミュレーションが始まります
+        {/* ガイダンスメッセージ */}
+        <Show when={!isRunning() && livingCount() === 0}>
+          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none bg-slate-900/85 backdrop-blur-md px-3.5 py-1.5 rounded-full text-white/90 text-[11px] font-semibold border border-white/10 shadow-lg whitespace-nowrap animate-pulse">
+            タップ・ドラッグでセルを描いてください
+          </div>
+        </Show>
+        <Show when={!isRunning() && livingCount() > 0 && generation() === 0}>
+          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none bg-slate-900/85 backdrop-blur-md px-3.5 py-1.5 rounded-full text-white/90 text-[11px] font-semibold border border-white/10 shadow-lg whitespace-nowrap">
+            「再生」を押すとシミュレーションを開始します
           </div>
         </Show>
       </div>

@@ -45,7 +45,7 @@ export const GAMES: GameDefinition[] = [
     title: "Conway's Life Game",
     titleJp: 'ライフゲーム',
     category: 'casual',
-    description: 'セルの誕生・生存・過密による死滅を観察する数学シミュレーション。多彩なプリセットを搭載。',
+    description: 'セルの誕生・生存・過密による死滅を観察する数学シミュレーション。画面をタップ・なぞってセルを自由に配置。',
     badge: 'NEW',
     icon: LifeGameIcon,
     color: 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-900/40',
