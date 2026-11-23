@@ -1,4 +1,4 @@
-import { Component, createSignal, createEffect, onSettled, Show } from 'solid-js';
+import { Component, createSignal, createEffect, onSettled, onCleanup, Show } from 'solid-js';
 import type { JSX } from '@solidjs/web';
 import confetti from 'canvas-confetti';
 import {
@@ -112,35 +112,44 @@ export const GameShell: Component<GameShellProps> = (props) => {
   let prevGameOver = false;
   let prevVictory = false;
 
-  // ゲーム開始・マウント時にプレイ回数を加算 & ビューポート監視
+  // ゲーム開始・マウント時にプレイ回数を加算
   onSettled(() => {
     recordGameStart(props.id);
     setStats(getGameStats(props.id));
-
-    if (typeof window !== 'undefined') {
-      const updateViewport = () => {
-        if (window.visualViewport) {
-          setViewportHeight(`${window.visualViewport.height}px`);
-        } else {
-          setViewportHeight(`${window.innerHeight}px`);
-        }
-        if (window.scrollY > 0) {
-          window.scrollTo(0, 0);
-        }
-      };
-
-      updateViewport();
-      window.visualViewport?.addEventListener('resize', updateViewport);
-      window.visualViewport?.addEventListener('scroll', updateViewport);
-      window.addEventListener('scroll', updateViewport);
-
-      return () => {
-        window.visualViewport?.removeEventListener('resize', updateViewport);
-        window.visualViewport?.removeEventListener('scroll', updateViewport);
-        window.removeEventListener('scroll', updateViewport);
-      };
-    }
   });
+
+  // ビューポート追従 & キーボード押し上げ防止 & クリーンアップ
+  if (typeof window !== 'undefined') {
+    const updateViewport = () => {
+      if (window.visualViewport) {
+        setViewportHeight(`${window.visualViewport.height}px`);
+      } else {
+        setViewportHeight(`${window.innerHeight}px`);
+      }
+    };
+
+    updateViewport();
+    window.visualViewport?.addEventListener('resize', updateViewport);
+
+    // モバイル仮想キーボード表示時にヘッダーが画面外へ押し上げられるのを防止
+    const handleFocusIn = (e: FocusEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0);
+        });
+      }
+    };
+    window.addEventListener('focusin', handleFocusIn);
+
+    // ゲーム画面表示中は外側の余計なバウンス・スクロールを抑止
+    document.body.classList.add('overflow-hidden');
+
+    onCleanup(() => {
+      window.visualViewport?.removeEventListener('resize', updateViewport);
+      window.removeEventListener('focusin', handleFocusIn);
+      document.body.classList.remove('overflow-hidden');
+    });
+  }
 
   // リアルタイムハイスコア自動保存
   createEffect(
@@ -279,7 +288,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
       {/* 遊び方・ルールモーダル */}
       <Show when={showHelp()}>
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-2xs p-4">
-          <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-3">
               <InfoIcon class="text-slate-600 dark:text-slate-300" size={20} />
               {props.title} の遊び方
@@ -310,7 +319,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
       {/* ゲームオーバー / 勝利モーダル */}
       <Show when={props.isGameOver || props.isVictory}>
         <div class="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
-          <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 text-center animate-in fade-in zoom-in-95 duration-200">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 text-center animate-in fade-in zoom-in-95 duration-200 max-h-[85vh] overflow-y-auto">
             <div class="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
               <Show when={props.isVictory} fallback={<GamepadIcon size={32} class="text-slate-400" />}>
                 <TrophyIcon size={32} class="text-amber-500 animate-spin-slow" />
