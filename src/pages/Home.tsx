@@ -508,7 +508,6 @@ export const Home: Component = () => {
           <span>🌸</span>
           <span class="font-bold text-slate-600 dark:text-slate-300">BlossomsArchive Games</span>
         </div>
-        <div class="text-[11px] mb-1">No Server-Side Processing / Zero Backend / Powered by Solid.js 2.0</div>
         <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400">
           ©2017 - {new Date().getFullYear()} BlossomsArchive
         </div>
