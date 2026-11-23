@@ -3,16 +3,39 @@ import { GameShell } from '../../components/GameShell.tsx';
 import { sound } from '../../utils/sound.ts';
 import confetti from 'canvas-confetti';
 
+interface TopicHints {
+  // Round 1: 様子見・何にでも当てはまりそうな超抽象表現
+  round1: string[];
+  // Round 2: シチュエーション・感覚・雰囲気の抽象表現
+  round2Citizen: string[];
+  round2Wolf: string[];
+  // Round 3: 探り合い・こだわり・特徴のニュアンス比較
+  round3Citizen: string[];
+  round3Wolf: string[];
+}
+
 interface TopicPair {
   citizen: string;
   wolf: string;
   category: string;
   difficulty: 'normal' | 'hard';
-  hints: {
-    citizenHints: string[];
-    wolfHints: string[];
-  };
+  hints: TopicHints;
 }
+
+const GENERAL_R1_HINTS = [
+  '誰でも一度は経験したことがある親しみやすい定番ですよね。',
+  '好きな人はとことん好きだし、自分も割とポジティブな印象を持っています。',
+  'これがある日はちょっと気分が上がりますし、あると嬉しい存在です。',
+  '人によって接する頻度や好みのシチュエーションが分かれそうですね。',
+  '値段や種類も幅広くて、いろんなバリエーションが楽しめます。',
+];
+
+const GENERAL_R2_HINTS = [
+  '家で楽しむか外で楽しむかで、人それぞれのスタイルが出そうです。',
+  '季節感やその日の気分によって選ぶ基準がガラリと変わりますね。',
+  '一人でじっくり向き合うのも良いですし、誰かと共有するのも楽しいです。',
+  '自分なりのこだわりや、選ぶときのポイントが自然と決まってきます。',
+];
 
 const TOPICS: TopicPair[] = [
   {
@@ -21,15 +44,29 @@ const TOPICS: TopicPair[] = [
     category: '人気のドリンク',
     difficulty: 'hard',
     hints: {
-      citizenHints: [
-        'ほっと一息つきたいカフェの定番ですね。',
-        'ミルクのまろやかさの中に、心地よい苦味や香ばしさがあります。',
-        '豆の焙煎度合いやエスプレッソの濃さで味がガラリと変わります。',
+      round1: [
+        'カフェやお店に入ると、無意識にメニューで探しちゃいますね。',
+        'ほっと一息つきたいリラックスタイムの定番です。',
+        '甘さや温度の好みで人それぞれのこだわりが出やすいと思います。',
+        '朝の目覚めや午後の休憩時間に飲むとすごく落ち着きますね。',
       ],
-      wolfHints: [
-        'ほっと一息つきたいカフェの定番ですね。',
-        'ミルクのまろやかさの中に、華やかで豊かな香りが広がります。',
-        '茶葉の種類や甘さの加減でいろんなアレンジが楽しめます。',
+      round2Citizen: [
+        'まろやかさの中に、深みのある香ばしさが残るのが好きです。',
+        '大人になってから飲む頻度がグッと増えた気がします。',
+        '上のふんわりした泡や見た目のグラデーションも綺麗ですよね。',
+      ],
+      round2Wolf: [
+        'まろやかさの中に、上品で華やかな香りが広がるのが好きです。',
+        '少し甘めにしてスイーツ感覚で楽しむことも多いですね。',
+        'カップを持った瞬間の温もりと香りにすごく癒やされます。',
+      ],
+      round3Citizen: [
+        '苦味と甘さのバランスが一番のポイントですよね。',
+        '豆や抽出のこだわりがある専門店も多くて奥が深いです。',
+      ],
+      round3Wolf: [
+        'ベースの香りとまろやかさの調和が決め手ですよね。',
+        '茶葉の産地やブレンドによって風味が変わるのも魅力的です。',
       ],
     },
   },
@@ -39,15 +76,29 @@ const TOPICS: TopicPair[] = [
     category: '長距離移動',
     difficulty: 'hard',
     hints: {
-      citizenHints: [
-        '遠くへ旅行や出張に行くときに頼りになる乗り物です。',
-        '乗る前に売店でお弁当や飲み物を買い込むのが楽しみの一つ。',
-        '窓の外の街並みや田園風景が高速で流れていくのが見どころです。',
+      round1: [
+        '遠出する時や特別な旅の始まりを感じさせてくれますね。',
+        '乗る前からちょっとした非日常感とワクワクがあります。',
+        '時間に余裕を持って準備して向かうイメージです。',
+        '窓から流れる景色をぼーっと眺める時間が好きですね。',
       ],
-      wolfHints: [
-        '遠くへ旅行や出張に行くときに頼りになる乗り物です。',
-        '出発の少し前に着いて、手続きを済ませて待つ時間がドキドキします。',
-        '窓から見下ろす雲海や地上の景色がとても神秘的で感動します。',
+      round2Citizen: [
+        '乗る前に駅でお弁当や飲み物を買い込むのが楽しみの一つです。',
+        '街並みから大自然へ景色が移り変わるスピード感がいいですね。',
+        '揺れが少なくて、座席でゆったり過ごせるのが快適です。',
+      ],
+      round2Wolf: [
+        '出発前に手続きを済ませてゲートで待つ時間がドキドキします。',
+        '天候や高度によって窓の外の景色がドラマチックに変わります。',
+        '短時間で一気に遠くまでワープする感覚がすごいですよね。',
+      ],
+      round3Citizen: [
+        '地面を滑るように走る疾走感と、時間通りの安心感があります。',
+        '乗り降りや移動の手軽さも大きな魅力ですよね。',
+      ],
+      round3Wolf: [
+        '離陸や着陸の瞬間の独特の浮遊感がとても印象的です。',
+        '上空から見下ろす街や雲海が本当に綺麗ですよね。',
       ],
     },
   },
@@ -57,15 +108,29 @@ const TOPICS: TopicPair[] = [
     category: '夏の水辺レジャー',
     difficulty: 'normal',
     hints: {
-      citizenHints: [
-        '夏になると家族や友達と水着を着て出かけたくなります。',
-        '波の音を聞きながら砂浜でまったり過ごすのも気持ちいいです。',
-        '上がったあとに肌が少しベタついたり、塩気を感じることがあります。',
+      round1: [
+        '夏といえば真っ先に思い浮かぶ王道のアクティビティですね。',
+        '家族や友達とグループで出かけるとすごく盛り上がります。',
+        '準備するものも多くて、行く前からイベント感があります。',
+        '水に入った瞬間のひんやりした爽快感がたまりません。',
       ],
-      wolfHints: [
-        '夏になると家族や友達と水着を着て出かけたくなります。',
-        '流れるコースやすべり台など、アトラクション感覚で楽しめます。',
-        '上がったあとに塩素の匂いがしたり、シャワーで洗い流しますね。',
+      round2Citizen: [
+        '風の匂いや波の音を聞きながらのんびりするだけでも癒やされます。',
+        '砂浜を歩いたり、広大な景色を眺める解放感が格別ですね。',
+        '上がった後に少し肌に名残を感じるのも夏の風物詩です。',
+      ],
+      round2Wolf: [
+        '流れるコースやアトラクションでワイワイ遊ぶのが楽しいです。',
+        '設備が整っていて、足元が汚れにくいのも安心感があります。',
+        '上がった後のシャワーでサッパリするまでがワンセットですね。',
+      ],
+      round3Citizen: [
+        '自然の広大さと夕暮れ時のエモーショナルな雰囲気が好きです。',
+        '日焼け対策や砂のケアも思い出の一部ですよね。',
+      ],
+      round3Wolf: [
+        '監視員さんがいて区切られた空間だからこその安心感があります。',
+        '屋内外やスライダーなど遊ぶ要素が色々ありますよね。',
       ],
     },
   },
@@ -75,15 +140,29 @@ const TOPICS: TopicPair[] = [
     category: '屋内デートスポット',
     difficulty: 'hard',
     hints: {
-      citizenHints: [
-        '薄暗い落ち着いた空間で、非日常の体験ができます。',
-        'チケットを買って指定の席に座り、ポップコーンをつまみます。',
-        '大画面の迫力と臨場感ある音響に圧倒されて引き込まれます。',
+      round1: [
+        '薄暗くて落ち着いた空間で、非日常のひとときを味わえます。',
+        '休日やデート、一人で気分転換したい時にもぴったりですね。',
+        '天候に左右されずに一日中快適に過ごせるのが嬉しいです。',
+        'その空間ならではの独特の静けさと雰囲気が好きです。',
       ],
-      wolfHints: [
-        '薄暗い落ち着いた空間で、非日常の体験ができます。',
-        '歩きながら幻想的な青い光の空間に包まれてリラックスできます。',
-        'ガラス越しに優雅に動く姿を眺めていると時間が経つのを忘れます。',
+      round2Citizen: [
+        'チケットを予約して指定の席に座り、フードをつまむのが定番。',
+        '始まる前の照明がスーッと落ちる瞬間にワクワクします。',
+        '大画面の迫力と包み込まれるような音響に引き込まれますね。',
+      ],
+      round2Wolf: [
+        '青い照明に包まれた空間をゆったり歩きながら癒やされます。',
+        '目の前を通り過ぎる優雅な動きを眺めていると時間を忘れます。',
+        '展示の工夫やライティングで幻想的な世界に浸れますね。',
+      ],
+      round3Citizen: [
+        '終わった後に作品の感想を語り合う時間が楽しいです。',
+        '上映中の静寂とみんなで同じものを見つめる一体感があります。',
+      ],
+      round3Wolf: [
+        '見ていて飽きない可愛らしさや神秘的な魅力があります。',
+        '涼しげな館内の雰囲気でリフレッシュできますよね。',
       ],
     },
   },
@@ -93,15 +172,29 @@ const TOPICS: TopicPair[] = [
     category: 'ごちそう肉料理',
     difficulty: 'normal',
     hints: {
-      citizenHints: [
-        'スタミナをつけたい時や、お祝いの席で食べたくなる最高のごちそう。',
-        '網の上でジュージュー焼いて、部位ごとの食感の違いを楽しみます。',
-        '白ご飯やビールが止まらなくなって、タレの香ばしさがたまりません。',
+      round1: [
+        'お祝いの席や自分へのご褒美の日に真っ先に浮かびますね。',
+        'テーブルの上にお皿がズラリと並ぶとテンション上がります。',
+        '大人数でワイワイ囲むと食事の楽しさが倍増しますよね。',
+        '普段の食事とは一味違う、特別な贅沢感があります。',
       ],
-      wolfHints: [
-        'スタミナをつけたい時や、お祝いの席で食べたくなる最高のごちそう。',
-        '甘辛い出汁で煮込んで、お肉と一緒に野菜や豆腐にも味が染み込みます。',
-        '溶いた生卵にくぐらせて口に運ぶ瞬間がたまらなく至福です。',
+      round2Citizen: [
+        '立ち上る香ばしい匂いと音だけで食欲が刺激されますね。',
+        '自分の好みの仕上がりやペースで食べ進められるのが醍醐味。',
+        'ご飯や冷たいドリンクが止まらなくなるガッツリ感があります。',
+      ],
+      round2Wolf: [
+        '立ち上る湯気と甘辛い香りが部屋中に広がる瞬間がたまらないです。',
+        'お肉の旨味が他の具材にも染み込んで一体感を楽しめます。',
+        'じっくり火が通るのをみんなで待ちながら食べるのが温かいですね。',
+      ],
+      round3Citizen: [
+        'いろんな部位や味付けを少しずつ食べ比べるのが楽しいです。',
+        'お店ならではの活気や熱気の中で食べるのが最高ですよね。',
+      ],
+      round3Wolf: [
+        'ひと口ごとに広がる濃厚で深いコクが本当に贅沢です。',
+        '最後に残った出汁やタレまで美味しく味わい尽くせますよね。',
       ],
     },
   },
@@ -111,15 +204,29 @@ const TOPICS: TopicPair[] = [
     category: 'プレート洋食',
     difficulty: 'hard',
     hints: {
-      citizenHints: [
-        '大人から子どもまで大人気で、ご飯にたっぷりかけていただきます。',
-        'スパイスの香りが食欲をそそり、辛さのアクセントがクセになります。',
-        '福神漬けやらっきょうが名脇役として最高に合いますね。',
+      round1: [
+        '大人から子供までみんな大好きで、お腹いっぱい満たされます。',
+        '大きなお皿にご飯とたっぷりのルーが盛られたビジュアルが最高。',
+        '家庭の味としても定食屋さんの味としても馴染み深いですね。',
+        'ひと口食べ始めるとスプーンが止まらなくなる魅力があります。',
       ],
-      wolfHints: [
-        '大人から子どもまで大人気で、ご飯にたっぷりかけていただきます。',
-        'トマトや玉ねぎの深いコクと甘みが引き立ち、とてもまろやかです。',
-        '薄切り牛肉の旨味がデミグラスソースに溶け込んで優しい味わいです。',
+      round2Citizen: [
+        '独特の香りが部屋に充満して、遠くからでも食欲が湧きます。',
+        'ピリッとした刺激とコクのバランスがやみつきになりますね。',
+        'トッピングや薬味のアクセントが名脇役として輝きます。',
+      ],
+      round2Wolf: [
+        'じっくり煮込まれた具材のまろやかな甘みが引き立ちます。',
+        '酸味とコクが絶妙に調和した優しい味わいが特徴ですね。',
+        'ソースの奥深い風味が口いっぱいに広がって優しいです。',
+      ],
+      round3Citizen: [
+        '辛さの度合いや配合によって全く別物になりますよね。',
+        '翌日に少し寝かせた時の濃厚さも格別だと思います。',
+      ],
+      round3Wolf: [
+        'お肉の旨味と野菜の甘みが全体に溶け込んでいます。',
+        '辛いのが苦手な人でも安心して美味しく食べられますよね。',
       ],
     },
   },
@@ -129,15 +236,29 @@ const TOPICS: TopicPair[] = [
     category: '身近なペット',
     difficulty: 'hard',
     hints: {
-      citizenHints: [
-        '人間にとても忠実で、表情豊かにコミュニケーションをとってくれます。',
-        '毎日のお散歩や運動が欠かせず、外で元気に遊ぶのが大好き。',
-        '嬉しいときに尻尾をブンブン振って駆け寄ってくる姿が愛おしいです。',
+      round1: [
+        '一緒にいるだけで日々の疲れが吹き飛ぶ最高の癒やしです。',
+        '動画や写真を眺めているだけでも思わず笑顔になっちゃいます。',
+        '家族の一員として大切に愛着を持って接したくなりますね。',
+        'それぞれ違った愛嬌と魅力があって、見ていて飽きません。',
       ],
-      wolfHints: [
-        '自由気ままでマイペースなところがたまらなく可愛いです。',
-        '日当たりのいい場所で丸くなって寝ている姿に癒やされます。',
-        '喉をゴロゴロ鳴らしてすり寄ってくるとたまらない気持ちになります。',
+      round2Citizen: [
+        '表情豊かに感情をストレートに表現してくれるのが愛おしいです。',
+        '外で一緒に元気に体を動かす時間がとても楽しいですね。',
+        '帰宅した時に全力で出迎えてくれる姿にジーンときます。',
+      ],
+      round2Wolf: [
+        '自由気ままでマイペースな距離感がたまらなく魅力的です。',
+        '日当たりのいい場所で丸くなって眠る姿に癒やされます。',
+        'たまにふと甘えてスリスリ寄ってくると胸がキュンとしますね。',
+      ],
+      round3Citizen: [
+        '呼ぶと元気よく駆け寄ってきてくれる忠実さが可愛いです。',
+        '人との強い絆やコミュニケーションを感じられる存在ですね。',
+      ],
+      round3Wolf: [
+        '気まぐれだけど、信頼して心を開いてくれた瞬間が特別です。',
+        'しなやかな仕草や柔らかな触り心地に癒やされますよね。',
       ],
     },
   },
@@ -147,15 +268,29 @@ const TOPICS: TopicPair[] = [
     category: '温浴リフレッシュ',
     difficulty: 'hard',
     hints: {
-      citizenHints: [
-        'じっくり汗を流して、心身ともにデトックスできる場所です。',
-        '限界まで温まったあとの水風呂と外気浴で「ととのう」感覚が最高。',
-        '数分入っているだけで全身から玉のような汗が吹き出してきます。',
+      round1: [
+        '日常の疲れやストレスをしっかり洗い流してリセットできます。',
+        '心身ともにじっくり温まってデトックスする至福の時間です。',
+        '休日にこれを目的に出かけると、最高の贅沢になりますね。',
+        '利用した後の身体の軽さとスッキリ感がたまりません。',
       ],
-      wolfHints: [
-        'じっくり汗を流して、心身ともにデトックスできる場所です。',
-        '湯船に肩まで浸かって「はぁ〜」と声が出る瞬間が至福の癒やし。',
-        '露天風呂から眺める自然の景色や、効能豊かな泉質を味わいます。',
+      round2Citizen: [
+        '熱気に耐えたあとの冷たい刺激と外気浴で深く落ち着きます。',
+        '短時間で全身から驚くほど汗が吹き出してくる感覚がすごい。',
+        '頭の中がクリアになって思考が研ぎ澄まされるのが魅力です。',
+      ],
+      round2Wolf: [
+        '肩まで浸かって思わず深いため息が漏れる瞬間のリラックス感。',
+        '露天から眺める景色や、独特の効能を全身で味わいます。',
+        'じわじわと体の芯まで温まってポカポカが長く続きますね。',
+      ],
+      round3Citizen: [
+        'あの独特の爽快感はクセになると抜け出せませんよね。',
+        '呼吸を整えて自分自身と静かに向き合う時間になります。',
+      ],
+      round3Wolf: [
+        'お湯の肌触りや香りの違いを旅先で楽しむのが醍醐味です。',
+        '上がったあとにのんびり畳の部屋で涼む時間が最高ですよね。',
       ],
     },
   },
@@ -165,15 +300,29 @@ const TOPICS: TopicPair[] = [
     category: '夏の風物詩',
     difficulty: 'normal',
     hints: {
-      citizenHints: [
-        '夜空を見上げながら、夏の思い出を作るビッグイベントです。',
-        '浴衣を着て出かける人も多く、ドーンとお腹に響く大迫力。',
-        'クライマックスの連続打ち上げには思わず歓声と拍手が起こります。',
+      round1: [
+        '夏の夜の特別な空気感と思い出を作ってくれる大イベントです。',
+        '浴衣姿の人たちを見かけると、季節の訪れを実感しますね。',
+        '暗くなってからの賑わいと非日常の雰囲気が大好きです。',
+        '友達や家族、恋人と一緒に行くと特別な記憶に残ります。',
       ],
-      wolfHints: [
-        '夏の夜にみんなで集まって、屋台や雰囲気を楽しむイベントです。',
-        '浴衣を着て出かける人も多く、太鼓の音や提灯の灯りが風情満点。',
-        '焼きそばやかき氷、射的や金魚すくいなどお店を回るのが楽しいです。',
+      round2Citizen: [
+        '空を見上げながら、お腹に響くほどの迫力を体感します。',
+        '夜空いっぱいに広がる鮮やかな光の余韻が感動的ですね。',
+        'クライマックスの瞬間に沸き起こる大歓声が胸に刺さります。',
+      ],
+      round2Wolf: [
+        '提灯の明かりと賑やかな音が流れる空間を散策するのが楽しい。',
+        'ずらりと並ぶ屋台の匂いや活気にすごくワクワクしますね。',
+        '食べ歩きしたり、昔ながらの遊びに挑戦する時間が楽しいです。',
+      ],
+      round3Citizen: [
+        '遠くからでも見えたり音が聞こえると夏を感じますよね。',
+        '一瞬の輝きと儚さが日本ならではの美しさだと思います。',
+      ],
+      round3Wolf: [
+        '地域ごとの伝統や懐かしい雰囲気に包まれるのが魅力です。',
+        '屋台で買ったものを片手に夜風を感じながら歩くのが好きですね。',
       ],
     },
   },
@@ -183,15 +332,29 @@ const TOPICS: TopicPair[] = [
     category: 'アウトドア体験',
     difficulty: 'hard',
     hints: {
-      citizenHints: [
-        '大自然の中でテントを張り、非日常のひとときを過ごします。',
-        '自分たちで火を起こしてご飯を作ったり、不便さも楽しむスタイル。',
-        '夜の焚き火を囲んで星空を眺めながら語り合うのが最高の醍醐味。',
+      round1: [
+        '大自然の中で日常を忘れて過ごすリフレッシュのひととき。',
+        '澄んだ空気と緑に囲まれて過ごす時間が何よりの贅沢ですね。',
+        '夜に星空を眺めながら語り合うのが最高の思い出になります。',
+        '外で食べるご飯って、なぜか普段の何倍も美味しく感じますよね。',
       ],
-      wolfHints: [
-        '大自然の中でテントを張り、非日常のひとときを過ごします。',
-        'ベッドや冷暖房が完備されていて、手ぶらで快適に過ごせるスタイル。',
-        '豪華なバーベキューやおしゃれな内装で、ホテル感覚のアウトドアです。',
+      round2Citizen: [
+        '自分たちで拠点を整えたり、火を起こす作業そのものが楽しい。',
+        '少し不便な環境だからこそ得られる達成感と一体感があります。',
+        'パチパチ燃える炎を眺めながら静かに過ごすのが醍醐味ですね。',
+      ],
+      round2Wolf: [
+        '自然を満喫しつつ、ホテル並みの快適な空間で過ごせます。',
+        '手ぶらで豪華な食事や設備が整っているのがすごく嬉しいですね。',
+        'おしゃれな内装や映える空間で贅沢な気分に浸れます。',
+      ],
+      round3Citizen: [
+        '道具を揃えて自分好みのスタイルを作るのが楽しいですね。',
+        '大自然とダイレクトに一体になる感覚が味わえます。',
+      ],
+      round3Wolf: [
+        '初心者でも気負わず安心して大自然を満喫できますよね。',
+        'ベッドでぐっすり眠れて翌朝もスッキリ快適に過ごせます。',
       ],
     },
   },
@@ -201,15 +364,29 @@ const TOPICS: TopicPair[] = [
     category: '麺料理',
     difficulty: 'normal',
     hints: {
-      citizenHints: [
-        '熱々のスープと麺の組み合わせが絶品で、専門店がたくさんあります。',
-        'スープの濃さや背脂の量、麺の硬さをお好みでカスタマイズできます。',
-        '飲み会のシメや、ガッツリお腹を満たしたいときに真っ先に浮かびます。',
+      round1: [
+        '熱々のスープと麺の組み合わせはいつ食べても飽きません。',
+        'お腹が空いた時、真っ先に候補に浮かぶ国民食ですね。',
+        '全国各地にご当地の個性があって、食べ歩くのも楽しいです。',
+        '注文してからパッと手軽に食べられる手軽さも最高ですよね。',
       ],
-      wolfHints: [
-        '熱々のスープと麺の組み合わせが絶品で、専門店がたくさんあります。',
-        '出汁の優しい旨味が染み渡り、温かいのも冷水で締めたのも美味。',
-        '体調がすぐれない時や、胃に優しいものが食べたい時にも安心の味です。',
+      round2Citizen: [
+        '濃厚なスープと麺が絡み合ってガツンと満たされる感覚。',
+        '具材や味の濃さをお好みで選べるのが楽しいですよね。',
+        'ガッツリ食べたい時に無性に恋しくなる魅力があります。',
+      ],
+      round2Wolf: [
+        '出汁の優しい旨味が五臓六腑に染み渡るような安心感です。',
+        '温かいのも冷たく締めたのも、それぞれ違った良さがあります。',
+        '胃に優しいものが食べたい時にも安心の味ですね。',
+      ],
+      round3Citizen: [
+        '立ち込めるスープの香りが店先に漂うと引き寄せられます。',
+        'こってり系からあっさり系まで奥が深いジャンルですよね。',
+      ],
+      round3Wolf: [
+        'ツルツルッとした喉越しと、出汁本来の風味が主役ですね。',
+        'トッピングやお揚げなどとの相性も抜群だと思います。',
       ],
     },
   },
@@ -219,15 +396,29 @@ const TOPICS: TopicPair[] = [
     category: '筆記用具',
     difficulty: 'hard',
     hints: {
-      citizenHints: [
-        '文字や絵を描くときに手放せない、学生時代からの相棒です。',
-        'ノックすると芯が出てきて、常に一定の細さで書き続けられます。',
-        '中に替芯を補充して、お気に入りの本体を何年も長く愛用できます。',
+      round1: [
+        '学生時代からずっと手に馴染んできた身近な相棒ですね。',
+        '文字やメモを書くとき、手元にあると安心する道具です。',
+        '人によって持つ時のグリップや筆圧の好みが分かれますね。',
+        '紙の上を走らせる感触が心地よくて愛着が湧きます。',
       ],
-      wolfHints: [
-        '文字や絵を描くときに手放せない、学生時代からの相棒です。',
-        '削りたての木の香りと、紙の上を走る独特の滑らかな描き心地が好き。',
-        '使っていくうちに少しずつ短くなっていく姿に愛着が湧きますね。',
+      round2Citizen: [
+        'カチカチとノックして、常に一定の細さで書き続けられる便利さ。',
+        '中にお気に入りの芯を補充して、同じ軸を長く愛用できます。',
+        '機能的なグリップや進化が面白くてコレクションしたくなります。',
+      ],
+      round2Wolf: [
+        '削りたての木の香りと、紙に吸い付くような滑らかな描き心地。',
+        '筆圧の加減で濃淡を自由にコントロールできるのが魅力です。',
+        '使っていくうちにだんだん短くなっていく姿に愛着を感じますね。',
+      ],
+      round3Citizen: [
+        '芯が折れにくい工夫や、細かい文字が綺麗に書けるのがいいですね。',
+        '手帳やノートの小さなマス目にもスッキリ収まるのが便利です。',
+      ],
+      round3Wolf: [
+        '握ったときの木の温もりと、素朴な質感がホッとします。',
+        'デッサンやスケッチなど表現の幅が豊かなのも特徴ですよね。',
       ],
     },
   },
@@ -291,13 +482,105 @@ export const AiWordWolfGame: Component = () => {
   ];
 
   const AI_PLAYERS = [
-    { id: 'alice', name: 'アリス', avatar: '👩‍💼', desc: '論理的・慎重派' },
-    { id: 'bob', name: 'ボブ', avatar: '🧑‍🎨', desc: '直感・マイペース派' },
-    { id: 'carol', name: 'キャロル', avatar: '🕵️‍♀️', desc: '鋭い観察・探偵派' },
+    { id: 'alice' as const, name: 'アリス', avatar: '👩‍💼', desc: '論理的・慎重派' },
+    { id: 'bob' as const, name: 'ボブ', avatar: '🧑‍🎨', desc: '直感・マイペース派' },
+    { id: 'carol' as const, name: 'キャロル', avatar: '🕵️‍♀️', desc: '鋭い観察・探偵派' },
   ];
+
+  // 同一ゲーム内での重複発言を絶対に防止する管理セット
+  const usedStatements = new Set<string>();
+
+  // キャラクター別の個性的な口調変換＆相槌演出
+  const applyCharacterStyle = (
+    baseText: string,
+    role: 'alice' | 'bob' | 'carol',
+    prevSpeaker?: string
+  ): string => {
+    // 35%の確率で前の発言者への自然な相槌・リアクションを付与
+    let prefix = '';
+    if (prevSpeaker && Math.random() < 0.35) {
+      if (role === 'alice') {
+        prefix = `${prevSpeaker}さんのおっしゃる通り、`;
+      } else if (role === 'bob') {
+        prefix = `${prevSpeaker}の言うことめっちゃわかる！`;
+      } else if (role === 'carol') {
+        prefix = `${prevSpeaker}さんの視点、興味深いわね。`;
+      }
+    }
+
+    if (role === 'alice') {
+      // アリス: 丁寧・論理派
+      return prefix + baseText;
+    } else if (role === 'bob') {
+      // ボブ: カジュアル・直感・元気
+      const casual = baseText
+        .replace(/ですね。?$/, 'だよね！')
+        .replace(/と思います。?$/, 'と思うな〜！')
+        .replace(/ありますね。?$/, 'あるある！')
+        .replace(/ですね$/, 'だし！')
+        .replace(/最高です。?$/, '最高じゃん！')
+        .replace(/好きです。?$/, '好きなんだよね！')
+        .replace(/ますね。?$/, 'るよね！');
+      return prefix + casual;
+    } else {
+      // キャロル: 鋭い観察・クール派
+      const cool = baseText
+        .replace(/ですね。?$/, 'かしら。')
+        .replace(/と思います。?$/, 'と思うわ。')
+        .replace(/ありますね。?$/, 'あるわね。')
+        .replace(/ですね$/, 'ね。')
+        .replace(/です。?$/, 'ね。');
+      return prefix + cool;
+    }
+  };
+
+  // ワードウルフらしい抽象的かつ知的な発言生成（ラウンド進行＆キャラ別）
+  const generateStatement = (
+    speakerRole: 'alice' | 'bob' | 'carol',
+    r: number, // 1, 2, 3
+    isWolf: boolean,
+    prevSpeakerName?: string
+  ): string => {
+    const topic = currentTopic();
+    let candidates: string[] = [];
+
+    // ハードモードでウルフの場合、中盤以降30%で市民に擬態・同調
+    if (isWolf && difficulty() === 'hard' && r >= 2 && Math.random() < 0.3) {
+      const camouflagePhrases = [
+        '皆さんの言う通り、そのイメージすごく共感できます！',
+        '確かにそのシチュエーションが一番しっくりきますね。',
+        'うんうん、私もそのニュアンスで捉えていました。',
+      ];
+      candidates = camouflagePhrases;
+    } else if (r === 1) {
+      // ラウンド1: 超抽象・様子見・何にでも当てはまりそうな表現
+      candidates = [...topic.hints.round1, ...GENERAL_R1_HINTS];
+    } else if (r === 2) {
+      // ラウンド2: 雰囲気・シチュエーション探り
+      candidates = isWolf
+        ? [...topic.hints.round2Wolf, ...GENERAL_R2_HINTS]
+        : [...topic.hints.round2Citizen, ...GENERAL_R2_HINTS];
+    } else {
+      // ラウンド3: 核心探り・こだわり・他者との比較
+      candidates = isWolf
+        ? [...topic.hints.round3Wolf]
+        : [...topic.hints.round3Citizen];
+    }
+
+    // 未使用のフレーズを優先して重複を100%防止
+    const unused = candidates.filter((c) => !usedStatements.has(c));
+    const chosenRaw = unused.length > 0
+      ? unused[Math.floor(Math.random() * unused.length)]
+      : candidates[Math.floor(Math.random() * candidates.length)] || 'とても奥が深いテーマですよね。';
+
+    usedStatements.add(chosenRaw);
+    return applyCharacterStyle(chosenRaw, speakerRole, prevSpeakerName);
+  };
 
   const restart = (diff = difficulty()) => {
     clearAllTimers();
+    usedStatements.clear();
+
     // 難易度に応じたお題の抽出
     const candidates = TOPICS.filter((t) => (diff === 'hard' ? true : t.difficulty === 'normal'));
     const topic = candidates[Math.floor(Math.random() * candidates.length)] || TOPICS[0];
@@ -324,7 +607,6 @@ export const AiWordWolfGame: Component = () => {
     // 最初のAI（アリス）の思考演出
     const firstSpeaker = AI_PLAYERS[0];
     const isFirstWolf = wolfName === firstSpeaker.name;
-    const hints = isFirstWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
 
     setThinkingPlayer({ name: firstSpeaker.name, avatar: firstSpeaker.avatar });
     scrollToBottom();
@@ -332,12 +614,13 @@ export const AiWordWolfGame: Component = () => {
     addTimer(() => {
       setThinkingPlayer(null);
       sound.playPop(480);
+      const text = generateStatement('alice', 1, isFirstWolf);
       setLogs([
         {
           speaker: firstSpeaker.name,
           avatar: firstSpeaker.avatar,
           role: 'alice',
-          text: hints[0],
+          text,
         },
       ]);
       scrollToBottom();
@@ -357,7 +640,6 @@ export const AiWordWolfGame: Component = () => {
     scrollToBottom();
 
     const currentR = round();
-    const topic = currentTopic();
 
     // 1. ボブの思考時間演出 (約950ms)
     setThinkingPlayer({ name: 'ボブ', avatar: '🧑‍🎨' });
@@ -365,7 +647,7 @@ export const AiWordWolfGame: Component = () => {
 
     addTimer(() => {
       const isBobWolf = wolfPlayer() === 'ボブ';
-      const bobHints = isBobWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
+      const bobStatement = generateStatement('bob', currentR, isBobWolf, 'あなた');
       sound.playPop(480);
       setLogs((prev) => [
         ...prev,
@@ -373,7 +655,7 @@ export const AiWordWolfGame: Component = () => {
           speaker: 'ボブ',
           avatar: '🧑‍🎨',
           role: 'bob',
-          text: bobHints[Math.min(currentR - 1, bobHints.length - 1)],
+          text: bobStatement,
         },
       ]);
       scrollToBottom();
@@ -384,7 +666,7 @@ export const AiWordWolfGame: Component = () => {
 
       addTimer(() => {
         const isCarolWolf = wolfPlayer() === 'キャロル';
-        const carolHints = isCarolWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
+        const carolStatement = generateStatement('carol', currentR, isCarolWolf, 'ボブ');
         sound.playPop(480);
         setLogs((prev) => [
           ...prev,
@@ -392,7 +674,7 @@ export const AiWordWolfGame: Component = () => {
             speaker: 'キャロル',
             avatar: '🕵️‍♀️',
             role: 'carol',
-            text: carolHints[Math.min(currentR - 1, carolHints.length - 1)],
+            text: carolStatement,
           },
         ]);
         setThinkingPlayer(null);
@@ -406,7 +688,7 @@ export const AiWordWolfGame: Component = () => {
 
           addTimer(() => {
             const isAliceWolf = wolfPlayer() === 'アリス';
-            const aliceHints = isAliceWolf ? topic.hints.wolfHints : topic.hints.citizenHints;
+            const aliceStatement = generateStatement('alice', currentR + 1, isAliceWolf, 'キャロル');
             sound.playPop(480);
             setLogs((prev) => [
               ...prev,
@@ -414,7 +696,7 @@ export const AiWordWolfGame: Component = () => {
                 speaker: 'アリス',
                 avatar: '👩‍💼',
                 role: 'alice',
-                text: aliceHints[currentR],
+                text: aliceStatement,
               },
             ]);
             setThinkingPlayer(null);
