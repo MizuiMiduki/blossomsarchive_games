@@ -1,4 +1,5 @@
-import { Component, createSignal, For, Show, createMemo } from 'solid-js';
+import { Component, createSignal, For, Show, createMemo, onSettled } from 'solid-js';
+import confetti from 'canvas-confetti';
 import { GAMES, GameCategory } from '../games/registry.ts';
 import {
   PlayIcon,
@@ -19,15 +20,63 @@ import {
   getGameStats,
   exportBackupJson,
   importBackupJson,
+  AppData,
 } from '../utils/storage.ts';
+import {
+  createSyncUrl,
+  createQrCodeDataUrl,
+  deserializeFromSync,
+  mergeIncomingData,
+} from '../utils/sync.ts';
 
 export const Home: Component = () => {
-  const [appData, setAppData] = createSignal(loadAppData());
+  const [appData, setAppData] = createSignal<AppData>(loadAppData());
   const [searchQuery, setSearchQuery] = createSignal('');
   const [selectedCategory, setSelectedCategory] = createSignal<GameCategory | 'favorite'>('all');
-  const [showBackupModal, setShowBackupModal] = createSignal(false);
+  
+  // モーダル管理
+  const [showDataModal, setShowDataModal] = createSignal(false);
+  const [modalTab, setModalTab] = createSignal<'qr' | 'json'>('qr');
+  const [qrCodeDataUrl, setQrCodeDataUrl] = createSignal<string>('');
+  const [syncUrlText, setSyncUrlText] = createSignal('');
+  const [copyStatus, setCopyStatus] = createSignal(false);
   const [backupJsonText, setBackupJsonText] = createSignal('');
   const [importStatus, setImportStatus] = createSignal<string | null>(null);
+
+  // URL経由の自動同期受信モーダル
+  const [pendingSyncData, setPendingSyncData] = createSignal<Partial<AppData> | null>(null);
+
+  // 起動時のURLハッシュ同期チェック
+  onSettled(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#sync=')) {
+      const encoded = hash.slice(6);
+      const data = deserializeFromSync(encoded);
+      if (data) {
+        sound.playVictory();
+        setPendingSyncData(data);
+        // URLのハッシュを消去して履歴をクリーンに保つ
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }
+  });
+
+  // 同期データの受諾
+  const acceptSync = () => {
+    const incoming = pendingSyncData();
+    if (!incoming) return;
+
+    sound.playVictory();
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+
+    const { merged, updatedScoresCount } = mergeIncomingData(incoming);
+    setAppData(merged);
+    setPendingSyncData(null);
+  };
 
   // ダークモード適用
   const toggleTheme = () => {
@@ -77,7 +126,6 @@ export const Home: Component = () => {
     const favs = appData().favorites;
 
     return GAMES.filter((g) => {
-      // 検索フィルター
       const matchesSearch =
         !query ||
         g.title.toLowerCase().includes(query) ||
@@ -86,31 +134,50 @@ export const Home: Component = () => {
 
       if (!matchesSearch) return false;
 
-      // カテゴリフィルター
       if (cat === 'all') return true;
       if (cat === 'favorite') return favs.includes(g.id);
       return g.category === cat;
     });
   });
 
-  // バックアップエクスポート
-  const handleOpenBackup = () => {
+  // データ同期モーダルを開く
+  const handleOpenDataModal = async () => {
     sound.playPop(440);
+    const data = loadAppData();
+    const url = createSyncUrl(data);
+    setSyncUrlText(url);
     setBackupJsonText(exportBackupJson());
     setImportStatus(null);
-    setShowBackupModal(true);
+    setCopyStatus(false);
+    setShowDataModal(true);
+
+    // QRコード生成
+    const qr = await createQrCodeDataUrl(url);
+    setQrCodeDataUrl(qr);
   };
 
-  // バックアップインポート
-  const handleImport = () => {
+  // 同期URLをクリップボードにコピー
+  const handleCopySyncUrl = async () => {
+    sound.playPop(520);
+    try {
+      await navigator.clipboard.writeText(syncUrlText());
+      setCopyStatus(true);
+      setTimeout(() => setCopyStatus(false), 2000);
+    } catch {
+      // fallback
+    }
+  };
+
+  // バックアップJSONインポート
+  const handleImportJson = () => {
     sound.playPop(480);
     const success = importBackupJson(backupJsonText());
     if (success) {
-      setImportStatus('インポートが完了しました！');
+      setImportStatus('復元が完了しました！');
       setAppData(loadAppData());
-      setTimeout(() => setShowBackupModal(false), 1200);
+      setTimeout(() => setShowDataModal(false), 1200);
     } else {
-      setImportStatus('データ形式が無効です。JSONを確認してください。');
+      setImportStatus('無効なJSONフォーマットです。');
     }
   };
 
@@ -135,11 +202,11 @@ export const Home: Component = () => {
 
           <div class="flex items-center gap-1 sm:gap-2">
             <button
-              onClick={handleOpenBackup}
-              title="セーブデータ管理 (保存/復元)"
-              class="px-2.5 py-1.5 rounded-xl border border-rose-100 dark:border-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50/50 dark:hover:bg-slate-800 transition-colors hidden sm:inline-flex items-center gap-1"
+              onClick={handleOpenDataModal}
+              title="端末同期 ＆ セーブデータ管理"
+              class="px-2.5 py-1.5 rounded-xl border border-rose-200 dark:border-slate-800 bg-rose-50/60 dark:bg-slate-900 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-100/80 transition-colors inline-flex items-center gap-1.5 shadow-2xs"
             >
-              <span>💾 セーブデータ</span>
+              <span>📲 端末間同期</span>
             </button>
 
             <button
@@ -171,7 +238,7 @@ export const Home: Component = () => {
         <section class="text-center py-6 sm:py-10 relative overflow-hidden">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100/80 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-300 text-xs font-bold mb-4 shadow-2xs">
             <SparklesIcon size={14} />
-            <span>ブラウザ完結・完全無料・Solid.js 2.0 駆動</span>
+            <span>完全クライアント完結・DB不要・Solid.js 2.0 駆動</span>
           </div>
 
           <h2 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
@@ -179,7 +246,7 @@ export const Home: Component = () => {
           </h2>
 
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-8">
-            インストールの手間も会員登録も不要。開いた瞬間に遊べる、超軽量ミニゲームアーカイブ。
+            インストールの手間も会員登録も不要。QRコードでスマホともデータ同期できる、全10種の超軽量ミニゲームアーカイブ。
           </p>
 
           {/* 検索バー */}
@@ -191,7 +258,7 @@ export const Home: Component = () => {
               type="text"
               value={searchQuery()}
               onInput={(e) => setSearchQuery(e.currentTarget.value)}
-              placeholder="ゲーム名やキーワードで検索..."
+              placeholder="ゲーム名やジャンルで検索..."
               class="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-rose-100 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400 shadow-sm text-sm"
             />
           </div>
@@ -199,12 +266,12 @@ export const Home: Component = () => {
           {/* カテゴリタブ */}
           <div class="flex items-center justify-center gap-1.5 flex-wrap">
             {[
-              { id: 'all', label: 'すべて' },
+              { id: 'all', label: 'すべて (10)' },
               { id: 'board', label: 'ボード♟️' },
-              { id: 'puzzle', label: 'パズル' },
-              { id: 'casual', label: 'カジュアル' },
-              { id: 'card', label: 'カード' },
-              { id: 'action', label: 'アクション' },
+              { id: 'puzzle', label: 'パズル🧩' },
+              { id: 'card', label: 'カード🃏' },
+              { id: 'casual', label: 'カジュアル🌱' },
+              { id: 'action', label: 'アクション🏃' },
               { id: 'favorite', label: 'お気に入り❤️' },
             ].map((tab) => (
               <button
@@ -244,20 +311,14 @@ export const Home: Component = () => {
                     {/* アイコン & バッジ & お気に入り */}
                     <div class="flex items-start justify-between mb-4">
                       <div
-                        class={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${game.color} flex items-center justify-center text-3xl shadow-md`}
+                        class={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${game.color} flex items-center justify-center text-3xl shadow-md text-white`}
                       >
                         {game.icon}
                       </div>
 
                       <div class="flex items-center gap-1.5">
                         <Show when={game.badge}>
-                          <span
-                            class={`px-2 py-0.5 rounded-lg text-[11px] font-bold ${
-                              game.isAvailable
-                                ? 'bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300'
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
-                            }`}
-                          >
+                          <span class="px-2 py-0.5 rounded-lg text-[11px] font-bold bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300">
                             {game.badge}
                           </span>
                         </Show>
@@ -287,37 +348,23 @@ export const Home: Component = () => {
 
                   <div>
                     {/* スコア・戦績 */}
-                    <Show when={game.isAvailable}>
-                      <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 py-2 border-t border-rose-50 dark:border-slate-800/80 mb-3">
-                        <span class="flex items-center gap-1">
-                          <AwardIcon size={14} class="text-amber-500" />
-                          ハイスコア: <strong class="text-slate-700 dark:text-slate-300">{stats.highScore}</strong>
-                        </span>
-                        <span>プレイ: {stats.playCount}回</span>
-                      </div>
-                    </Show>
+                    <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 py-2 border-t border-rose-50 dark:border-slate-800/80 mb-3">
+                      <span class="flex items-center gap-1">
+                        <AwardIcon size={14} class="text-amber-500" />
+                        最高: <strong class="text-slate-700 dark:text-slate-300">{stats.highScore}</strong>
+                      </span>
+                      <span>プレイ: {stats.playCount}回</span>
+                    </div>
 
-                    {/* アクションボタン */}
-                    <Show
-                      when={game.isAvailable}
-                      fallback={
-                        <button
-                          disabled
-                          class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 text-xs font-semibold cursor-not-allowed"
-                        >
-                          近日リリース予定
-                        </button>
-                      }
+                    {/* プレイボタン */}
+                    <a
+                      href={`/game/${game.id}`}
+                      onClick={() => sound.playPop(520)}
+                      class="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-500/20 active:scale-98 transition-all"
                     >
-                      <a
-                        href={`/game/${game.id}`}
-                        onClick={() => sound.playPop(520)}
-                        class="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-500/20 active:scale-98 transition-all"
-                      >
-                        <PlayIcon size={14} />
-                        <span>今すぐ遊ぶ</span>
-                      </a>
-                    </Show>
+                      <PlayIcon size={14} />
+                      <span>今すぐ遊ぶ</span>
+                    </a>
                   </div>
                 </div>
               );
@@ -326,43 +373,125 @@ export const Home: Component = () => {
         </section>
       </main>
 
-      {/* セーブデータ管理モーダル */}
-      <Show when={showBackupModal()}>
+      {/* 端末同期 & データ管理モーダル */}
+      <Show when={showDataModal()}>
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
           <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-100 dark:border-slate-800 animate-in fade-in zoom-in-95">
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">
-              💾 セーブデータ管理
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+              <span>📲 複数端末同期 & セーブデータ</span>
             </h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-              ハイスコアやお気に入りなどのデータはブラウザ（LocalStorage）に保存されています。別のPCや端末へ引き継ぐ場合は下のJSONをコピーして保存してください。
-            </p>
 
-            <textarea
-              rows={8}
-              value={backupJsonText()}
-              onInput={(e) => setBackupJsonText(e.currentTarget.value)}
-              class="w-full font-mono text-xs p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-400 mb-3"
-            />
-
-            <Show when={importStatus()}>
-              <div class="text-xs font-bold text-rose-500 mb-3">{importStatus()}</div>
-            </Show>
-
-            <div class="flex items-center gap-2">
+            {/* モーダル内タブ */}
+            <div class="flex border-b border-rose-100 dark:border-slate-800 mb-4">
               <button
-                onClick={handleImport}
-                class="flex-1 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-semibold text-xs transition-colors"
+                onClick={() => setModalTab('qr')}
+                class={`flex-1 py-2 text-xs font-bold transition-all border-b-2 ${
+                  modalTab() === 'qr'
+                    ? 'border-rose-500 text-rose-600 dark:text-rose-400'
+                    : 'border-transparent text-slate-400 hover:text-slate-600'
+                }`}
               >
-                JSONから復元
+                QRコードで同期 (おすすめ)
               </button>
               <button
-                onClick={() => {
-                  sound.playPop(420);
-                  setShowBackupModal(false);
-                }}
-                class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                onClick={() => setModalTab('json')}
+                class={`flex-1 py-2 text-xs font-bold transition-all border-b-2 ${
+                  modalTab() === 'json'
+                    ? 'border-rose-500 text-rose-600 dark:text-rose-400'
+                    : 'border-transparent text-slate-400 hover:text-slate-600'
+                }`}
               >
-                閉じる
+                JSONファイル保存 / 復元
+              </button>
+            </div>
+
+            {/* タブ1: QRコード同期 */}
+            <Show when={modalTab() === 'qr'}>
+              <div class="text-center flex flex-col items-center">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                  スマートフォンのカメラで以下のQRコードを読み取るだけで、現在のハイスコアやお気に入りが即座に引き継がれます！
+                </p>
+
+                <Show when={qrCodeDataUrl()} fallback={<div class="w-48 h-48 bg-slate-100 animate-pulse rounded-2xl mb-4" />}>
+                  <div class="p-3 bg-white rounded-2xl shadow-md border-2 border-rose-100 mb-4">
+                    <img src={qrCodeDataUrl()} alt="セーブデータ同期用QRコード" class="w-48 h-48 block mx-auto" />
+                  </div>
+                </Show>
+
+                <button
+                  onClick={handleCopySyncUrl}
+                  class="w-full py-2.5 rounded-xl border border-rose-200 dark:border-slate-700 hover:bg-rose-50/50 text-rose-600 dark:text-rose-400 font-semibold text-xs mb-3 transition-all"
+                >
+                  {copyStatus() ? '✓ 同期用URLをコピーしました！' : '🔗 同期用URLをコピー (LINE等で送る)'}
+                </button>
+              </div>
+            </Show>
+
+            {/* タブ2: JSONバックアップ */}
+            <Show when={modalTab() === 'json'}>
+              <div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                  セーブデータの手動バックアップやテキストでの引き継ぎ用です。
+                </p>
+                <textarea
+                  rows={6}
+                  value={backupJsonText()}
+                  onInput={(e) => setBackupJsonText(e.currentTarget.value)}
+                  class="w-full font-mono text-[11px] p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-400 mb-2"
+                />
+                <Show when={importStatus()}>
+                  <div class="text-xs font-bold text-rose-500 mb-2">{importStatus()}</div>
+                </Show>
+                <button
+                  onClick={handleImportJson}
+                  class="w-full py-2 rounded-xl bg-slate-800 text-white dark:bg-slate-700 font-semibold text-xs mb-3"
+                >
+                  JSONテキストから復元
+                </button>
+              </div>
+            </Show>
+
+            <button
+              onClick={() => {
+                sound.playPop(420);
+                setShowDataModal(false);
+              }}
+              class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            >
+              閉じる
+            </button>
+          </div>
+        </div>
+      </Show>
+
+      {/* URLからの自動同期受信モーダル */}
+      <Show when={pendingSyncData()}>
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-rose-300 text-center animate-in zoom-in-95">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-rose-100 dark:bg-rose-950 flex items-center justify-center text-3xl">
+              📲
+            </div>
+            <h3 class="text-lg font-black text-slate-900 dark:text-white mb-1">
+              別端末のデータが見つかりました！
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
+              QRコードまたは共有リンクからセーブデータを受信しました。<br />
+              現在の記録とマージして同期しますか？<br />
+              （※ハイスコアは高い方がキープされます）
+            </p>
+
+            <div class="flex flex-col gap-2">
+              <button
+                onClick={acceptSync}
+                class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold text-xs shadow-md shadow-rose-500/25 active:scale-95 transition-all"
+              >
+                データを統合して同期する
+              </button>
+              <button
+                onClick={() => setPendingSyncData(null)}
+                class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-500 text-xs font-semibold"
+              >
+                キャンセル
               </button>
             </div>
           </div>
@@ -375,7 +504,7 @@ export const Home: Component = () => {
           <span>🌸</span>
           <span class="font-bold text-slate-600 dark:text-slate-300">BlossomsArchive Games</span>
         </div>
-        <div>No Server-Side Processing / Powered by Solid.js 2.0</div>
+        <div>No Server-Side Processing / Zero Backend / Powered by Solid.js 2.0</div>
       </footer>
     </div>
   );
