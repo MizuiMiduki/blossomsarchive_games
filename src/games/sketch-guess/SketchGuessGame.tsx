@@ -93,10 +93,22 @@ export const SketchGuessGame: Component = () => {
     }
   };
 
+  const ensureContext = (): CanvasRenderingContext2D | null => {
+    if (!ctx && canvasRef) {
+      ctx = canvasRef.getContext('2d');
+      if (ctx) {
+        clearCanvas(false);
+      }
+    }
+    return ctx;
+  };
+
   const clearCanvas = (notify = true) => {
-    if (!ctx || !canvasRef) return;
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(0, 0, canvasRef.width, canvasRef.height);
+    const c = ctx || (canvasRef ? canvasRef.getContext('2d') : null);
+    if (!c || !canvasRef) return;
+    ctx = c;
+    c.fillStyle = '#0f172a';
+    c.fillRect(0, 0, canvasRef.width, canvasRef.height);
 
     if (notify && p2p && mode() === 'p2p') {
       p2p.send({ type: 'clear' });
@@ -104,44 +116,62 @@ export const SketchGuessGame: Component = () => {
   };
 
   const drawLine = (data: StrokeData, notify = false) => {
-    if (!ctx) return;
-    ctx.beginPath();
-    ctx.moveTo(data.x0, data.y0);
-    ctx.lineTo(data.x1, data.y1);
-    ctx.strokeStyle = data.color;
-    ctx.lineWidth = data.size;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();
+    const c = ensureContext();
+    if (!c) return;
+    c.beginPath();
+    c.moveTo(data.x0, data.y0);
+    c.lineTo(data.x1, data.y1);
+    c.strokeStyle = data.color;
+    c.lineWidth = data.size;
+    c.lineCap = 'round';
+    c.lineJoin = 'round';
+    c.stroke();
 
     if (notify && p2p && mode() === 'p2p') {
       p2p.send({ type: 'stroke', stroke: data });
     }
   };
 
-  const getCanvasCoords = (e: MouseEvent | Touch) => {
+  const getCanvasCoords = (e: MouseEvent | Touch | PointerEvent) => {
+    if (!canvasRef) return { x: 0, y: 0 };
     const rect = canvasRef.getBoundingClientRect();
-    const scaleX = canvasRef.width / rect.width;
-    const scaleY = canvasRef.height / rect.height;
+    const scaleX = canvasRef.width / (rect.width || 1);
+    const scaleY = canvasRef.height / (rect.height || 1);
+    const clientX = 'clientX' in e ? e.clientX : (e as Touch).clientX;
+    const clientY = 'clientY' in e ? e.clientY : (e as Touch).clientY;
     return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY,
     };
   };
 
-  const onPointerDown = (e: MouseEvent | TouchEvent) => {
-    if (!isDrawer() || roundEnded()) return;
+  const onPointerDown = (e: PointerEvent) => {
+    if (!isDrawer() || roundEnded() || !canvasRef) return;
     isDrawing = true;
-    const point = 'touches' in e ? e.touches[0] : e;
-    const coords = getCanvasCoords(point);
+    try {
+      (e.target as HTMLElement)?.setPointerCapture?.(e.pointerId);
+    } catch (_) {}
+    const coords = getCanvasCoords(e);
     lastX = coords.x;
     lastY = coords.y;
+
+    // クリック・タップ時にも即座に点を打つ
+    drawLine(
+      {
+        x0: lastX,
+        y0: lastY,
+        x1: coords.x,
+        y1: coords.y,
+        color: currentColor(),
+        size: brushSize(),
+      },
+      true
+    );
   };
 
-  const onPointerMove = (e: MouseEvent | TouchEvent) => {
-    if (!isDrawing || !isDrawer() || roundEnded()) return;
-    const point = 'touches' in e ? e.touches[0] : e;
-    const coords = getCanvasCoords(point);
+  const onPointerMove = (e: PointerEvent) => {
+    if (!isDrawing || !isDrawer() || roundEnded() || !canvasRef) return;
+    const coords = getCanvasCoords(e);
 
     drawLine(
       {
@@ -159,8 +189,13 @@ export const SketchGuessGame: Component = () => {
     lastY = coords.y;
   };
 
-  const onPointerUp = () => {
+  const onPointerUp = (e?: PointerEvent) => {
     isDrawing = false;
+    if (e) {
+      try {
+        (e.target as HTMLElement)?.releasePointerCapture?.(e.pointerId);
+      } catch (_) {}
+    }
   };
 
   const addChat = (msg: ChatMessage) => {
@@ -518,16 +553,19 @@ export const SketchGuessGame: Component = () => {
             <div class="flex flex-col items-center w-full md:w-2/3">
               <div class="relative w-full border-2 border-slate-700 rounded-xl overflow-hidden shadow-2xl bg-slate-950 touch-none">
                 <canvas
-                  ref={canvasRef}
+                  ref={(el) => {
+                    canvasRef = el;
+                    ctx = el.getContext('2d');
+                    clearCanvas(false);
+                  }}
                   width={480}
                   height={360}
-                  class="w-full aspect-[4/3] block cursor-crosshair"
-                  onMouseDown={onPointerDown}
-                  onMouseMove={onPointerMove}
-                  onMouseUp={onPointerUp}
-                  onTouchStart={onPointerDown}
-                  onTouchMove={onPointerMove}
-                  onTouchEnd={onPointerUp}
+                  class="w-full aspect-[4/3] block cursor-crosshair touch-none"
+                  onPointerDown={onPointerDown}
+                  onPointerMove={onPointerMove}
+                  onPointerUp={onPointerUp}
+                  onPointerCancel={onPointerUp}
+                  onPointerLeave={onPointerUp}
                 />
               </div>
 
