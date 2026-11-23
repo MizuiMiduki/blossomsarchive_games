@@ -292,10 +292,10 @@ export const GAMES: GameDefinition[] = [
   {
     id: 'room-escape',
     title: 'Room Escape',
-    titleJp: 'ミニ脱出ゲーム',
+    titleJp: 'AI生成脱出ゲーム',
     category: 'puzzle',
-    description: '怪しい場所をクリックして手がかりやアイテムを発見。暗号を解いて密室から脱出する定番ゲーム。',
-    badge: '脱出',
+    description: '怪しい場所をクリックして手がかりやアイテムを発見。ローカルAIが部屋のテーマと暗号を自動生成する脱出ゲーム。',
+    badge: 'AI生成',
     icon: EscapeRoomIcon,
     color: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-900/40',
     component: RoomEscapeGame,
