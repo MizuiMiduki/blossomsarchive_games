@@ -90,7 +90,7 @@ export const GAMES: GameDefinition[] = [
   {
     id: 'blossom-drop',
     title: 'Blossom Drop',
-    titleJp: '花果マージパズル (スイカ系)',
+    titleJp: '花果マージパズル',
     category: 'puzzle',
     description: '同じフルーツ・花を落としてくっつけ、大輪の桜花を目指す2D物理パズル。',
     badge: '注目',

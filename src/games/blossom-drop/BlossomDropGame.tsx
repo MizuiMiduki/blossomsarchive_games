@@ -49,6 +49,7 @@ export const BlossomDropGame: Component = () => {
   let circles: Circle[] = [];
   let dropX = 160;
   let canDrop = true;
+  let isPointerDown = false;
   const gravity = 0.38;
   const friction = 0.985;
   const bounce = 0.3;
@@ -58,10 +59,20 @@ export const BlossomDropGame: Component = () => {
     circles = [];
     dropX = 160;
     canDrop = true;
+    isPointerDown = false;
     setScore(0);
     setNextLevel(Math.floor(Math.random() * 3)); // 0~2
     setIsGameOver(false);
     loop();
+  };
+
+  const handlePointerDown = (e: PointerEvent) => {
+    if (isGameOver()) return;
+    isPointerDown = true;
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {}
+    handlePointerMove(e.clientX);
   };
 
   const handlePointerMove = (clientX: number) => {
@@ -70,6 +81,24 @@ export const BlossomDropGame: Component = () => {
     const x = ((clientX - rect.left) / rect.width) * canvasRef.width;
     const currentFruit = FRUIT_TIERS[nextLevel()];
     dropX = Math.max(currentFruit.radius + 5, Math.min(canvasRef.width - currentFruit.radius - 5, x));
+  };
+
+  const handlePointerUp = (e: PointerEvent) => {
+    if (!isPointerDown) return;
+    isPointerDown = false;
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {}
+    handlePointerMove(e.clientX);
+    handleDrop();
+  };
+
+  const handlePointerCancel = (e: PointerEvent) => {
+    if (!isPointerDown) return;
+    isPointerDown = false;
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {}
   };
 
   const handleDrop = () => {
@@ -261,8 +290,8 @@ export const BlossomDropGame: Component = () => {
   });
 
   const instructions = [
-    '左右にスワイプ・カーソル移動して狙いを定め、タップで落とします。',
-    '同じ種類の果物・花がぶつかるとマージして大きく成長します！',
+    '画面をスワイプ（またはマウス移動）して落とす位置を調整し、指を離すとフルーツが落下します。',
+    '同じ種類の果物・花がぶつかるとマージして一段階大きく成長します！',
     '上の赤い点線を超えて溢れ出さないように、大輪の桜花🌸を目指しましょう。',
   ];
 
@@ -286,8 +315,10 @@ export const BlossomDropGame: Component = () => {
         {/* 落下ボックス (Canvas) */}
         <div
           class="w-full aspect-[3/4] bg-gradient-to-b from-rose-50/60 to-pink-100/50 dark:from-slate-950 dark:to-slate-900 rounded-3xl overflow-hidden shadow-2xl border-4 border-rose-200 dark:border-slate-800 relative cursor-crosshair select-none touch-none"
+          onPointerDown={handlePointerDown}
           onPointerMove={(e) => handlePointerMove(e.clientX)}
-          onPointerDown={() => handleDrop()}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerCancel}
         >
           <canvas
             ref={canvasRef}
