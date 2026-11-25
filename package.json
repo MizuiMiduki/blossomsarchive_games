@@ -11,7 +11,15 @@
     "indexnow": "npx tsx scripts/notify-indexnow.ts",
     "audit:pagespeed": "npx tsx scripts/audit-lighthouse.ts",
     "type-check": "tsc --noEmit",
-    "test": "node scripts/qa-test-suite.js"
+    "test": "node scripts/qa-test-suite.js && npx tsx tests/runner.ts",
+    "test:all": "node scripts/qa-test-suite.js && npx tsx tests/runner.ts",
+    "test:unit": "npx tsx tests/runner.ts --suite=unit",
+    "test:integration": "npx tsx tests/runner.ts --suite=integration",
+    "test:ui": "npx tsx tests/runner.ts --suite=ui",
+    "test:e2e": "npx tsx tests/runner.ts --suite=e2e",
+    "test:visual": "npx tsx tests/runner.ts --suite=visual",
+    "test:perf": "npx tsx tests/runner.ts --suite=performance",
+    "test:security": "npx tsx tests/runner.ts --suite=security"
   },
   "dependencies": {
     "@solidjs/router": "^2.0.1",

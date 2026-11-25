@@ -9,7 +9,7 @@ export interface P2PConnectionEvents {
 }
 
 // SDPをコンパクトなBase64文字列に圧縮
-function compressSdp(sdp: RTCSessionDescriptionInit): string {
+export function compressSdp(sdp: RTCSessionDescriptionInit): string {
   const json = JSON.stringify(sdp);
   return btoa(encodeURIComponent(json).replace(/%([0-9A-F]{2})/g, (_, p1) => {
     return String.fromCharCode(parseInt(p1, 16));
@@ -17,7 +17,7 @@ function compressSdp(sdp: RTCSessionDescriptionInit): string {
 }
 
 // Base64からSDPを復元
-function decompressSdp(encoded: string): RTCSessionDescriptionInit | null {
+export function decompressSdp(encoded: string): RTCSessionDescriptionInit | null {
   try {
     const json = decodeURIComponent(
       Array.prototype.map
@@ -26,7 +26,9 @@ function decompressSdp(encoded: string): RTCSessionDescriptionInit | null {
         })
         .join('')
     );
-    return JSON.parse(json);
+    const parsed = JSON.parse(json);
+    if (!parsed || typeof parsed !== 'object' || !parsed.type || !parsed.sdp) return null;
+    return parsed;
   } catch {
     return null;
   }
