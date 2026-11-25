@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vite build && npx tsx scripts/post-build.ts",
     "preview": "vite preview",
+    "indexnow": "npx tsx scripts/notify-indexnow.ts",
     "audit:pagespeed": "npx tsx scripts/audit-lighthouse.ts",
     "type-check": "tsc --noEmit",
     "test": "node scripts/qa-test-suite.js"

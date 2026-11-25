@@ -148,6 +148,14 @@ jobs:
             **/*.lock
             **/*.sql
 
+      - name: Notify Search Engines via IndexNow
+        if: steps.check-ftp.outputs.configured == 'true'
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+          VITE_SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          npm run indexnow || echo "⚠️ IndexNow notification failed or was rate-limited (non-fatal)"
+
   # ─── 4. Lighthouse 並列分散監査 (4シャード均等分散で高速並列実行) ───
   lighthouse-audit:
     needs: [build]

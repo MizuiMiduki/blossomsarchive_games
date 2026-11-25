@@ -372,6 +372,31 @@ if (fs.existsSync(sitemapPath)) {
   console.log('  [SKIP] dist/sitemap.xml not yet generated (pre-build stage)');
 }
 
+// -----------------------------------------------------------------------------
+// 20. IndexNow プロトコル & キー検証QA
+// -----------------------------------------------------------------------------
+console.log('\n--- TEST SUITE 20: IndexNow Protocol & Key QA ---');
+const indexnowConfigCode = fs.readFileSync('scripts/indexnow-config.ts', 'utf8');
+const notifyScriptCode = fs.readFileSync('scripts/notify-indexnow.ts', 'utf8');
+const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+
+assert(indexnowConfigCode.includes('DEFAULT_INDEXNOW_KEY') && indexnowConfigCode.includes('INDEXNOW_KEY'), 'indexnow-config.ts defines API key constants');
+assert(notifyScriptCode.includes('api.indexnow.org') && notifyScriptCode.includes('bing.com/indexnow'), 'notify-indexnow.ts targets valid search engine endpoints');
+assert(packageJson.scripts && packageJson.scripts.indexnow, 'package.json contains "indexnow" script');
+
+// キー仕様の適合性チェック (8〜128文字英数字)
+const keyMatch = indexnowConfigCode.match(/DEFAULT_INDEXNOW_KEY\s*=\s*['"]([a-zA-Z0-9_-]+)['"]/);
+const defaultKey = keyMatch ? keyMatch[1] : '';
+assert(defaultKey.length >= 8 && defaultKey.length <= 128, `Default IndexNow key length is valid (${defaultKey.length} chars)`);
+
+const distKeyPath = path.resolve(`dist/${defaultKey}.txt`);
+if (fs.existsSync(distKeyPath)) {
+  const fileContent = fs.readFileSync(distKeyPath, 'utf8').trim();
+  assert(fileContent === defaultKey, 'dist/<key>.txt matches IndexNow key strictly');
+} else {
+  console.log('  [SKIP] dist/<key>.txt not yet generated (pre-build stage)');
+}
+
 console.log('\n====================================================');
 console.log(`QA TEST SUMMARY: Passed: ${passedTests}, Failed: ${failedTests}`);
 console.log('====================================================');

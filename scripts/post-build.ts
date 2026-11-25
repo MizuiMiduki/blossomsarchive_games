@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { GAME_TRANSLATIONS } from '../src/utils/gameTranslations.ts';
 import { LANG_OPTIONS, SupportedLang } from '../src/utils/i18n.ts';
+import { INDEXNOW_KEY, SITE_URL } from './indexnow-config.ts';
 
 const distDir = path.resolve('dist');
 const indexHtmlPath = path.join(distDir, 'index.html');
@@ -16,7 +17,6 @@ const templateHtml = fs.readFileSync(indexHtmlPath, 'utf8');
 // Copy to 404.html (SPA Fallback)
 fs.writeFileSync(path.join(distDir, '404.html'), templateHtml);
 
-const SITE_URL = (process.env.VITE_SITE_URL || 'https://games.blossomsarchive.com').replace(/\/+$/, '');
 const TODAY = new Date().toISOString().split('T')[0];
 
 const HOME_METAS: Record<SupportedLang, { title: string; description: string }> = {
@@ -236,9 +236,15 @@ Sitemap: ${SITE_URL}/sitemap.xml
 
 fs.writeFileSync(path.join(distDir, 'robots.txt'), robotsTxt, 'utf8');
 
+// ==========================================
+// 5. IndexNow キーファイルの生成 (<key>.txt)
+// ==========================================
+fs.writeFileSync(path.join(distDir, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY, 'utf8');
+
 console.log(`✅ Generated multilingual static routes:`);
 console.log(`   - Home pages: ${LANG_OPTIONS.length} languages`);
 console.log(`   - Game pages: ${gameIds.length} games x ${LANG_OPTIONS.length} languages = ${gameIds.length * LANG_OPTIONS.length} static routes`);
 console.log(`   - Total generated HTMLs: ${LANG_OPTIONS.length * (gameIds.length + 1)} pages`);
 console.log(`   - sitemap.xml generated with ${sitemapEntries.length} localized URLs`);
 console.log(`   - robots.txt generated with Sitemap declaration`);
+console.log(`   - IndexNow key verification file: ${INDEXNOW_KEY}.txt`);
