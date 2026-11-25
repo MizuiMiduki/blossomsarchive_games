@@ -237,7 +237,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
       class="fixed inset-0 w-full flex flex-col items-center justify-between bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-1 sm:p-2.5 pt-[max(0.35rem,env(safe-area-inset-top))] pb-[max(0.35rem,env(safe-area-inset-bottom))] pl-[max(0.35rem,env(safe-area-inset-left))] pr-[max(0.35rem,env(safe-area-inset-right))] select-none overflow-hidden overscroll-none"
     >
       {/* 上部ヘッダーコントロール */}
-      <header class="w-full max-w-4xl shrink-0 flex items-center justify-between py-1.5 px-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs mb-1">
+      <header class="w-full max-w-4xl shrink-0 flex items-center justify-between py-1.5 px-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs mb-1 relative z-30">
         <Link
           href="/"
           onClick={() => sound.playPop(400)}

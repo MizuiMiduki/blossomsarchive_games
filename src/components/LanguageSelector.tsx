@@ -49,7 +49,7 @@ export const LanguageSelector: Component<{ class?: string }> = (props) => {
   });
 
   return (
-    <div ref={menuRef} class={`relative inline-block text-left ${props.class || ''}`}>
+    <div ref={menuRef} class={`relative inline-block text-left ${isOpen() ? 'z-50' : 'z-20'} ${props.class || ''}`}>
       <button
         onClick={handleToggle}
         title={t('selectLang')}
