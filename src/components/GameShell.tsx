@@ -16,6 +16,9 @@ import {
   ShareIcon,
 } from './Icons.tsx';
 import { sound } from '../utils/sound.ts';
+import { t } from '../utils/i18n.ts';
+import { LanguageSelector } from './LanguageSelector.tsx';
+import { getLocalizedGame } from '../utils/gameTranslations.ts';
 import {
   recordGameStart,
   updateHighScore,
@@ -51,12 +54,20 @@ export const GameShell: Component<GameShellProps> = (props) => {
 
   let containerRef: HTMLDivElement | undefined;
 
+  const localizedMeta = () =>
+    getLocalizedGame(props.id, {
+      title: props.title,
+      titleJp: props.title,
+      description: '',
+    });
+
   const handleShare = async () => {
     sound.playPop(520);
-    const title = `${props.title} - BlossomsArchive Games`;
-    const scoreText = props.score !== undefined ? `【スコア: ${props.score}】` : '';
-    const resultText = props.isVictory ? 'クリア達成！' : '';
-    const text = `「${props.title}」をプレイ中！${scoreText}${resultText}\n登録不要・完全無料で遊べるブラウザミニゲームコレクション\n`;
+    const gameTitle = localizedMeta().title;
+    const title = `${gameTitle} - BlossomsArchive Games`;
+    const scoreText = props.score !== undefined ? ` [${t('score')}: ${props.score}]` : '';
+    const resultText = props.isVictory ? ` ${t('victory')}` : '';
+    const text = `${gameTitle}${scoreText}${resultText}\nBlossomsArchive Games - Web Mini Games\n`;
     const url = typeof window !== 'undefined' ? window.location.href : '';
 
     if (typeof navigator !== 'undefined' && navigator.share) {
@@ -233,36 +244,37 @@ export const GameShell: Component<GameShellProps> = (props) => {
           class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <ArrowLeftIcon size={18} />
-          <span>一覧へ</span>
+          <span>{t('backToList')}</span>
         </Link>
 
         <div class="text-center">
           <h1 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1 justify-center">
-            {props.title}
+            {localizedMeta().title}
           </h1>
           <Show when={props.score !== undefined}>
             <div class="flex items-center justify-center gap-3 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              <span>スコア: <strong class="text-slate-900 dark:text-white font-bold">{props.score}</strong></span>
-              <span>最高: <strong class="text-slate-700 dark:text-slate-300">{stats().highScore}</strong></span>
+              <span>{t('score')}: <strong class="text-slate-900 dark:text-white font-bold">{props.score}</strong></span>
+              <span>{t('highScore')}: <strong class="text-slate-700 dark:text-slate-300">{stats().highScore}</strong></span>
             </div>
           </Show>
         </div>
 
         <div class="flex items-center gap-1">
+          <LanguageSelector />
           <button
             onClick={() => {
               sound.playPop(450);
               setShowHelp(true);
             }}
-            title="遊び方"
-            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title={t('howToPlay')}
+            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <InfoIcon size={18} />
           </button>
           <button
             onClick={toggleSound}
-            title={isMuted() ? 'ミュート解除' : 'ミュート'}
-            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title={isMuted() ? t('soundUnmute') : t('soundMute')}
+            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <Show when={isMuted()} fallback={<VolumeIcon size={18} />}>
               <VolumeXIcon size={18} class="text-slate-400" />
@@ -270,8 +282,8 @@ export const GameShell: Component<GameShellProps> = (props) => {
           </button>
           <button
             onClick={handleShare}
-            title="ゲームを共有"
-            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title={t('shareResult')}
+            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <ShareIcon size={18} />
           </button>
@@ -280,15 +292,15 @@ export const GameShell: Component<GameShellProps> = (props) => {
               sound.playPop(420);
               handleRestart();
             }}
-            title="リスタート"
-            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title={t('retryStage')}
+            class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <RotateCcwIcon size={18} />
           </button>
           <button
             onClick={toggleFullscreen}
-            title="全画面"
-            class="p-2 hidden sm:flex text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title="Fullscreen"
+            class="p-2 hidden sm:flex text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <MaximizeIcon size={18} />
           </button>
@@ -318,7 +330,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
           <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-3">
               <InfoIcon class="text-slate-600 dark:text-slate-300" size={20} />
-              {props.title} の遊び方
+              {localizedMeta().title} {t('howToPlay')}
             </h3>
             <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300 mb-6">
               {props.instructions.map((item, idx) => (
@@ -338,7 +350,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
               }}
               class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-medium shadow-2xs transition-all active:scale-95 cursor-pointer"
             >
-              閉じる
+              {t('close')}
             </button>
           </div>
         </div>
@@ -356,26 +368,26 @@ export const GameShell: Component<GameShellProps> = (props) => {
 
             <h2 class="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1">
               {props.isVictory
-                ? props.victoryTitle || 'ステージクリア！'
-                : props.gameOverTitle || 'ゲームオーバー'}
+                ? props.victoryTitle || t('victory')
+                : props.gameOverTitle || t('gameOver')}
             </h2>
 
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
               {props.isVictory
-                ? props.victoryMessage || '素晴らしい！見事クリアしました！'
-                : props.gameOverMessage || 'もう一度挑戦してみましょう！'}
+                ? props.victoryMessage || t('clearMessage')
+                : props.gameOverMessage || t('playAgain')}
             </p>
 
             <Show when={props.score !== undefined}>
               <div class="bg-slate-50 dark:bg-slate-800/80 rounded-2xl p-4 mb-5 border border-slate-200 dark:border-slate-700">
-                <div class="text-xs text-slate-500 dark:text-slate-400">最終スコア</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400">{t('finalScore')}</div>
                 <div class="text-3xl font-black text-slate-900 dark:text-white tracking-tight my-0.5">
                   {props.score}
                 </div>
                 <Show when={isNewRecord()}>
                   <div class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full mt-1">
                     <AwardIcon size={14} />
-                    新記録達成！
+                    {t('newRecord')}
                   </div>
                 </Show>
               </div>
@@ -390,7 +402,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
                   }}
                   class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 text-sm cursor-pointer"
                 >
-                  <span>{props.nextStageLabel || '次のステージへ進む →'}</span>
+                  <span>{props.nextStageLabel || t('nextStage')}</span>
                 </button>
               </Show>
               <button
@@ -398,7 +410,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
                 class="w-full py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2 text-xs cursor-pointer"
               >
                 <ShareIcon size={16} />
-                <span>{shareCopied() ? '共有リンクをコピーしました！' : '結果をシェアする'}</span>
+                <span>{shareCopied() ? t('shareCopied') : t('shareResult')}</span>
               </button>
               <button
                 onClick={() => {
@@ -408,14 +420,14 @@ export const GameShell: Component<GameShellProps> = (props) => {
                 class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2 text-xs cursor-pointer"
               >
                 <RotateCcwIcon size={16} />
-                このステージをもう一度
+                {t('retryStage')}
               </button>
               <Link
                 href="/"
                 onClick={() => sound.playPop(400)}
                 class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs"
               >
-                ゲーム一覧へ戻る
+                {t('backToList')}
               </Link>
             </div>
 
@@ -428,7 +440,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
       {/* 共有完了トースト通知 */}
       <Show when={shareCopied()}>
         <div class="fixed top-3 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 rounded-2xl shadow-xl border border-slate-700 text-xs font-bold animate-in fade-in duration-150">
-          共有リンクをクリップボードにコピーしました！
+          {t('shareCopied')}
         </div>
       </Show>
     </div>

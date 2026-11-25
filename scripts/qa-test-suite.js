@@ -324,6 +324,22 @@ assert(indexHtml.includes('<meta property="og:title"'), 'OpenGraph title tag exi
 assert(indexHtml.includes('<meta property="og:description"'), 'OpenGraph description tag exists');
 assert(indexHtml.includes('<link rel="icon"'), 'Favicon link exists');
 
+// -----------------------------------------------------------------------------
+// 18. 多言語対応 (i18n) & 全40タイトル翻訳網羅性QA
+// -----------------------------------------------------------------------------
+console.log('\n--- TEST SUITE 18: i18n & Full Localization QA ---');
+const i18nCode = fs.readFileSync('src/utils/i18n.ts', 'utf8');
+const gameTransCode = fs.readFileSync('src/utils/gameTranslations.ts', 'utf8');
+
+const targetLangs = ['ja', 'en', 'ru', 'ko', 'zh-CN', 'zh-TW'];
+for (const lang of targetLangs) {
+  assert(i18nCode.includes(`'${lang}'`) || i18nCode.includes(`${lang}:`), `i18n defines language '${lang}'`);
+}
+
+for (const expId of expectedIds) {
+  assert(gameTransCode.includes(`'${expId}':`), `Game '${expId}' translations defined in gameTranslations.ts`);
+}
+
 console.log('\n====================================================');
 console.log(`QA TEST SUMMARY: Passed: ${passedTests}, Failed: ${failedTests}`);
 console.log('====================================================');

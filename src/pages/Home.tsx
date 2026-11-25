@@ -15,6 +15,9 @@ import {
   SyncIcon,
   CheckIcon,
 } from '../components/Icons.tsx';
+import { LanguageSelector } from '../components/LanguageSelector.tsx';
+import { t } from '../utils/i18n.ts';
+import { getLocalizedGame } from '../utils/gameTranslations.ts';
 import { sound } from '../utils/sound.ts';
 import {
   loadAppData,
@@ -147,11 +150,15 @@ export const Home: Component = () => {
     const favs = appData().favorites;
 
     return GAMES.filter((g) => {
+      const loc = getLocalizedGame(g.id, g);
       const matchesSearch =
         !query ||
         g.title.toLowerCase().includes(query) ||
         g.titleJp.includes(query) ||
-        g.description.includes(query);
+        g.description.includes(query) ||
+        loc.title.toLowerCase().includes(query) ||
+        loc.titleSub.toLowerCase().includes(query) ||
+        loc.description.toLowerCase().includes(query);
 
       if (!matchesSearch) return false;
 
@@ -194,11 +201,11 @@ export const Home: Component = () => {
     sound.playPop(480);
     const success = importBackupJson(backupJsonText());
     if (success) {
-      setImportStatus('復元が完了しました！');
+      setImportStatus(t('importSuccess'));
       setAppData(loadAppData());
       setTimeout(() => setShowDataModal(false), 1200);
     } else {
-      setImportStatus('無効なJSONフォーマットです。');
+      setImportStatus(t('importInvalid'));
     }
   };
 
@@ -222,19 +229,21 @@ export const Home: Component = () => {
           </div>
 
           <div class="flex items-center gap-1 sm:gap-2">
+            <LanguageSelector />
+
             <button
               onClick={handleOpenDataModal}
-              title="端末同期 ＆ セーブデータ管理"
-              class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 shadow-2xs"
+              title={t('dataSync')}
+              class="px-2 sm:px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 shadow-2xs cursor-pointer"
             >
               <SyncIcon size={14} />
-              <span>端末同期</span>
+              <span class="hidden sm:inline">{t('dataSync')}</span>
             </button>
 
             <button
               onClick={toggleSound}
-              title={appData().settings.soundMuted ? 'ミュート解除' : 'ミュート'}
-              class="p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title={appData().settings.soundMuted ? t('soundUnmute') : t('soundMute')}
+              class="p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <Show when={appData().settings.soundMuted} fallback={<VolumeIcon size={20} />}>
                 <VolumeXIcon size={20} class="text-slate-400" />
@@ -243,8 +252,8 @@ export const Home: Component = () => {
 
             <button
               onClick={toggleTheme}
-              title={appData().settings.darkMode ? 'ライトモード' : 'ダークモード'}
-              class="p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title={appData().settings.darkMode ? t('themeLight') : t('themeDark')}
+              class="p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <Show when={appData().settings.darkMode} fallback={<MoonIcon size={20} />}>
                 <SunIcon size={20} class="text-amber-500" />
@@ -259,11 +268,11 @@ export const Home: Component = () => {
         {/* ヒーローセクション */}
         <section class="text-center py-6 sm:py-10 relative overflow-hidden">
           <h2 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
-            スキマ時間にすぐ遊べる、Webミニゲームポータル。
+            {t('heroTitle')}
           </h2>
 
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-8">
-            インストールの手間も会員登録も不要。QRコードでスマホともデータ同期できる、完全無料・登録不要の軽量ミニゲームコレクション。
+            {t('heroDesc')}
           </p>
 
           {/* 検索バー */}
@@ -275,7 +284,7 @@ export const Home: Component = () => {
               type="text"
               value={searchQuery()}
               onInput={(e) => setSearchQuery(e.currentTarget.value)}
-              placeholder="ゲーム名やジャンルで検索..."
+              placeholder={t('searchPlaceholder')}
               class="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600 shadow-2xs text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
             />
           </div>
@@ -283,15 +292,15 @@ export const Home: Component = () => {
           {/* カテゴリタブ */}
           <div class="flex items-center justify-center gap-1.5 flex-wrap">
             {[
-              { id: 'all', label: `すべて (${GAMES.length})` },
-              { id: 'ar', label: '📷 AR体感' },
-              { id: 'ai', label: 'ローカルAI' },
-              { id: 'board', label: 'ボード' },
-              { id: 'puzzle', label: 'パズル' },
-              { id: 'card', label: 'カード' },
-              { id: 'casual', label: 'カジュアル' },
-              { id: 'action', label: 'アクション' },
-              { id: 'favorite', label: 'お気に入り' },
+              { id: 'all', label: `${t('catAll')} (${GAMES.length})` },
+              { id: 'ar', label: t('catAr') },
+              { id: 'ai', label: t('catAi') },
+              { id: 'board', label: t('catBoard') },
+              { id: 'puzzle', label: t('catPuzzle') },
+              { id: 'card', label: t('catCard') },
+              { id: 'casual', label: t('catCasual') },
+              { id: 'action', label: t('catAction') },
+              { id: 'favorite', label: t('catFavorite') },
             ].map((tab) => (
               <button
                 onClick={() => {
@@ -319,7 +328,7 @@ export const Home: Component = () => {
             each={filteredGames()}
             fallback={
               <div class="col-span-full py-12 text-center text-slate-400 text-sm">
-                該当するゲームが見つかりませんでした。
+                {t('noGamesFound')}
               </div>
             }
           >
@@ -332,6 +341,7 @@ export const Home: Component = () => {
                   lastPlayedAt: 0,
                 };
               const isFav = () => appData().favorites.includes(game.id);
+              const loc = () => getLocalizedGame(game.id, game);
               const GameIcon = game.icon;
 
               return (
@@ -353,8 +363,8 @@ export const Home: Component = () => {
                         </Show>
                         <button
                           onClick={(e) => onToggleFav(game.id, e)}
-                          title="お気に入りに追加"
-                          class="p-1.5 text-slate-300 dark:text-slate-600 hover:text-red-500 transition-colors"
+                          title={t('addToFav')}
+                          class="p-1.5 text-slate-300 dark:text-slate-600 hover:text-red-500 transition-colors cursor-pointer"
                         >
                           <HeartIcon
                             size={18}
@@ -367,11 +377,11 @@ export const Home: Component = () => {
 
                     {/* タイトル & 説明 */}
                     <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
-                      {game.title}
+                      {loc().title}
                     </h3>
-                    <div class="text-xs text-slate-400 font-medium mb-2">{game.titleJp}</div>
+                    <div class="text-xs text-slate-400 font-medium mb-2">{loc().titleSub}</div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 mb-4">
-                      {game.description}
+                      {loc().description}
                     </p>
                   </div>
 
@@ -380,9 +390,9 @@ export const Home: Component = () => {
                     <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 py-2 border-t border-slate-100 dark:border-slate-800/80 mb-3">
                       <span class="flex items-center gap-1">
                         <AwardIcon size={14} class="text-amber-500" />
-                        最高: <strong class="text-slate-700 dark:text-slate-300">{stats().highScore}</strong>
+                        {t('highScore')}: <strong class="text-slate-700 dark:text-slate-300">{stats().highScore}</strong>
                       </span>
-                      <span>プレイ: {stats().playCount}回</span>
+                      <span>{t('playCount')}: {stats().playCount}{t('playTimes')}</span>
                     </div>
 
                     {/* プレイボタン */}
@@ -392,7 +402,7 @@ export const Home: Component = () => {
                       class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs active:scale-98 transition-all"
                     >
                       <PlayIcon size={14} />
-                      <span>今すぐ遊ぶ</span>
+                      <span>{t('playNow')}</span>
                     </Link>
                   </div>
                 </div>
@@ -411,30 +421,30 @@ export const Home: Component = () => {
           <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95">
             <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
               <SyncIcon size={20} class="text-slate-700 dark:text-slate-300" />
-              <span>端末間セーブデータ同期</span>
+              <span>{t('syncTitle')}</span>
             </h3>
 
             {/* モーダル内タブ */}
             <div class="flex border-b border-slate-200 dark:border-slate-800 mb-4">
               <button
                 onClick={() => setModalTab('qr')}
-                class={`flex-1 py-2 text-xs font-bold transition-all border-b-2 ${
+                class={`flex-1 py-2 text-xs font-bold transition-all border-b-2 cursor-pointer ${
                   modalTab() === 'qr'
                     ? 'border-slate-900 text-slate-900 dark:border-slate-100 dark:text-white'
                     : 'border-transparent text-slate-400 hover:text-slate-600'
                 }`}
               >
-                QRコードで同期 (おすすめ)
+                {t('syncQrTabRecommend')}
               </button>
               <button
                 onClick={() => setModalTab('json')}
-                class={`flex-1 py-2 text-xs font-bold transition-all border-b-2 ${
+                class={`flex-1 py-2 text-xs font-bold transition-all border-b-2 cursor-pointer ${
                   modalTab() === 'json'
                     ? 'border-slate-900 text-slate-900 dark:border-slate-100 dark:text-white'
                     : 'border-transparent text-slate-400 hover:text-slate-600'
                 }`}
               >
-                JSONファイル保存 / 復元
+                {t('syncJsonTab')}
               </button>
             </div>
 
@@ -442,22 +452,22 @@ export const Home: Component = () => {
             <Show when={modalTab() === 'qr'}>
               <div class="text-center flex flex-col items-center">
                 <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  スマートフォンのカメラで以下のQRコードを読み取るだけで、現在のハイスコアやお気に入りが即座に引き継がれます。
+                  {t('qrInstruction')}
                 </p>
 
                 <Show when={qrCodeDataUrl()} fallback={<div class="w-48 h-48 bg-slate-100 animate-pulse rounded-2xl mb-4" />}>
                   <div class="p-3 bg-white rounded-2xl shadow-sm border border-slate-200 mb-4">
-                    <img src={qrCodeDataUrl()} alt="セーブデータ同期用QRコード" class="w-48 h-48 block mx-auto" />
+                    <img src={qrCodeDataUrl()} alt="QR Code" class="w-48 h-48 block mx-auto" />
                   </div>
                 </Show>
 
                 <button
                   onClick={handleCopySyncUrl}
-                  class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs mb-3 transition-all flex items-center justify-center gap-1.5"
+                  class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs mb-3 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Show when={copyStatus()} fallback={<span>同期用URLをコピー</span>}>
+                  <Show when={copyStatus()} fallback={<span>{t('copySyncUrl')}</span>}>
                     <CheckIcon size={14} class="text-emerald-600" />
-                    <span>同期用URLをコピーしました</span>
+                    <span>{t('copySyncUrlDone')}</span>
                   </Show>
                 </button>
               </div>
@@ -467,12 +477,13 @@ export const Home: Component = () => {
             <Show when={modalTab() === 'json'}>
               <div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                  セーブデータの手動バックアップやテキストでの引き継ぎ用です。
+                  {t('exportDesc')}
                 </p>
                 <textarea
                   rows={6}
                   value={backupJsonText()}
                   onInput={(e) => setBackupJsonText(e.currentTarget.value)}
+                  placeholder={t('importPlaceholder')}
                   class="w-full font-mono text-[11px] p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400 mb-2"
                 />
                 <Show when={importStatus()}>
@@ -480,9 +491,9 @@ export const Home: Component = () => {
                 </Show>
                 <button
                   onClick={handleImportJson}
-                  class="w-full py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white font-semibold text-xs mb-3"
+                  class="w-full py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white font-semibold text-xs mb-3 cursor-pointer"
                 >
-                  JSONテキストから復元
+                  {t('importJson')}
                 </button>
               </div>
             </Show>
@@ -492,9 +503,9 @@ export const Home: Component = () => {
                 sound.playPop(420);
                 setShowDataModal(false);
               }}
-              class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
             >
-              閉じる
+              {t('close')}
             </button>
           </div>
         </div>
@@ -508,26 +519,24 @@ export const Home: Component = () => {
               <SyncIcon size={24} />
             </div>
             <h3 class="text-lg font-black text-slate-900 dark:text-white mb-1">
-              別端末のデータが見つかりました
+              {t('syncFoundTitle')}
             </h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
-              QRコードまたは共有リンクからセーブデータを受信しました。<br />
-              現在の記録と統合して同期しますか？<br />
-              （※ハイスコアは高い方がキープされます）
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed whitespace-pre-line">
+              {t('syncFoundDesc')}
             </p>
 
             <div class="flex flex-col gap-2">
               <button
                 onClick={acceptSync}
-                class="w-full py-3 rounded-xl bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white font-bold text-xs shadow-xs active:scale-95 transition-all"
+                class="w-full py-3 rounded-xl bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white font-bold text-xs shadow-xs active:scale-95 transition-all cursor-pointer"
               >
-                データを統合して同期する
+                {t('syncAccept')}
               </button>
               <button
                 onClick={() => setPendingSyncData(null)}
-                class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-500 text-xs font-semibold"
+                class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-500 text-xs font-semibold cursor-pointer"
               >
-                キャンセル
+                {t('cancel')}
               </button>
             </div>
           </div>

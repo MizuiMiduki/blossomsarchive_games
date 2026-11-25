@@ -1270,3 +1270,23 @@ export const WordWolfRoomIcon: Component<IconProps> = (props) => (
     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
   </svg>
 );
+
+export const GlobeIcon: Component<IconProps> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={props.size || 20}
+    height={props.size || 20}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={props.class}
+    {...props}
+  >
+    <circle cx="12" cy="12" r="10" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </svg>
+);
