@@ -328,10 +328,13 @@ export const GameShell: Component<GameShellProps> = (props) => {
       <Show when={showHelp()}>
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-2xs p-4">
           <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
-            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-3">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-2">
               <InfoIcon class="text-slate-600 dark:text-slate-300" size={20} />
               {localizedMeta().title} {t('howToPlay')}
             </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+              {localizedMeta().description}
+            </p>
             <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300 mb-6">
               {props.instructions.map((item, idx) => (
                 <li class="flex items-start gap-2">

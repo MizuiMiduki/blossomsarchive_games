@@ -1,9 +1,10 @@
-import { SupportedLang } from './i18n.ts';
+import { getLang, SupportedLang } from './i18n.ts';
 
 export interface LocalizedGameMeta {
   title: string;
   titleSub?: string;
   description: string;
+  instructions?: string[];
 }
 
 export const GAME_TRANSLATIONS: Record<string, Record<SupportedLang, LocalizedGameMeta>> = {
@@ -329,8 +330,11 @@ export const GAME_TRANSLATIONS: Record<string, Record<SupportedLang, LocalizedGa
   },
 };
 
-export function getLocalizedGame(id: string, defaultMeta: { title: string; titleJp: string; description: string }): { title: string; titleSub: string; description: string } {
-  const lang = (typeof window !== 'undefined' ? localStorage.getItem('blossomsarchive_games_lang') as SupportedLang : null) || 'ja';
+export function getLocalizedGame(
+  id: string,
+  defaultMeta: { title: string; titleJp: string; description: string }
+): { title: string; titleSub: string; description: string; instructions?: string[] } {
+  const lang = getLang();
   const entry = GAME_TRANSLATIONS[id]?.[lang] || GAME_TRANSLATIONS[id]?.ja;
   if (!entry) {
     return {
@@ -343,5 +347,6 @@ export function getLocalizedGame(id: string, defaultMeta: { title: string; title
     title: entry.title,
     titleSub: entry.titleSub || defaultMeta.titleJp,
     description: entry.description,
+    instructions: entry.instructions,
   };
 }
