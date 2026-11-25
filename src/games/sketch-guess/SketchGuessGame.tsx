@@ -412,6 +412,7 @@ export const SketchGuessGame: Component = () => {
                 <input
                   type="text"
                   readonly
+                  aria-label="生成された招待コード"
                   value={roomCode()}
                   class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-pink-300 select-all"
                 />
@@ -438,6 +439,7 @@ export const SketchGuessGame: Component = () => {
               <input
                 type="text"
                 placeholder="相手の応答コードを貼り付け"
+                aria-label="相手の応答コード入力"
                 value={inputCode()}
                 onInput={(e) => setInputCode(e.currentTarget.value)}
                 class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-white"
@@ -459,6 +461,7 @@ export const SketchGuessGame: Component = () => {
               <input
                 type="text"
                 placeholder="ホストの招待コード"
+                aria-label="ホストの招待コード入力"
                 value={inputCode()}
                 onInput={(e) => setInputCode(e.currentTarget.value)}
                 class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-white"
@@ -485,6 +488,7 @@ export const SketchGuessGame: Component = () => {
                 <input
                   type="text"
                   readonly
+                  aria-label="生成された応答コード"
                   value={roomCode()}
                   class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-pink-300 select-all"
                 />
@@ -651,6 +655,7 @@ export const SketchGuessGame: Component = () => {
                 <input
                   type="text"
                   placeholder={isDrawer() ? '描く番です' : 'お題をひらがな等で入力...'}
+                  aria-label={isDrawer() ? '描く番です' : 'お題の回答入力 (ひらがな等)'}
                   disabled={isDrawer() || roundEnded()}
                   value={guessInput()}
                   onInput={(e) => setGuessInput(e.currentTarget.value)}

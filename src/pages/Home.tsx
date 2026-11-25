@@ -496,6 +496,7 @@ export const Home: Component = () => {
                   value={backupJsonText()}
                   onInput={(e) => setBackupJsonText(e.currentTarget.value)}
                   placeholder={t('importPlaceholder')}
+                  aria-label={t('importPlaceholder')}
                   class="w-full font-mono text-[11px] p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400 mb-2"
                 />
                 <Show when={importStatus()}>

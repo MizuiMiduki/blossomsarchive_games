@@ -592,6 +592,7 @@ export const AiDetectiveGame: Component = () => {
               <input
                 type="text"
                 placeholder="質問を入力 (例: 金属でできていますか？)..."
+                aria-label="質問入力 (例: 金属でできていますか？)"
                 value={questionInput()}
                 onInput={(e) => setQuestionInput(e.currentTarget.value)}
                 disabled={isThinking()}
@@ -625,6 +626,7 @@ export const AiDetectiveGame: Component = () => {
               <input
                 type="text"
                 placeholder="例: 猫, スマートフォン..."
+                aria-label="正体の推理答え入力 (例: 猫, スマートフォン)"
                 value={guessInput()}
                 onInput={(e) => setGuessInput(e.currentTarget.value)}
                 onKeyDown={(e) => {

@@ -260,7 +260,7 @@ export const BlossomLifeGame: Component = () => {
                 class={`px-3 py-1 rounded-lg font-semibold transition-all ${
                   brushMode() === 'draw'
                     ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
-                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 配置
@@ -273,7 +273,7 @@ export const BlossomLifeGame: Component = () => {
                 class={`px-3 py-1 rounded-lg font-semibold transition-all ${
                   brushMode() === 'erase'
                     ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
-                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 消去
@@ -319,6 +319,7 @@ export const BlossomLifeGame: Component = () => {
               onChange={(e) => {
                 setSpeedMs(Number(e.currentTarget.value));
               }}
+              aria-label="シミュレーション速度"
               class="bg-slate-800 text-white text-[11px] rounded-lg px-1.5 py-0.5 border border-slate-700 focus:outline-none cursor-pointer"
             >
               <option value="200">0.5x</option>

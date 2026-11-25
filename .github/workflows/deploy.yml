@@ -156,13 +156,13 @@ jobs:
         run: |
           npm run indexnow || echo "⚠️ IndexNow notification failed or was rate-limited (non-fatal)"
 
-  # ─── 4. Lighthouse 並列分散監査 (4シャード均等分散で高速並列実行) ───
+  # ─── 4. Lighthouse 並列分散監査 (8シャード均等分散で超高速並列実行) ───
   lighthouse-audit:
     needs: [build]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
       fail-fast: false
     steps:
       - name: Checkout repository
@@ -200,7 +200,7 @@ jobs:
       - name: Run Sharded Lighthouse Audit
         run: |
           export PATH="/home/runner/.npm-global/bin:$PATH"
-          npx tsx scripts/audit-lighthouse.ts --shard=${{ matrix.shard }}/4 --report-json=dist-reports/shard-${{ matrix.shard }}.json
+          npx tsx scripts/audit-lighthouse.ts --shard=${{ matrix.shard }}/8 --report-json=dist-reports/shard-${{ matrix.shard }}.json
 
       - name: Upload Shard Report
         uses: actions/upload-artifact@v4
@@ -246,12 +246,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TZ: 'Asia/Tokyo'
         run: |
-          OLD_ISSUES=$(gh issue list --state open --limit 100 --json number,title --jq '.[] | select(.title | startswith("[PageSpeed Alert]")) | .number')
+          echo "⚠️ PageSpeed regressions detected. Updating issues..."
+          OLD_ISSUES=$(gh issue list --state open --limit 100 --json number,title --jq '.[] | select(.title | startswith("[PageSpeed Alert]")) | .number' 2>/dev/null || echo "")
           NEW_URL=$(gh issue create \
             --title "[PageSpeed Alert] Lighthouse スコア退行を検出しました ($(TZ='Asia/Tokyo' date +'%Y-%m-%d %H:%M'))" \
-            --body-file dist/lighthouse-issue.md)
+            --body-file dist/lighthouse-issue.md 2>&1 || echo "failed_to_create_issue")
           for NUM in $OLD_ISSUES; do
-            gh issue close "$NUM" --comment "🔄 新しい監査結果 ($NEW_URL) に更新されたため、古いレポートを自動クローズしました。"
+            [ -n "$NUM" ] && gh issue close "$NUM" --comment "🔄 新しい監査結果 ($NEW_URL) に更新されたため、古いレポートを自動クローズしました。" 2>/dev/null || true
           done
 
       - name: Close Resolved PageSpeed Issues
@@ -259,6 +260,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for NUM in $(gh issue list --state open --limit 100 --json number,title --jq '.[] | select(.title | startswith("[PageSpeed Alert]")) | .number'); do
-            gh issue close "$NUM" --comment "✅ 最新のCI監査にて全40ゲーム（ライト/ダーク×モバイル/デスクトップ）で Lighthouse 監査基準クリアを確認したため、古いIssueを自動クローズしました。"
+          echo "🎉 All Lighthouse audits passed criteria (>= 95). Resolving any open regression alerts..."
+          for NUM in $(gh issue list --state open --limit 100 --json number,title --jq '.[] | select(.title | startswith("[PageSpeed Alert]")) | .number' 2>/dev/null || echo ""); do
+            [ -n "$NUM" ] && gh issue close "$NUM" --comment "✅ 最新のCI監査にて全40ゲーム（ライト/ダーク×モバイル/デスクトップ）で Lighthouse 監査基準クリアを確認したため、古いIssueを自動クローズしました。" 2>/dev/null || true
           done

@@ -223,6 +223,7 @@ export const SpeedTypingGame: Component = () => {
               autocapitalize="off"
               autocomplete="off"
               spellcheck={false}
+              aria-label="タイピング入力フィールド"
               value={inputVal()}
               onInput={handleMobileInput}
               class="w-full max-w-sm bg-slate-100 dark:bg-slate-800 border-2 border-indigo-400 rounded-xl px-4 py-2.5 text-center text-sm font-mono text-slate-900 dark:text-white focus:outline-hidden"

@@ -342,6 +342,7 @@ export const AiCourtroomGame: Component = () => {
             <input
               type="text"
               placeholder="検察の主張に対する反論・アリバイ・物証の疑義を入力..."
+              aria-label="検察の主張に対する反論・アリバイ・物証の疑義を入力"
               value={inputText()}
               onInput={(e) => setInputText(e.currentTarget.value)}
               onFocus={() => {

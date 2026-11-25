@@ -336,6 +336,7 @@ COMMENT: 奇想天外な回答ですが、筋が通っており度胸を感じ�
                 <input
                   type="text"
                   placeholder="あなたの回答を入力（説得力・ユーモア・熱意）..."
+                  aria-label="あなたの面接回答入力（説得力・ユーモア・熱意）"
                   value={inputText()}
                   onInput={(e) => setInputText(e.currentTarget.value)}
                   onKeyDown={(e) => {

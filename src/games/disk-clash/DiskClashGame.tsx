@@ -465,6 +465,7 @@ export const DiskClashGame: Component = () => {
               <input
                 type="text"
                 placeholder="相手の応答コードを貼り付け..."
+                aria-label="相手の応答コード入力"
                 value={inputCode()}
                 onInput={(e) => setInputCode(e.currentTarget.value)}
                 class="w-full p-2 bg-slate-100 dark:bg-slate-800 border rounded-xl"
@@ -478,6 +479,7 @@ export const DiskClashGame: Component = () => {
               <input
                 type="text"
                 placeholder="届いた招待コードを貼り付け..."
+                aria-label="届いた招待コード入力"
                 value={inputCode()}
                 onInput={(e) => setInputCode(e.currentTarget.value)}
                 class="w-full p-2 bg-slate-100 dark:bg-slate-800 border rounded-xl"

@@ -358,6 +358,7 @@ export const AiJailbreakGame: Component = () => {
                 <input
                   type="text"
                   placeholder="AIへの説得・命令・誘導メッセージを入力..."
+                  aria-label="AIへの説得・命令・誘導メッセージ入力"
                   value={inputText()}
                   onInput={(e) => setInputText(e.currentTarget.value)}
                   onFocus={() => {

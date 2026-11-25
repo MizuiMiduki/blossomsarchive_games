@@ -612,6 +612,7 @@ export const MiniShogiGame: Component = () => {
                   <input
                     type="text"
                     placeholder="応答コードを貼り付け..."
+                    aria-label="相手からの応答コード入力"
                     value={hostInputAnswer()}
                     onInput={(e) => setHostInputAnswer(e.currentTarget.value)}
                     class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-xs"
@@ -635,6 +636,7 @@ export const MiniShogiGame: Component = () => {
                     <input
                       type="text"
                       placeholder="招待コードを貼り付け..."
+                      aria-label="ホストの招待コード入力"
                       value={guestInputOffer()}
                       onInput={(e) => setGuestInputOffer(e.currentTarget.value)}
                       class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-xs"

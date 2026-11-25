@@ -1203,6 +1203,7 @@ export const RoomEscapeGame: Component = () => {
               <input
                 type="text"
                 placeholder="パスワードを入力..."
+                aria-label="研究端末の認証パスワード入力"
                 value={labPcInput()}
                 onInput={(e) => setLabPcInput(e.currentTarget.value)}
                 class="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-xl text-sm mb-4 font-mono text-center"

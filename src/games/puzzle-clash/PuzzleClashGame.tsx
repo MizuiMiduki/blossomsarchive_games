@@ -790,6 +790,7 @@ export const PuzzleClashGame: Component = () => {
               <input
                 type="text"
                 readonly
+                aria-label="生成された招待コード"
                 value={isGenerating() ? '⏳ 招待コードを生成中...' : roomCode()}
                 placeholder="招待コードがここに表示されます"
                 class={`flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono select-all ${
@@ -817,6 +818,7 @@ export const PuzzleClashGame: Component = () => {
               <input
                 type="text"
                 placeholder="相手の応答コードを貼り付け"
+                aria-label="相手の応答コード入力"
                 value={inputCode()}
                 onInput={(e) => setInputCode(e.currentTarget.value)}
                 class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-white"
@@ -838,6 +840,7 @@ export const PuzzleClashGame: Component = () => {
               <input
                 type="text"
                 placeholder="ホストの招待コード"
+                aria-label="ホストの招待コード入力"
                 value={inputCode()}
                 onInput={(e) => setInputCode(e.currentTarget.value)}
                 class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-white"
@@ -858,6 +861,7 @@ export const PuzzleClashGame: Component = () => {
                 <input
                   type="text"
                   readonly
+                  aria-label="生成された応答コード"
                   value={roomCode()}
                   class="flex-1 bg-slate-950 border border-slate-700 px-3 py-2 rounded-lg text-xs font-mono text-cyan-300 select-all"
                 />

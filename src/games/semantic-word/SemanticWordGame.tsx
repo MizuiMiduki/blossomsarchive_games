@@ -305,6 +305,7 @@ export const SemanticWordGame: Component = () => {
             <input
               type="text"
               placeholder="連想する単語を入力 (例: 空, 赤, 太陽)..."
+              aria-label="連想する単語入力 (例: 空, 赤, 太陽)"
               value={inputText()}
               onInput={(e) => setInputText(e.currentTarget.value)}
               onFocus={() => {

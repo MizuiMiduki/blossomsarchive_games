@@ -956,6 +956,7 @@ export const AiWordWolfGame: Component = () => {
               <input
                 type="text"
                 disabled={!!thinkingPlayer()}
+                aria-label="自分のお題についての発言入力"
                 placeholder={
                   thinkingPlayer()
                     ? `⏳ ${thinkingPlayer()?.name}の思考を待っています...`

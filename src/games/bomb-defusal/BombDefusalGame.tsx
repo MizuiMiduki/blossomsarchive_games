@@ -365,6 +365,7 @@ export const BombDefusalGame: Component = () => {
             </h3>
             <textarea
               readonly
+              aria-label="ホスト招待コード"
               value={offerCode()}
               class="w-full h-20 p-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-[10px] font-mono break-all mb-2"
             />
@@ -384,6 +385,7 @@ export const BombDefusalGame: Component = () => {
             <input
               type="text"
               placeholder="相手から届いた応答コードを貼り付け..."
+              aria-label="相手から届いた応答コード入力"
               value={inputCode()}
               onInput={(e) => setInputCode(e.currentTarget.value)}
               class="w-full p-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs mb-2"
@@ -405,6 +407,7 @@ export const BombDefusalGame: Component = () => {
             </h3>
             <textarea
               placeholder="招待コードを貼り付け..."
+              aria-label="ホストの招待コード貼り付け"
               value={inputCode()}
               onInput={(e) => setInputCode(e.currentTarget.value)}
               class="w-full h-24 p-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-[10px] font-mono break-all mb-3"
@@ -425,6 +428,7 @@ export const BombDefusalGame: Component = () => {
             </h3>
             <textarea
               readonly
+              aria-label="生成された応答コード"
               value={answerCode()}
               class="w-full h-24 p-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-[10px] font-mono break-all mb-3"
             />

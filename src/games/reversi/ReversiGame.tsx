@@ -517,6 +517,7 @@ export const ReversiGame: Component = () => {
               <input
                 type="text"
                 placeholder="応答コードを貼り付け..."
+                aria-label="相手から届いた応答コード入力"
                 value={hostInputAnswer()}
                 onInput={(e) => setHostInputAnswer(e.currentTarget.value)}
                 class="w-full p-2 text-[11px] rounded-lg border border-slate-200 dark:border-slate-700 font-mono"
@@ -537,6 +538,7 @@ export const ReversiGame: Component = () => {
               <textarea
                 rows={3}
                 placeholder="ホストから貰った招待コードを貼り付け..."
+                aria-label="ホストから貰った招待コード入力"
                 value={guestInputOffer()}
                 onInput={(e) => setGuestInputOffer(e.currentTarget.value)}
                 class="w-full p-2 text-[11px] rounded-lg border border-slate-200 dark:border-slate-700 font-mono"
