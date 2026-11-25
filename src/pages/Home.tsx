@@ -145,7 +145,7 @@ export const Home: Component = () => {
 
   // フィルタリング処理
   const filteredGames = createMemo(() => {
-    const lang = getLang(); // 明示的に言語シグナルを購読
+    getLang(); // 言語シグナルを購読
     const query = searchQuery().toLowerCase().trim();
     const cat = selectedCategory();
     const favs = appData().favorites;
@@ -166,17 +166,21 @@ export const Home: Component = () => {
       if (cat === 'all') return true;
       if (cat === 'favorite') return favs.includes(g.id);
       return g.category === cat;
-    }).map((g) => {
-      const loc = getLocalizedGame(g.id, g);
-      return {
-        ...g,
-        _lang: lang,
-        localizedTitle: loc.title,
-        localizedSub: loc.titleSub,
-        localizedDesc: loc.description,
-      };
     });
   });
+
+  // カテゴリタブの多言語リアクティブ対応
+  const categoryTabs = createMemo(() => [
+    { id: 'all' as const, label: `${t('catAll')} (${GAMES.length})` },
+    { id: 'ar' as const, label: t('catAr') },
+    { id: 'ai' as const, label: t('catAi') },
+    { id: 'board' as const, label: t('catBoard') },
+    { id: 'puzzle' as const, label: t('catPuzzle') },
+    { id: 'card' as const, label: t('catCard') },
+    { id: 'casual' as const, label: t('catCasual') },
+    { id: 'action' as const, label: t('catAction') },
+    { id: 'favorite' as const, label: t('catFavorite') },
+  ]);
 
   // データ同期モーダルを開く
   const handleOpenDataModal = async () => {
@@ -301,31 +305,23 @@ export const Home: Component = () => {
 
           {/* カテゴリタブ */}
           <div class="flex items-center justify-center gap-1.5 flex-wrap">
-            {[
-              { id: 'all', label: `${t('catAll')} (${GAMES.length})` },
-              { id: 'ar', label: t('catAr') },
-              { id: 'ai', label: t('catAi') },
-              { id: 'board', label: t('catBoard') },
-              { id: 'puzzle', label: t('catPuzzle') },
-              { id: 'card', label: t('catCard') },
-              { id: 'casual', label: t('catCasual') },
-              { id: 'action', label: t('catAction') },
-              { id: 'favorite', label: t('catFavorite') },
-            ].map((tab) => (
-              <button
-                onClick={() => {
-                  sound.playPop(460);
-                  setSelectedCategory(tab.id as typeof selectedCategory extends () => infer R ? R : never);
-                }}
-                class={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                  selectedCategory() === tab.id
-                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
-                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            <For each={categoryTabs()}>
+              {(tab) => (
+                <button
+                  onClick={() => {
+                    sound.playPop(460);
+                    setSelectedCategory(tab.id);
+                  }}
+                  class={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    selectedCategory() === tab.id
+                      ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xs'
+                      : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              )}
+            </For>
           </div>
         </section>
 
@@ -386,11 +382,13 @@ export const Home: Component = () => {
 
                     {/* タイトル & 説明 */}
                     <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
-                      {game.localizedTitle}
+                      {getLocalizedGame(game.id, game).title}
                     </h3>
-                    <div class="text-xs text-slate-400 font-medium mb-2">{game.localizedSub}</div>
+                    <div class="text-xs text-slate-400 font-medium mb-2">
+                      {getLocalizedGame(game.id, game).titleSub}
+                    </div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 mb-4">
-                      {game.localizedDesc}
+                      {getLocalizedGame(game.id, game).description}
                     </p>
                   </div>
 

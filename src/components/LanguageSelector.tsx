@@ -27,8 +27,9 @@ export const LanguageSelector: Component<{ class?: string }> = (props) => {
         newPath = restSegments.length > 0 ? `/${code}/${restSegments.join('/')}` : `/${code}`;
       }
 
+      const targetUrl = newPath + window.location.search;
       if (window.location.pathname !== newPath) {
-        window.history.replaceState(null, '', newPath + window.location.search);
+        window.location.href = targetUrl;
       }
     }
   };
