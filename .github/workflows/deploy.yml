@@ -44,7 +44,13 @@ jobs:
           npm test &
           PID_TEST=$!
           wait $PID_TYPE
+          STATUS_TYPE=$?
           wait $PID_TEST
+          STATUS_TEST=$?
+          if [ $STATUS_TYPE -ne 0 ] || [ $STATUS_TEST -ne 0 ]; then
+            echo "❌ Quality check failed (type-check: $STATUS_TYPE, tests: $STATUS_TEST)"
+            exit 1
+          fi
 
   # ─── 2. 本番ビルド (quality-gateと並行実行) ───
   build:
@@ -71,6 +77,9 @@ jobs:
           npm run build
           # SPA用 404フォールバック
           cp dist/index.html dist/404.html
+
+      - name: Verify Post-Build Production Assets
+        run: npm test
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4

@@ -35,7 +35,15 @@ jobs:
           npm test &
           PID_TEST=$!
           wait $PID_TYPE
+          STATUS_TYPE=$?
           wait $PID_TEST
+          STATUS_TEST=$?
+          if [ $STATUS_TYPE -ne 0 ] || [ $STATUS_TEST -ne 0 ]; then
+            echo "❌ Quality check failed (type-check: $STATUS_TYPE, tests: $STATUS_TEST)"
+            exit 1
+          fi
 
-      - name: Verify Production Build
-        run: npm run build
+      - name: Verify Production Build & Route Assets
+        run: |
+          npm run build
+          npm test
