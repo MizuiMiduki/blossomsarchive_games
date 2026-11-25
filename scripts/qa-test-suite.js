@@ -381,7 +381,21 @@ const notifyScriptCode = fs.readFileSync('scripts/notify-indexnow.ts', 'utf8');
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
 assert(indexnowConfigCode.includes('DEFAULT_INDEXNOW_KEY') && indexnowConfigCode.includes('INDEXNOW_KEY'), 'indexnow-config.ts defines API key constants');
-assert(notifyScriptCode.includes('api.indexnow.org') && notifyScriptCode.includes('bing.com/indexnow'), 'notify-indexnow.ts targets valid search engine endpoints');
+
+// CodeQL 準拠: URL パースによるホスト名厳密検証
+const matchedEndpoints = [...notifyScriptCode.matchAll(/['"](https:\/\/[^'"]+)['"]/g)].map((m) => m[1]);
+const endpointHostnames = new Set(
+  matchedEndpoints.map((u) => {
+    try {
+      return new URL(u).hostname;
+    } catch {
+      return '';
+    }
+  })
+);
+const hasValidEndpoints = endpointHostnames.has('api.indexnow.org') && endpointHostnames.has('www.bing.com');
+assert(hasValidEndpoints, 'notify-indexnow.ts targets valid search engine endpoints');
+
 assert(packageJson.scripts && packageJson.scripts.indexnow, 'package.json contains "indexnow" script');
 
 // キー仕様の適合性チェック (8〜128文字英数字)

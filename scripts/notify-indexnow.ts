@@ -52,7 +52,18 @@ async function main() {
   const args = process.argv.slice(2);
   const isDryRun = args.includes('--dry-run');
 
-  const customUrls = args.filter((a) => a.startsWith('http://') || a.startsWith('https://'));
+  const customUrls = args
+    .map((arg) => {
+      try {
+        const parsed = new URL(arg);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+          return parsed.toString();
+        }
+      } catch {}
+      return null;
+    })
+    .filter((u): u is string => u !== null);
+
   const targetUrls = customUrls.length > 0 ? customUrls : extractUrlsFromSitemap();
 
   const keyLocation = `${SITE_URL}/${INDEXNOW_KEY}.txt`;
