@@ -16,7 +16,7 @@ import {
   ShareIcon,
 } from './Icons.tsx';
 import { sound } from '../utils/sound.ts';
-import { t } from '../utils/i18n.ts';
+import { t, getLang, getDefaultInstructions } from '../utils/i18n.ts';
 import { LanguageSelector } from './LanguageSelector.tsx';
 import { getLocalizedGame } from '../utils/gameTranslations.ts';
 import {
@@ -332,18 +332,36 @@ export const GameShell: Component<GameShellProps> = (props) => {
               <InfoIcon class="text-slate-600 dark:text-slate-300" size={20} />
               {localizedMeta().title} {t('howToPlay')}
             </h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
-              {localizedMeta().description}
-            </p>
+
+            {/* ゲーム概要説明 */}
+            <div class="bg-slate-50 dark:bg-slate-800/80 p-3 rounded-xl border border-slate-100 dark:border-slate-700/60 mb-4">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                {t('gameOverview')}
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                {localizedMeta().description}
+              </p>
+            </div>
+
+            {/* 操作・ルール手順リスト */}
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+              {t('rulesHeader')}
+            </div>
             <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300 mb-6">
-              {props.instructions.map((item, idx) => (
-                <li class="flex items-start gap-2">
-                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold shrink-0 mt-0.5">
-                    {idx + 1}
-                  </span>
-                  <span>{item}</span>
-                </li>
-              ))}
+              {(() => {
+                const lang = getLang();
+                const meta = localizedMeta();
+                const customInstructions = meta.instructions && meta.instructions.length > 0 ? meta.instructions : null;
+                const items = customInstructions || (lang === 'ja' ? props.instructions : getDefaultInstructions(lang));
+                return items.map((item, idx) => (
+                  <li class="flex items-start gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <span class="text-xs leading-relaxed">{item}</span>
+                  </li>
+                ));
+              })()}
             </ul>
             <AdSense class="my-3 min-h-[100px]" />
             <button

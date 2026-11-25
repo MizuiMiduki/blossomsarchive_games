@@ -155,6 +155,8 @@ export const UI_STRINGS: Record<SupportedLang, Record<string, string>> = {
     copySuccess: 'クリップボードにコピーしました！',
     importSuccess: 'データの復元が完了しました！',
     importInvalid: '無効なJSONフォーマットです。',
+    gameOverview: 'ゲームの概要',
+    rulesHeader: '操作とルール',
     syncQrTabRecommend: 'QRコードで同期 (おすすめ)',
     syncJsonTab: 'JSONファイル保存 / 復元',
     copySyncUrl: '同期用URLをコピー',
@@ -223,6 +225,8 @@ export const UI_STRINGS: Record<SupportedLang, Record<string, string>> = {
     copySuccess: 'Copied to clipboard!',
     importSuccess: 'Save data restored successfully!',
     importInvalid: 'Invalid JSON format.',
+    gameOverview: 'Game Overview',
+    rulesHeader: 'Controls & Rules',
     syncQrTabRecommend: 'Sync via QR Code (Recommended)',
     syncJsonTab: 'JSON Save / Restore',
     copySyncUrl: 'Copy Sync URL',
@@ -291,6 +295,8 @@ export const UI_STRINGS: Record<SupportedLang, Record<string, string>> = {
     copySuccess: 'Скопировано в буфер обмена!',
     importSuccess: 'Данные успешно восстановлены!',
     importInvalid: 'Неверный формат JSON.',
+    gameOverview: 'Об игре',
+    rulesHeader: 'Управление и правила',
     syncQrTabRecommend: 'Синхронизация по QR-коду (Рекомендуется)',
     syncJsonTab: 'Сохранение / Восстановление JSON',
     copySyncUrl: 'Скопировать ссылку для синхронизации',
@@ -359,6 +365,8 @@ export const UI_STRINGS: Record<SupportedLang, Record<string, string>> = {
     copySuccess: '클립보드에 복사되었습니다!',
     importSuccess: '데이터 복원이 완료되었습니다!',
     importInvalid: '유효하지 않은 JSON 형식입니다.',
+    gameOverview: '게임 개요',
+    rulesHeader: '조작 및 규칙',
     syncQrTabRecommend: 'QR 코드로 동기화 (추천)',
     syncJsonTab: 'JSON 파일 저장 / 복원',
     copySyncUrl: '동기화 URL 복사',
@@ -427,6 +435,8 @@ export const UI_STRINGS: Record<SupportedLang, Record<string, string>> = {
     copySuccess: '已成功复制到剪贴板！',
     importSuccess: '数据恢复成功！',
     importInvalid: '无效的 JSON 格式。',
+    gameOverview: '游戏简介',
+    rulesHeader: '操作与规则',
     syncQrTabRecommend: '扫描二维码同步 (推荐)',
     syncJsonTab: 'JSON 文件备份 / 恢复',
     copySyncUrl: '复制同步链接',
@@ -495,6 +505,8 @@ export const UI_STRINGS: Record<SupportedLang, Record<string, string>> = {
     copySuccess: '已成功複製到剪貼簿！',
     importSuccess: '資料還原成功！',
     importInvalid: '無效的 JSON 格式。',
+    gameOverview: '遊戲簡介',
+    rulesHeader: '操作與規則',
     syncQrTabRecommend: '掃描 QR Code 同步 (推薦)',
     syncJsonTab: 'JSON 檔案備份 / 還原',
     copySyncUrl: '複製同步連結',
@@ -509,4 +521,47 @@ export const UI_STRINGS: Record<SupportedLang, Record<string, string>> = {
 export function t(key: string): string {
   const lang = currentLang();
   return UI_STRINGS[lang]?.[key] ?? UI_STRINGS.ja[key] ?? key;
+}
+
+export function getDefaultInstructions(lang: SupportedLang): string[] {
+  switch (lang) {
+    case 'en':
+      return [
+        'Controls: Click, tap, or drag on the game screen to interact.',
+        'Objective: Master the unique game mechanics and aim for a new high score!',
+        'Easy Restart: Use the restart button in the top navigation bar anytime to start over.',
+        'Audio & Fullscreen: Toggle sound and fullscreen mode using the header buttons.',
+      ];
+    case 'ru':
+      return [
+        'Управление: нажимайте, кликайте или проводите пальцем по экрану для взаимодействия.',
+        'Цель: освойте механику игры и поставьте новый рекорд!',
+        'Быстрый рестарт: используйте кнопку сброса в верхнем меню, чтобы начать заново.',
+        'Звук и полный экран: управляйте звуком и полноэкранным режимом кнопками в шапке.',
+      ];
+    case 'ko':
+      return [
+        '조작 방법: 게임 화면을 탭하거나 클릭, 드래그하여 플레이합니다.',
+        '목표: 고유한 게임 규칙을 익히고 최고 점수에 도전해보세요!',
+        '언제든 재도전: 상단 바의 다시하기 버튼을 눌러 언제든 처음부터 시작할 수 있습니다.',
+        '사운드 & 전체화면: 상단 헤더 버튼으로 소리와 전체화면 모드를 간편하게 제어할 수 있습니다.',
+      ];
+    case 'zh-CN':
+      return [
+        '操作说明：通过点击、滑动或拖拽屏幕元素进行游戏互动。',
+        '通关目标：掌握核心游戏机制，冲击并创造全新高分纪录！',
+        '随时重开：可随时点击顶部导航栏中的重新开始按钮重置本局。',
+        '音效与全屏：可通过顶部菜单栏按钮自由开关音效及全屏模式。',
+      ];
+    case 'zh-TW':
+      return [
+        '操作說明：透過點擊、滑動或拖曳螢幕元素進行遊戲互動。',
+        '通關目標：掌握核心遊戲機制，衝擊並創造全新高分紀錄！',
+        '隨時重開：可隨時點擊頂部導覽列中的重新開始按鈕重設本局。',
+        '音效與全螢幕：可透過頂部選單列按鈕自由開關音效及全螢幕模式。',
+      ];
+    case 'ja':
+    default:
+      return [];
+  }
 }

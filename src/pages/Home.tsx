@@ -16,7 +16,7 @@ import {
   CheckIcon,
 } from '../components/Icons.tsx';
 import { LanguageSelector } from '../components/LanguageSelector.tsx';
-import { t } from '../utils/i18n.ts';
+import { t, getLang } from '../utils/i18n.ts';
 import { getLocalizedGame } from '../utils/gameTranslations.ts';
 import { sound } from '../utils/sound.ts';
 import {
@@ -145,6 +145,7 @@ export const Home: Component = () => {
 
   // フィルタリング処理
   const filteredGames = createMemo(() => {
+    const lang = getLang(); // 明示的に言語シグナルを購読
     const query = searchQuery().toLowerCase().trim();
     const cat = selectedCategory();
     const favs = appData().favorites;
@@ -165,6 +166,15 @@ export const Home: Component = () => {
       if (cat === 'all') return true;
       if (cat === 'favorite') return favs.includes(g.id);
       return g.category === cat;
+    }).map((g) => {
+      const loc = getLocalizedGame(g.id, g);
+      return {
+        ...g,
+        _lang: lang,
+        localizedTitle: loc.title,
+        localizedSub: loc.titleSub,
+        localizedDesc: loc.description,
+      };
     });
   });
 
@@ -341,7 +351,6 @@ export const Home: Component = () => {
                   lastPlayedAt: 0,
                 };
               const isFav = () => appData().favorites.includes(game.id);
-              const loc = () => getLocalizedGame(game.id, game);
               const GameIcon = game.icon;
 
               return (
@@ -377,11 +386,11 @@ export const Home: Component = () => {
 
                     {/* タイトル & 説明 */}
                     <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
-                      {loc().title}
+                      {game.localizedTitle}
                     </h3>
-                    <div class="text-xs text-slate-400 font-medium mb-2">{loc().titleSub}</div>
+                    <div class="text-xs text-slate-400 font-medium mb-2">{game.localizedSub}</div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 mb-4">
-                      {loc().description}
+                      {game.localizedDesc}
                     </p>
                   </div>
 
