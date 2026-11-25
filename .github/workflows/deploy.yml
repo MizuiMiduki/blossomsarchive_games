@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ─── 1. 品質ゲート (型検査) ───
+  # ─── 1. 品質ゲート (型検査 & 包括QAテスト) ───
   quality-gate:
     runs-on: ubuntu-latest
     steps:
@@ -36,8 +36,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Type Check
-        run: npm run type-check
+      - name: Run Type Check & Tests (Parallel)
+        shell: bash
+        run: |
+          npm run type-check &
+          PID_TYPE=$!
+          npm test &
+          PID_TEST=$!
+          wait $PID_TYPE
+          wait $PID_TEST
 
   # ─── 2. 本番ビルド (quality-gateと並行実行) ───
   build:
@@ -131,3 +138,110 @@ jobs:
             **/*.log
             **/*.lock
             **/*.sql
+
+  # ─── 4. Lighthouse 並列分散監査 (4シャード均等分散で高速並列実行) ───
+  lighthouse-audit:
+    needs: [build]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: [1, 2, 3, 4]
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist/
+
+      - name: Setup Lighthouse CLI Cache
+        uses: actions/cache@v4
+        id: lh-cache
+        with:
+          path: /home/runner/.npm-global
+          key: ${{ runner.os }}-lighthouse-cli-v13
+
+      - name: Install Lighthouse CLI
+        if: steps.lh-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /home/runner/.npm-global
+          npm config set prefix /home/runner/.npm-global
+          npm install -g lighthouse
+
+      - name: Run Sharded Lighthouse Audit
+        run: |
+          export PATH="/home/runner/.npm-global/bin:$PATH"
+          npx tsx scripts/audit-lighthouse.ts --shard=${{ matrix.shard }}/4 --report-json=dist-reports/shard-${{ matrix.shard }}.json
+
+      - name: Upload Shard Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lh-shard-${{ matrix.shard }}
+          path: dist-reports/shard-${{ matrix.shard }}.json
+          retention-days: 1
+
+  # ─── 5. Lighthouse 監査結果集約 & Issue 自動管理 (BlossomsArchive Tools 準拠) ───
+  lighthouse-report:
+    needs: [lighthouse-audit]
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download All Shard Reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: lh-shard-*
+          path: dist-shards/
+          merge-multiple: true
+
+      - name: Aggregate Reports
+        id: aggregate
+        run: |
+          npx tsx scripts/audit-lighthouse.ts --aggregate=dist-shards
+
+      - name: Create Issue on PageSpeed Regression
+        if: steps.aggregate.outputs.has_issues == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TZ: 'Asia/Tokyo'
+        run: |
+          OLD_ISSUES=$(gh issue list --state open --limit 100 --json number,title --jq '.[] | select(.title | startswith("[PageSpeed Alert]")) | .number')
+          NEW_URL=$(gh issue create \
+            --title "[PageSpeed Alert] Lighthouse スコア退行を検出しました ($(TZ='Asia/Tokyo' date +'%Y-%m-%d %H:%M'))" \
+            --body-file dist/lighthouse-issue.md)
+          for NUM in $OLD_ISSUES; do
+            gh issue close "$NUM" --comment "🔄 新しい監査結果 ($NEW_URL) に更新されたため、古いレポートを自動クローズしました。"
+          done
+
+      - name: Close Resolved PageSpeed Issues
+        if: steps.aggregate.outputs.has_issues == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for NUM in $(gh issue list --state open --limit 100 --json number,title --jq '.[] | select(.title | startswith("[PageSpeed Alert]")) | .number'); do
+            gh issue close "$NUM" --comment "✅ 最新のCI監査にて全40ゲーム（ライト/ダーク×モバイル/デスクトップ）で Lighthouse 監査基準クリアを確認したため、古いIssueを自動クローズしました。"
+          done

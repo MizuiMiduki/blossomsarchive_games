@@ -1,0 +1,41 @@
+name: Run Tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Type Check & Comprehensive QA Tests
+        shell: bash
+        run: |
+          npm run type-check &
+          PID_TYPE=$!
+          npm test &
+          PID_TEST=$!
+          wait $PID_TYPE
+          wait $PID_TEST
+
+      - name: Verify Production Build
+        run: npm run build

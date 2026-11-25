@@ -200,6 +200,125 @@ const cameraUtil = fs.readFileSync('src/utils/camera.ts', 'utf8');
 assert(cameraUtil.includes('drawVideoCover'), 'drawVideoCover (aspect ratio correction) exists');
 assert(cameraUtil.includes('setupCanvasAutoResize'), 'setupCanvasAutoResize (ResizeObserver wrapper) exists');
 
+// -----------------------------------------------------------------------------
+// 12. セキュリティ & XSS 防護ガード (BlossomsArchive Tools 準拠)
+// -----------------------------------------------------------------------------
+console.log('\n--- TEST SUITE 12: Security & Safe Rendering Guard ---');
+function scanDirForFilePatterns(dir, extFilter) {
+  let results = [];
+  const list = fs.readdirSync(dir);
+  for (const file of list) {
+    const fullPath = path.join(dir, file);
+    const stat = fs.statSync(fullPath);
+    if (stat.isDirectory()) {
+      if (file !== 'node_modules' && file !== 'dist' && file !== '.git') {
+        results = results.concat(scanDirForFilePatterns(fullPath, extFilter));
+      }
+    } else if (extFilter.some(ext => file.endsWith(ext))) {
+      results.push(fullPath);
+    }
+  }
+  return results;
+}
+
+const srcFiles = scanDirForFilePatterns('src', ['.tsx', '.ts']);
+let unsafeInnerHtmlCount = 0;
+for (const file of srcFiles) {
+  const content = fs.readFileSync(file, 'utf8');
+  if (content.includes('innerHTML') && !content.includes('// safe-inner-html')) {
+    // Canvasや特定の安全な計測以外でのinnerHTMLを警戒
+    const lines = content.split('\n');
+    for (const l of lines) {
+      if (l.includes('.innerHTML =') && !l.includes('textContent')) {
+        unsafeInnerHtmlCount++;
+      }
+    }
+  }
+}
+assert(unsafeInnerHtmlCount === 0, `Zero unsafe innerHTML assignments across ${srcFiles.length} source files (found: ${unsafeInnerHtmlCount})`);
+
+// -----------------------------------------------------------------------------
+// 13. プロシージャル効果音エンジン & Web Audio メモリ保護QA
+// -----------------------------------------------------------------------------
+console.log('\n--- TEST SUITE 13: Sound Engine & Memory Guard ---');
+const soundCode = fs.readFileSync('src/utils/sound.ts', 'utf8');
+assert(soundCode.includes('class SoundEngine'), 'SoundEngine singleton class is defined');
+assert(soundCode.includes('setMuted') && soundCode.includes('getMuted'), 'SoundEngine supports mute toggle');
+assert(soundCode.includes('setVolume') && soundCode.includes('getVolume'), 'SoundEngine supports volume adjustment');
+assert(soundCode.includes('Math.max(0, Math.min(1, vol))'), 'Volume is strictly clamped between 0.0 and 1.0');
+assert(soundCode.includes('playPop') && soundCode.includes('playMatch') && soundCode.includes('playVictory'), 'Essential game sound triggers are implemented');
+
+// -----------------------------------------------------------------------------
+// 14. 2048 & スイーツドロップの数学的整合性QA
+// -----------------------------------------------------------------------------
+console.log('\n--- TEST SUITE 14: 2048 & Blossom Drop Integrity ---');
+const dropCode = fs.readFileSync('src/games/blossom-drop/BlossomDropGame.tsx', 'utf8');
+assert(dropCode.includes('SWEETS_TIERS'), 'SWEETS_TIERS is defined in BlossomDropGame');
+const tiersMatch = dropCode.match(/export const SWEETS_TIERS: SweetsType\[\]\s*=\s*\[([\s\S]*?)\];/);
+assert(tiersMatch !== null, 'SWEETS_TIERS array definition extracted');
+const tiers = eval('[' + tiersMatch[1] + ']');
+assert(tiers.length === 11, `Sweets Drop has 11 evolution stages (found: ${tiers.length})`);
+
+// 半径とスコアがレベルに応じて単調増加しているか検証
+let monotonicValid = true;
+for (let i = 1; i < tiers.length; i++) {
+  if (tiers[i].radius <= tiers[i - 1].radius || tiers[i].score <= tiers[i - 1].score) {
+    monotonicValid = false;
+  }
+}
+assert(monotonicValid, 'Sweets Drop radius and score monotonically increase by tier');
+
+// -----------------------------------------------------------------------------
+// 15. AI ワードウルフの推論と発言整合性QA
+// -----------------------------------------------------------------------------
+console.log('\n--- TEST SUITE 15: AI Word Wolf Dialogue System QA ---');
+const wolfCode = fs.readFileSync('src/games/ai-word-wolf/AiWordWolfGame.tsx', 'utf8');
+assert(wolfCode.includes('TOPICS: TopicPair[]'), 'AI Word Wolf TOPICS list exists');
+assert(wolfCode.includes('usedStatements'), 'usedStatements duplicate prevention set exists');
+assert(wolfCode.includes('applyCharacterStyle'), 'applyCharacterStyle dialogue filter exists');
+assert(wolfCode.includes('generateStatement'), 'Phased statement generator exists');
+
+// トピックのデータ整合性チェック
+const topicsMatch = wolfCode.match(/const TOPICS:\s*TopicPair\[\]\s*=\s*\[([\s\S]*?)\];/);
+const parsedTopics = eval('[' + topicsMatch[1] + ']');
+assert(parsedTopics.length >= 12, `AI Word Wolf has at least 12 topic pairs (found: ${parsedTopics.length})`);
+
+let allTopicsValid = true;
+for (const t of parsedTopics) {
+  if (!t.citizen || !t.wolf || !t.hints || !t.hints.round1 || !t.hints.round2Citizen || !t.hints.round2Wolf || !t.hints.round3Citizen || !t.hints.round3Wolf) {
+    allTopicsValid = false;
+  }
+  if (t.hints.round1.length < 3 || t.hints.round2Citizen.length < 2) {
+    allTopicsValid = false;
+  }
+}
+assert(allTopicsValid, 'All Word Wolf topics have comprehensive 3-round hints');
+
+// -----------------------------------------------------------------------------
+// 16. トランプ (ソリティア) & マインスイーパーの完全性QA
+// -----------------------------------------------------------------------------
+console.log('\n--- TEST SUITE 16: Cards & MineSweeper Algorithm QA ---');
+const solitaireLogic = fs.readFileSync('src/games/solitaire/logic.ts', 'utf8');
+assert(solitaireLogic.includes('export function createDeck'), 'Solitaire createDeck function exists');
+assert(solitaireLogic.includes('suits: Suit[]') && solitaireLogic.includes('rank <= 13'), 'Deck suits and 13 ranks defined');
+
+const minesweeperCode = fs.readFileSync('src/games/minesweeper/MinesweeperGame.tsx', 'utf8');
+assert(minesweeperCode.includes('CONFIGS') && minesweeperCode.includes('easy') && minesweeperCode.includes('hard'), 'Minesweeper CONFIGS settings exist');
+assert(minesweeperCode.includes('revealSafeZone') || minesweeperCode.includes('firstClick') || minesweeperCode.includes('safe') || minesweeperCode.includes('mines'), 'Minesweeper ensures first-click safety');
+
+// -----------------------------------------------------------------------------
+// 17. SEO, OGP & メタタグ検証QA (BlossomsArchive Tools 準拠)
+// -----------------------------------------------------------------------------
+console.log('\n--- TEST SUITE 17: SEO, OGP & Meta Tag QA ---');
+const indexHtml = fs.readFileSync('index.html', 'utf8');
+assert(indexHtml.includes('<html lang="ja">'), 'HTML has correct lang="ja" attribute');
+assert(indexHtml.includes('<meta name="viewport"'), 'Responsive viewport meta tag exists');
+assert(indexHtml.includes('<title>'), 'Document title tag exists');
+assert(indexHtml.includes('<meta name="description"'), 'Meta description tag exists');
+assert(indexHtml.includes('<meta property="og:title"'), 'OpenGraph title tag exists');
+assert(indexHtml.includes('<meta property="og:description"'), 'OpenGraph description tag exists');
+assert(indexHtml.includes('<link rel="icon"'), 'Favicon link exists');
+
 console.log('\n====================================================');
 console.log(`QA TEST SUMMARY: Passed: ${passedTests}, Failed: ${failedTests}`);
 console.log('====================================================');

@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vite build && node scripts/post-build.js",
     "preview": "vite preview",
+    "audit:pagespeed": "npx tsx scripts/audit-lighthouse.ts",
     "type-check": "tsc --noEmit",
     "test": "node scripts/qa-test-suite.js"
   },
@@ -26,6 +27,7 @@
     "@types/node": "^22.13.0",
     "@types/qrcode": "^1.5.5",
     "tailwindcss": "^4.0.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.8.0",
     "vite": "^6.2.0",
     "vite-plugin-solid": "^3.0.0-next.27"
