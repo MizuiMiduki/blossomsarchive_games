@@ -310,6 +310,9 @@ export const Home: Component = () => {
           </div>
         </section>
 
+        {/* ヒーロー直下 AdSense 広告エリア */}
+        <AdSense class="my-6" />
+
         {/* ゲームカードグリッド */}
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-4">
           <For

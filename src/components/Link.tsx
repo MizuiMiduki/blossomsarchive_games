@@ -1,6 +1,5 @@
 import { Component } from 'solid-js';
 import type { JSX } from '@solidjs/web';
-import { useNavigate } from '@solidjs/router';
 
 export interface LinkProps extends JSX.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;
@@ -10,16 +9,14 @@ export interface LinkProps extends JSX.AnchorHTMLAttributes<HTMLAnchorElement> {
 }
 
 export const Link: Component<LinkProps> = (props) => {
-  const navigate = useNavigate();
-
   const handleClick = (e: MouseEvent) => {
     if (props.onClick) {
       props.onClick(e);
     }
-    // Only intercept normal left clicks without modifier keys
+    // ページ遷移時にブラウザをフルリロードして広告・メモリ・状態を確実に再初期化
     if (!e.defaultPrevented && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
       e.preventDefault();
-      navigate(props.href);
+      window.location.href = props.href;
     }
   };
 

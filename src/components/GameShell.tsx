@@ -1,5 +1,6 @@
 import { Component, createSignal, createEffect, onSettled, onCleanup, Show } from 'solid-js';
 import { Link } from './Link.tsx';
+import AdSense from './AdSense.tsx';
 import type { JSX } from '@solidjs/web';
 import confetti from 'canvas-confetti';
 import {
@@ -329,12 +330,13 @@ export const GameShell: Component<GameShellProps> = (props) => {
                 </li>
               ))}
             </ul>
+            <AdSense class="my-3 min-h-[100px]" />
             <button
               onClick={() => {
                 sound.playPop(480);
                 setShowHelp(false);
               }}
-              class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-medium shadow-2xs transition-all active:scale-95"
+              class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-medium shadow-2xs transition-all active:scale-95 cursor-pointer"
             >
               閉じる
             </button>
@@ -416,6 +418,9 @@ export const GameShell: Component<GameShellProps> = (props) => {
                 ゲーム一覧へ戻る
               </Link>
             </div>
+
+            {/* ゲーム終了時 AdSense 広告 */}
+            <AdSense class="mt-4 min-h-[120px]" />
           </div>
         </div>
       </Show>
