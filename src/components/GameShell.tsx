@@ -267,6 +267,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
               setShowHelp(true);
             }}
             title={t('howToPlay')}
+            aria-label={t('howToPlay')}
             class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <InfoIcon size={18} />
@@ -274,6 +275,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
           <button
             onClick={toggleSound}
             title={isMuted() ? t('soundUnmute') : t('soundMute')}
+            aria-label={isMuted() ? t('soundUnmute') : t('soundMute')}
             class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <Show when={isMuted()} fallback={<VolumeIcon size={18} />}>
@@ -283,6 +285,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
           <button
             onClick={handleShare}
             title={t('shareResult')}
+            aria-label={t('shareResult')}
             class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <ShareIcon size={18} />
@@ -293,6 +296,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
               handleRestart();
             }}
             title={t('retryStage')}
+            aria-label={t('retryStage')}
             class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <RotateCcwIcon size={18} />
@@ -300,6 +304,7 @@ export const GameShell: Component<GameShellProps> = (props) => {
           <button
             onClick={toggleFullscreen}
             title="Fullscreen"
+            aria-label="Fullscreen"
             class="p-2 hidden sm:flex text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <MaximizeIcon size={18} />

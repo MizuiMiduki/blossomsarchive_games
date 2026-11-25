@@ -54,6 +54,7 @@ export const LanguageSelector: Component<{ class?: string }> = (props) => {
       <button
         onClick={handleToggle}
         title={t('selectLang')}
+        aria-label={t('selectLang')}
         class="px-2 sm:px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 shadow-2xs select-none cursor-pointer"
       >
         <GlobeIcon size={16} class="text-slate-500 dark:text-slate-400" />

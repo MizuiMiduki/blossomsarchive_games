@@ -1,4 +1,4 @@
-import { Component, Show } from 'solid-js';
+import { Component, Show, Loading } from 'solid-js';
 import { useParams } from '@solidjs/router';
 import { Link } from '../components/Link.tsx';
 import { GAMES } from '../games/registry.ts';
@@ -32,7 +32,18 @@ export const GameView: Component = () => {
       {(item) => {
         const target = item();
         const Comp = target.component;
-        return <Comp />;
+        return (
+          <Loading
+            fallback={
+              <div class="min-h-screen flex flex-col items-center justify-center p-4 text-center bg-slate-50 dark:bg-slate-950 text-slate-400">
+                <div class="w-8 h-8 border-2 border-slate-300 dark:border-slate-700 border-t-slate-800 dark:border-t-slate-200 rounded-full animate-spin mb-3"></div>
+                <p class="text-xs font-medium">読み込み中...</p>
+              </div>
+            }
+          >
+            <Comp />
+          </Loading>
+        );
       }}
     </Show>
   );

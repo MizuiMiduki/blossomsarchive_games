@@ -12,5 +12,16 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('qrcode')) return 'vendor-qrcode';
+            if (id.includes('canvas-confetti')) return 'vendor-confetti';
+            return 'vendor';
+          }
+        },
+      },
+    },
   },
 });
