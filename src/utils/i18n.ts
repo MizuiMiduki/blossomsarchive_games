@@ -22,6 +22,28 @@ const STORAGE_LANG_KEY = 'blossomsarchive_games_lang';
 
 function detectUserLang(): SupportedLang {
   if (typeof window === 'undefined') return 'ja';
+
+  // 1. URLパスから言語を最優先判定 (/en/..., /ru/..., /ko/..., /zh-CN/..., /zh-TW/...)
+  try {
+    const segments = window.location.pathname.split('/').filter(Boolean);
+    if (segments.length > 0) {
+      const first = segments[0].toLowerCase();
+      const matched = LANG_OPTIONS.find((o) => o.code.toLowerCase() === first);
+      if (matched) return matched.code;
+    }
+  } catch {}
+
+  // 2. URLクエリパラメータから判定 (?lang=en など)
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const langParam = params.get('lang');
+    if (langParam) {
+      const matched = LANG_OPTIONS.find((o) => o.code.toLowerCase() === langParam.toLowerCase());
+      if (matched) return matched.code;
+    }
+  } catch {}
+
+  // 3. localStorage に保存された選択言語
   try {
     const saved = localStorage.getItem(STORAGE_LANG_KEY) as SupportedLang | null;
     if (saved && LANG_OPTIONS.some((o) => o.code === saved)) {
@@ -29,6 +51,7 @@ function detectUserLang(): SupportedLang {
     }
   } catch {}
 
+  // 4. ブラウザの言語設定
   const browserLang = (typeof navigator !== 'undefined' ? navigator.language : '') || '';
   const lower = browserLang.toLowerCase();
 

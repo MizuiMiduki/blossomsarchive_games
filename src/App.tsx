@@ -11,6 +11,8 @@ const AppRouter = createRouter({
   routes: [
     { path: '/', component: () => <Home /> },
     { path: '/game/:id', component: () => <GameView /> },
+    { path: '/:lang', component: () => <Home /> },
+    { path: '/:lang/game/:id', component: () => <GameView /> },
     { path: '*all', component: () => <Home /> },
   ],
 });

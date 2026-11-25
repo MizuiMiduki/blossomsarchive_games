@@ -340,6 +340,38 @@ for (const expId of expectedIds) {
   assert(gameTransCode.includes(`'${expId}':`), `Game '${expId}' translations defined in gameTranslations.ts`);
 }
 
+// -----------------------------------------------------------------------------
+// 19. sitemap.xml & 多言語SEO成果物QA
+// -----------------------------------------------------------------------------
+console.log('\n--- TEST SUITE 19: Sitemap & Multilingual SEO Artifacts QA ---');
+const sitemapPath = path.resolve('dist/sitemap.xml');
+const robotsPath = path.resolve('dist/robots.txt');
+
+if (fs.existsSync(sitemapPath)) {
+  const sitemapContent = fs.readFileSync(sitemapPath, 'utf8');
+  assert(sitemapContent.includes('<urlset') && sitemapContent.includes('xmlns:xhtml'), 'sitemap.xml contains urlset and xhtml namespace');
+  const urlCount = (sitemapContent.match(/<loc>/g) || []).length;
+  assert(urlCount >= 246, `sitemap.xml contains all 246 multilingual URLs (found: ${urlCount})`);
+  assert(sitemapContent.includes('hreflang="ja"') && sitemapContent.includes('hreflang="en"'), 'sitemap.xml has multi-language hreflang annotations');
+  assert(sitemapContent.includes('hreflang="x-default"'), 'sitemap.xml includes x-default fallback annotations');
+
+  if (fs.existsSync(robotsPath)) {
+    const robotsContent = fs.readFileSync(robotsPath, 'utf8');
+    assert(robotsContent.includes('Sitemap:'), 'robots.txt declares Sitemap path');
+  }
+
+  // 多言語ごとの静的HTMLメタタグ検証
+  const enGameHtmlPath = path.resolve('dist/en/game/blossom-life/index.html');
+  if (fs.existsSync(enGameHtmlPath)) {
+    const enGameHtml = fs.readFileSync(enGameHtmlPath, 'utf8');
+    assert(enGameHtml.includes('lang="en"'), 'English static page has lang="en"');
+    assert(enGameHtml.includes("<title>Blossom Life - Conway's Life Game | BlossomsArchive Games</title>"), 'English static page has localized title');
+    assert(enGameHtml.includes('hreflang="en"') && enGameHtml.includes('rel="canonical"'), 'English static page has canonical and hreflang links');
+  }
+} else {
+  console.log('  [SKIP] dist/sitemap.xml not yet generated (pre-build stage)');
+}
+
 console.log('\n====================================================');
 console.log(`QA TEST SUMMARY: Passed: ${passedTests}, Failed: ${failedTests}`);
 console.log('====================================================');

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/post-build.js",
+    "build": "vite build && npx tsx scripts/post-build.ts",
     "preview": "vite preview",
     "audit:pagespeed": "npx tsx scripts/audit-lighthouse.ts",
     "type-check": "tsc --noEmit",

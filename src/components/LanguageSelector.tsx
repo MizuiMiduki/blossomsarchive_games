@@ -13,6 +13,24 @@ export const LanguageSelector: Component<{ class?: string }> = (props) => {
     sound.playPop(520);
     setLang(code);
     setIsOpen(false);
+
+    if (typeof window !== 'undefined') {
+      const pathname = window.location.pathname;
+      const segments = pathname.split('/').filter(Boolean);
+      const isKnownLangPrefix = LANG_OPTIONS.some((o) => o.code.toLowerCase() === segments[0]?.toLowerCase());
+      const restSegments = isKnownLangPrefix ? segments.slice(1) : segments;
+
+      let newPath = '/';
+      if (code === 'ja') {
+        newPath = restSegments.length > 0 ? `/${restSegments.join('/')}` : '/';
+      } else {
+        newPath = restSegments.length > 0 ? `/${code}/${restSegments.join('/')}` : `/${code}`;
+      }
+
+      if (window.location.pathname !== newPath) {
+        window.history.replaceState(null, '', newPath + window.location.search);
+      }
+    }
   };
 
   const handleToggle = () => {
